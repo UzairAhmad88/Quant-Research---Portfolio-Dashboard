@@ -1,5 +1,6 @@
 import os
 from typing import List
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -27,7 +28,6 @@ class Settings(BaseSettings):
     MARKET_DATA_API_KEY: str = os.getenv("MARKET_DATA_API_KEY", "")
     MARKET_DATA_BASE_URL: str = os.getenv("MARKET_DATA_BASE_URL", "")
 
-    class Config:
-        case_sensitive = True
+    model_config = ConfigDict(case_sensitive=True)
 
 settings = Settings()
