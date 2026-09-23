@@ -34,7 +34,7 @@ export const TopBar: React.FC = () => {
 
   useEffect(() => {
     fetchHealth().then((res) => {
-      if (res.success) {
+      if (res.status === 'ok') {
         setBackendStatus('ONLINE');
       }
     });
