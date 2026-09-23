@@ -29,8 +29,8 @@ All application errors return a standardized JSON body with appropriate HTTP sta
 ```
 
 ### Standard Error Categories & HTTP Statuses
-- **`400 Bad Request`** (`VALIDATION_ERROR`): Invalid query parameters or date range (`start_date > end_date`).
-- **`404 Not Found`** (`NOT_FOUND`): Requested instrument or resource ID does not exist.
+- **`400 Bad Request`** (`VALIDATION_ERROR`): Invalid query parameters, cash constraint violation, or duplicate holding.
+- **`404 Not Found`** (`NOT_FOUND`): Requested instrument or portfolio ID does not exist.
 - **`409 Conflict`** (`CONFLICT`): Symbol already registered on exchange.
 - **`422 Unprocessable Entity`** (`VALIDATION_ERROR`): Request payload failed Pydantic schema validation.
 - **`500 Internal Server Error`** (`INTERNAL_ERROR` / `DATABASE_ERROR`): Unexpected server error.
@@ -240,42 +240,6 @@ All list endpoints use a unified pagination wrapper:
 }
 ```
 
-#### `GET /api/v1/market-data/{instrument_id}/latest`
-- **Response `200 OK`**: Returns single latest `OHLCVResponse` bar for specified instrument.
-
-#### `GET /api/v1/market-data/{instrument_id}/quality`
-- **Query Parameters**:
-  - `start_date`: ISO 8601 UTC timestamp (Optional)
-  - `end_date`: ISO 8601 UTC timestamp (Optional)
-  - `frequency`: `DAILY` | `HOURLY` | `MINUTE` (Default: `DAILY`)
-- **Response `200 OK`**:
-```json
-{
-  "status": "GOOD",
-  "summary": {
-    "total_records": 1256,
-    "valid_records": 1256,
-    "invalid_records": 0,
-    "warning_count": 0,
-    "error_count": 0,
-    "critical_count": 0,
-    "duplicate_records": 0,
-    "potential_missing_sessions": 0
-  },
-  "issues": [],
-  "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
-  "symbol": "AAPL",
-  "asset_type": "EQUITY",
-  "provider": "DATABASE",
-  "start_date": "2021-09-23T00:00:00Z",
-  "end_date": "2026-09-23T00:00:00Z",
-  "generated_at": "2026-09-24T00:00:00Z"
-}
-```
-
-#### `GET /api/v1/market-data/{instrument_id}/ingestions/{ingestion_id}`
-- **Response `200 OK`**: Returns detailed ingestion audit log along with `quality_report`.
-
 ---
 
 ### Returns API
@@ -288,44 +252,90 @@ All list endpoints use a unified pagination wrapper:
   - `price_source`: `adjusted` | `close` (Default: `adjusted`)
   - `return_type`: `simple` | `log` (Default: `simple`)
   - `frequency`: `DAILY` | `HOURLY` | `MINUTE` (Default: `DAILY`)
-- **Response `200 OK`**:
+- **Response `200 OK`**: Returns `ReturnAnalysisResponse`.
+
+---
+
+### Portfolios API (Step 10)
+
+#### `GET /api/v1/portfolios`
+- **Query Parameters**: `active_only`: boolean (Default: `true`)
+- **Response `200 OK`**: List of active `PortfolioResponse` objects.
+
+#### `POST /api/v1/portfolios`
+- **Request Body**:
 ```json
 {
-  "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
-  "symbol": "SPY",
-  "asset_type": "ETF",
-  "price_source": "adjusted",
-  "return_type": "simple",
-  "frequency": "DAILY",
-  "quality_status": "GOOD",
-  "quality_warning": null,
-  "summary": {
-    "period_return": 0.2461,
-    "annualized_return": 0.0814,
-    "cumulative_return": 0.2461,
-    "positive_periods": 782,
-    "negative_periods": 660,
-    "best_period": 0.0742,
-    "worst_period": -0.0611,
-    "annualization_factor": 252
-  },
-  "series": [
+  "name": "Quantitative Benchmark Fund",
+  "description": "Multi-asset quantitative research portfolio",
+  "base_currency": "USD",
+  "initial_capital": 100000.0,
+  "holdings": [
     {
-      "timestamp": "2021-09-23T00:00:00Z",
-      "price": 440.50,
-      "simple_return": null,
-      "log_return": null,
-      "cumulative_return": 0.0
-    },
-    {
-      "timestamp": "2021-09-24T00:00:00Z",
-      "price": 443.10,
-      "simple_return": 0.005902,
-      "log_return": 0.005885,
-      "cumulative_return": 0.005902
+      "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+      "quantity": 100.0,
+      "entry_price": 150.0,
+      "target_weight": 15.0
     }
   ]
 }
 ```
+- **Response `201 Created`**: Returns created `PortfolioResponse`.
 
+#### `GET /api/v1/portfolios/{portfolio_id}`
+- **Response `200 OK`**: Returns `PortfolioResponse`.
 
+#### `PATCH /api/v1/portfolios/{portfolio_id}`
+- **Request Body**: Partial update (`name`, `description`, `initial_capital`, `is_active`).
+- **Response `200 OK`**: Returns updated `PortfolioResponse`.
+
+#### `DELETE /api/v1/portfolios/{portfolio_id}`
+- **Response `204 No Content`**: Soft-deactivates portfolio (`is_active = false`).
+
+#### `POST /api/v1/portfolios/{portfolio_id}/holdings`
+- **Request Body**:
+```json
+{
+  "instrument_id": "8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d",
+  "quantity": 50.0,
+  "entry_price": 200.0,
+  "target_weight": 10.0
+}
+```
+- **Response `201 Created`**: Returns created `PortfolioHoldingResponse`.
+
+#### `PATCH /api/v1/portfolios/{portfolio_id}/holdings/{holding_id}`
+- **Request Body**: Partial update (`quantity`, `entry_price`, `target_weight`).
+- **Response `200 OK`**: Returns updated `PortfolioHoldingResponse`.
+
+#### `DELETE /api/v1/portfolios/{portfolio_id}/holdings/{holding_id}`
+- **Response `204 No Content`**: Deactivates holding position.
+
+#### `GET /api/v1/portfolios/{portfolio_id}/analytics`
+- **Query Parameters**:
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+- **Response `200 OK`**:
+```json
+{
+  "portfolio_id": "...",
+  "name": "Quantitative Benchmark Fund",
+  "base_currency": "USD",
+  "price_source": "adjusted",
+  "quality_status": "GOOD",
+  "quality_warnings": [],
+  "summary": {
+    "initial_capital": 100000.0,
+    "initial_invested_value": 15000.0,
+    "cash": 85000.0,
+    "current_invested_value": 18000.0,
+    "current_portfolio_value": 103000.0,
+    "total_pnl": 3000.0,
+    "total_return": 0.03
+  },
+  "holdings": [],
+  "allocation": [],
+  "performance_series": []
+}
+```

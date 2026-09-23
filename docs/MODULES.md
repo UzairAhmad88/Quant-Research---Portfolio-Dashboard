@@ -32,13 +32,20 @@
 - [x] Return series table & CSV Export
 
 
-## 03 Portfolio Calculator
-- [ ] Add/remove assets
-- [ ] Weight validation
-- [ ] Portfolio return
-- [ ] Portfolio value
-- [ ] Contribution
-- [ ] Portfolio chart
+## 03 Portfolio Calculator & Portfolio Analytics (Step 10)
+- [x] Portfolio entity & PostgreSQL persistence (`core.portfolios`, `core.portfolio_holdings`)
+- [x] Portfolio holdings management & Instrument foreign-key integrity
+- [x] Duplicate holding rejection & non-negative cash enforcement ($C_{\text{uninvested}} \ge 0$)
+- [x] Initial capital allocation ($V_{\text{initial}} = \text{Cash} + \sum V_i$)
+- [x] Invested vs Total Portfolio weights calculation ($w_i = V_i / V_p$)
+- [x] Position P&L ($) and P&L (%) calculation
+- [x] Position performance contribution ($w_{\text{invested},i} \times \text{P\&L}_{\%,i}$)
+- [x] Buy-and-hold frictionless equity curve computation
+- [x] Interactive SVG Allocation Donut chart
+- [x] Interactive Portfolio Equity Curve & Cumulative Return Canvas chart
+- [x] Portfolio CRUD & Holdings REST API endpoints under `/api/v1/portfolios`
+- [x] Portfolio creation & add-holding modal workflows
+- [x] Data quality integration & coverage warning alerts
 
 ## 04 Correlation Analyzer
 - [ ] Asset selection

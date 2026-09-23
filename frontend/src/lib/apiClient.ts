@@ -170,7 +170,6 @@ export interface IngestionDetailItem extends IngestionLogItem {
   quality_report?: QualityReportItem;
 }
 
-
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 export async function fetchHealth(): Promise<HealthResponse> {
@@ -447,4 +446,240 @@ export async function fetchReturns(params: {
   return await response.json();
 }
 
+// Portfolio API types
+export interface PortfolioHoldingItem {
+  id: string;
+  portfolio_id: string;
+  instrument_id: string;
+  symbol: string;
+  name: string;
+  asset_type: string;
+  quantity: number;
+  entry_price: number;
+  entry_date?: string;
+  target_weight?: number;
+  initial_value: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
+export interface PortfolioItem {
+  id: string;
+  name: string;
+  description?: string;
+  base_currency: string;
+  initial_capital: number;
+  is_active: boolean;
+  holdings: PortfolioHoldingItem[];
+  invested_value: number;
+  cash: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateHoldingPayload {
+  instrument_id: string;
+  quantity: number;
+  entry_price: number;
+  entry_date?: string;
+  target_weight?: number;
+}
+
+export interface CreatePortfolioPayload {
+  name: string;
+  description?: string;
+  base_currency?: string;
+  initial_capital?: number;
+  holdings?: CreateHoldingPayload[];
+}
+
+export interface UpdatePortfolioPayload {
+  name?: string;
+  description?: string;
+  initial_capital?: number;
+  is_active?: boolean;
+}
+
+export interface UpdateHoldingPayload {
+  quantity?: number;
+  entry_price?: number;
+  target_weight?: number;
+}
+
+export interface HoldingAnalyticsItem {
+  holding_id: string;
+  instrument_id: string;
+  symbol: string;
+  name: string;
+  asset_type: string;
+  quantity: number;
+  entry_price: number;
+  current_price: number;
+  initial_value: number;
+  current_value: number;
+  invested_weight: number;
+  total_weight: number;
+  target_weight?: number;
+  pnl_amount: number;
+  pnl_percent: number;
+  contribution_percent: number;
+}
+
+export interface AllocationItem {
+  label: string;
+  symbol?: string;
+  value: number;
+  weight: number;
+  color?: string;
+}
+
+export interface PerformancePoint {
+  timestamp: string;
+  portfolio_value: number;
+  invested_value: number;
+  cumulative_return: number;
+}
+
+export interface PortfolioSummaryItem {
+  initial_capital: number;
+  initial_invested_value: number;
+  cash: number;
+  current_invested_value: number;
+  current_portfolio_value: number;
+  total_pnl: number;
+  total_return: number;
+}
+
+export interface PortfolioAnalyticsResponse {
+  portfolio_id: string;
+  name: string;
+  base_currency: string;
+  price_source: string;
+  quality_status: string;
+  quality_warnings: string[];
+  summary: PortfolioSummaryItem;
+  holdings: HoldingAnalyticsItem[];
+  allocation: AllocationItem[];
+  performance_series: PerformancePoint[];
+}
+
+export async function fetchPortfolios(activeOnly: boolean = true): Promise<PortfolioItem[]> {
+  const query = new URLSearchParams({ active_only: String(activeOnly) });
+  const response = await fetch(`${API_BASE_URL}/portfolios?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch portfolios: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export async function fetchPortfolio(portfolioId: string): Promise<PortfolioItem> {
+  const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch portfolio: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export async function createPortfolio(payload: CreatePortfolioPayload): Promise<PortfolioItem> {
+  const response = await fetch(`${API_BASE_URL}/portfolios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to create portfolio: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function updatePortfolio(portfolioId: string, payload: UpdatePortfolioPayload): Promise<PortfolioItem> {
+  const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to update portfolio: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function deletePortfolio(portfolioId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to deactivate portfolio: ${response.status}`);
+  }
+}
+
+export async function addPortfolioHolding(portfolioId: string, payload: CreateHoldingPayload): Promise<PortfolioHoldingItem> {
+  const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/holdings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to add holding: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function updatePortfolioHolding(
+  portfolioId: string,
+  holdingId: string,
+  payload: UpdateHoldingPayload
+): Promise<PortfolioHoldingItem> {
+  const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/holdings/${holdingId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to update holding: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function deletePortfolioHolding(portfolioId: string, holdingId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/holdings/${holdingId}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to remove holding: ${response.status}`);
+  }
+}
+
+export async function fetchPortfolioAnalytics(params: {
+  portfolio_id: string;
+  start_date?: string;
+  end_date?: string;
+  price_source?: string;
+}): Promise<PortfolioAnalyticsResponse> {
+  const query = new URLSearchParams();
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.price_source) query.append('price_source', params.price_source);
+
+  const response = await fetch(`${API_BASE_URL}/portfolios/${params.portfolio_id}/analytics?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Portfolio analytics request failed: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}

@@ -30,32 +30,46 @@ $$R_{\text{annualized}} = (1 + R_{\text{period}})^{\frac{N_{\text{annual}}}{N_{\
 - **Cryptocurrencies**: $N_{\text{annual}} = 365$ calendar days (24/7 continuous trading).
 
 
-## Portfolio Return
+## 2. Portfolio Analytics (Step 10)
 
-R_p = sum(w_i * R_i)
+### Position Initial & Current Value
+For position holding $i$ with quantity $Q_i$ and price $P_{i,t}$:
+$$V_{i,t} = Q_i \times P_{i,t}$$
 
-## Pearson Correlation
+### Portfolio Market Value & Cash
+For initial capital $C_0$ and active position holdings $1 \dots k$:
+$$\text{Cash} = \max\left(0, C_0 - \sum_{i=1}^k (Q_i \times P_{i,\text{entry}})\right)$$
+$$V_{p,t} = \text{Cash} + \sum_{i=1}^k (Q_i \times P_{i,t})$$
 
-rho(X,Y) = Cov(X,Y) / (sigma_X * sigma_Y)
+### Position Weights
+- **Invested Capital Weight**:
+  $$w_{\text{invested},i} = \frac{V_{i,\text{entry}}}{\sum_{j=1}^k V_{j,\text{entry}}}$$
+- **Total Portfolio Weight (including Cash)**:
+  $$w_{\text{total},i} = \frac{V_{i,t}}{V_{p,t}}, \quad w_{\text{cash}} = \frac{\text{Cash}}{V_{p,t}}$$
 
-## Volatility
+### Position P&L and Return
+$$\text{P\&L}_{\$,i} = V_{i,t} - V_{i,\text{entry}}$$
+$$\text{P\&L}_{\%,i} = \frac{P_{i,t}}{P_{i,\text{entry}}} - 1$$
 
-sigma = standard deviation of returns
+### Position Performance Contribution
+Period contribution of holding $i$ under buy-and-hold methodology:
+$$\text{Contribution}_i = w_{\text{invested},i} \times \text{P\&L}_{\%,i}$$
 
-## Annualized Daily Volatility
+### Portfolio Total Return
+Cumulative return of portfolio relative to total initial capital $C_0$:
+$$R_p(t) = \frac{V_{p,t}}{C_0} - 1$$
 
-sigma_annual = sigma_daily * sqrt(252)
+---
 
-The annualization convention must remain configurable.
+## 3. Future Analytics Modules (Scaffolded)
 
-## SMA
+### Pearson Correlation
+$$\rho(X,Y) = \frac{\text{Cov}(X,Y)}{\sigma_X \sigma_Y}$$
 
-SMA_n = mean of the last n prices
+### Volatility
+Annualized daily volatility:
+$$\sigma_{\text{annual}} = \sigma_{\text{daily}} \times \sqrt{N_{\text{annual}}}$$
 
-## Drawdown
+### Maximum Drawdown
+$$\text{Drawdown}_t = \frac{V_{p,t} - \max_{s \le t} V_{p,s}}{\max_{s \le t} V_{p,s}}$$
 
-Drawdown_t = (PortfolioValue_t - PreviousPeak_t) / PreviousPeak_t
-
-## Backtest Metrics
-
-Implement total return, annualized return, volatility, Sharpe ratio, maximum drawdown, trade count, win rate and profit factor with clearly documented assumptions.

@@ -6,6 +6,7 @@ from sqlalchemy.pool import StaticPool
 from app.db.base import Base
 from app.models.instrument import Instrument
 from app.models.market_data import OHLCV
+from app.models.portfolio import Portfolio, PortfolioHolding
 from app.main import app
 from app.db.session import get_db
 
@@ -28,6 +29,8 @@ def sqlite_db():
     # Restore schema names if changed
     Instrument.__table__.schema = "core"
     OHLCV.__table__.schema = "market_data"
+    Portfolio.__table__.schema = "core"
+    PortfolioHolding.__table__.schema = "core"
 
     Base.metadata.create_all(engine)
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -1,9 +1,9 @@
-# Quant Research Dashboard — Step 09 Complete
+# Quant Research Dashboard — Step 10 Complete
 
 A professional institutional quantitative-finance research and portfolio analysis platform.
 
 > [!NOTE]
-> **Step 09 Status**: Return Calculator & Return Analytics Engine Complete. Implemented NumPy/Pandas mathematical calculation engine (`app/analytics/returns/`), Simple returns, Log returns, Cumulative simple returns, CAGR Annualized performance (252 trading days for Equities vs 365 days for Crypto), price series selection (`Adjusted Close` vs `Raw Close`), FastAPI `/api/v1/returns` REST API, frontend `/returns` research workspace with metric cards, TradingView `lightweight-charts` cumulative/periodic canvas charts, daily return series table, CSV export, 39/39 Pytest pass rate, and 6/6 Vitest pass rate.
+> **Step 10 Status**: Portfolio Calculator & Portfolio Analytics Complete. Implemented persistent PostgreSQL portfolio storage (`core.portfolios`, `core.portfolio_holdings`), Alembic migration `003_add_portfolio_tables.py`, pure numerical calculation engine (`app/analytics/portfolio/calculator.py`), portfolio services (`PortfolioService`, `PortfolioAnalyticsService`), REST API (`/api/v1/portfolios`), frontend research workstation (`/portfolio`), interactive allocation chart, portfolio performance equity curve, holdings table, 100% test pass rate, and zero data fabrication.
 
 ---
 
@@ -17,9 +17,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 3. **Multi-Schema Database Architecture**: Segregated PostgreSQL schemas (`core` for application entities, `market_data` for OHLCV time-series).
 4. **Layered Persistence Pattern**: Clean separation between API routes, Services, Repositories, SQLAlchemy ORM, and PostgreSQL.
 5. **Data Validation & Quality Layer**: Centralized validation pipeline (`ValidationPipeline`) enforcing OHLC bounds, UTC normalization, market calendar session gap awareness, anomaly detection, and zero data fabrication.
-6. **Return Analytics Engine**: Decoupled numerical returns engine (`ReturnCalculator`) computing simple/log/cumulative returns and CAGR metrics from validated price series.
-
-
+6. **Return & Portfolio Analytics Engine**: Decoupled numerical analytics engine computing simple/log/cumulative returns, CAGR metrics, position P&L ($ / %), invested weights, cash bounds, position contribution, and frictionless buy-and-hold equity curves.
 
 ---
 
@@ -27,7 +25,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 
 ### Frontend
 - **Framework**: React 19 + TypeScript 5 + Vite 6
-- **Charting Engine**: TradingView `lightweight-charts` v5
+- **Charting Engine**: TradingView `lightweight-charts` v5 & Custom SVG Ring Visualization
 - **Routing**: `react-router-dom` v7
 - **State Management**: TanStack Query v5 (Server state) + Zustand v5 (Client UI state)
 - **Icons & UI**: Lucide React + Institutional UI Tokens + Tailwind CSS
@@ -35,7 +33,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 ### Backend & Database
 - **Framework**: Python 3.11 + FastAPI + Pydantic v2
 - **Database Engine**: PostgreSQL 16 + SQLAlchemy 2 + Alembic Migrations
-- **Schemas**: `core` (Instruments) & `market_data` (OHLCV time-series)
+- **Schemas**: `core` (Instruments & Portfolios) & `market_data` (OHLCV time-series)
 - **API Architecture**: Versioned router at `/api/v1`
 
 ---
@@ -47,7 +45,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 | `/` | Overview & Roadmap | Step 01 | Active |
 | `/market-data` | Market Data Workspace, Visualization & Data Quality | Step 06..08 | Complete |
 | `/returns` | Return Calculator & Performance Analytics | Step 09 | Complete |
-| `/portfolio` | Portfolio Analytics | Step 10 | Next |
+| `/portfolio` | Portfolio Calculator & Portfolio Analytics | Step 10 | Complete |
 | `/correlation` | Correlation Matrix | Step 11 | Scaffolded |
 | `/volatility` | Volatility Analytics | Step 12 | Scaffolded |
 | `/strategies` | Quantitative Strategies | Step 13 | Scaffolded |
