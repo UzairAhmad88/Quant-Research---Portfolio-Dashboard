@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/appStore';
-import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
-import { Search, Bell, Activity, Server, Clock, UserCheck } from 'lucide-react';
+import { Search, Bell, Server, UserCheck, Menu } from 'lucide-react';
 import { fetchHealth } from '../../lib/apiClient';
 
 const routeTitles: Record<string, string> = {
@@ -12,7 +11,7 @@ const routeTitles: Record<string, string> = {
   '/returns': 'Return Calculator',
   '/portfolio': 'Portfolio Analytics',
   '/correlation': 'Correlation Matrix',
-  '/volatility': 'Volatility & Risk Analytics',
+  '/volatility': 'Volatility Analytics',
   '/strategies': 'Quantitative Strategies',
   '/backtesting': 'Backtesting Engine',
   '/settings': 'System Settings',
@@ -20,52 +19,87 @@ const routeTitles: Record<string, string> = {
 
 export const TopBar: React.FC = () => {
   const location = useLocation();
-  const { searchQuery, setSearchQuery, isSidebarCollapsed } = useAppStore();
+  const {
+    isSidebarCollapsed,
+    toggleMobileDrawer,
+    toggleCommandPalette,
+    toggleNotificationCenter,
+    notifications,
+  } = useAppStore();
+
   const [backendStatus, setBackendStatus] = useState<'ONLINE' | 'STANDBY'>('STANDBY');
-  const [dbStatus, setDbStatus] = useState<boolean>(false);
 
   const currentTitle = routeTitles[location.pathname] || 'Quant Research Dashboard';
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   useEffect(() => {
     fetchHealth().then((res) => {
       if (res.success) {
         setBackendStatus('ONLINE');
-        setDbStatus(res.data.dbConnected);
       }
     });
   }, []);
 
   return (
     <header
-      className={`fixed top-0 right-0 z-30 h-14 bg-[#111827] border-b border-[#263244] transition-all duration-200 ease-in-out flex items-center justify-between px-6 ${
-        isSidebarCollapsed ? 'left-16' : 'left-60'
+      className={`fixed top-0 right-0 z-[50] h-14 bg-[#111827] border-b border-[#263244] transition-all duration-200 ease-in-out flex items-center justify-between px-4 sm:px-6 ${
+        isSidebarCollapsed ? 'left-0 md:left-16' : 'left-0 md:left-60'
       }`}
     >
-      {/* Title & Eyebrow */}
-      <div className="flex items-center gap-4">
+      {/* Title & Mobile Hamburger */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggleMobileDrawer}
+          className="md:hidden p-1.5 rounded text-[#94A3B8] hover:text-[#E5E7EB] hover:bg-[#151F2E]"
+          aria-label="Open mobile navigation"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
         <div>
           <div className="text-[10px] font-mono-num font-semibold text-[#64748B] tracking-wider uppercase">
-            Institutional Research Shell
+            Institutional Research Workstation
           </div>
           <h1 className="text-sm font-semibold text-[#E5E7EB] tracking-tight">{currentTitle}</h1>
         </div>
       </div>
 
-      {/* Global Search Placeholder */}
-      <div className="hidden md:flex items-center w-72">
-        <Input
-          type="text"
-          placeholder="Search ticker, instrument, or module..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          icon={<Search className="w-3.5 h-3.5" />}
-        />
-      </div>
+      {/* Center Search Trigger (Command Palette Ctrl + K) */}
+      <button
+        onClick={toggleCommandPalette}
+        className="hidden sm:flex items-center justify-between w-64 px-3 py-1.5 rounded bg-[#151F2E] border border-[#263244] text-xs text-[#64748B] hover:border-[#3B82F6]/50 hover:text-[#94A3B8] transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <Search className="w-3.5 h-3.5 text-[#3B82F6]" />
+          <span>Search or type command...</span>
+        </div>
+        <kbd className="px-1.5 py-0.5 rounded bg-[#111827] border border-[#263244] text-[10px] font-mono-num text-[#94A3B8]">
+          Ctrl K
+        </kbd>
+      </button>
 
-      {/* Status Bar Indicators */}
-      <div className="flex items-center gap-4">
+      {/* Status Bar Indicators & Controls */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Market Status Placeholder Component */}
+        <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono-num text-[#94A3B8] border-r border-[#263244] pr-3">
+          <span className="text-[#64748B]">Market:</span>
+          <span className="inline-flex items-center gap-1 text-[#F59E0B]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" />
+            Closed
+          </span>
+        </div>
+
+        {/* Data Status Placeholder Component */}
+        <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono-num text-[#94A3B8] border-r border-[#263244] pr-3">
+          <span className="text-[#64748B]">Data:</span>
+          <span className="inline-flex items-center gap-1 text-[#22C55E]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
+            Connected
+          </span>
+        </div>
+
         {/* Backend API Health Status */}
-        <div className="hidden lg:flex items-center gap-2 text-xs text-[#94A3B8] border-r border-[#263244] pr-4">
+        <div className="hidden xl:flex items-center gap-1.5 text-xs text-[#94A3B8] border-r border-[#263244] pr-3">
           <Server className="w-3.5 h-3.5 text-[#3B82F6]" />
           <span className="font-mono-num text-[11px]">API:</span>
           <Badge variant={backendStatus === 'ONLINE' ? 'success' : 'warning'}>
@@ -73,40 +107,28 @@ export const TopBar: React.FC = () => {
           </Badge>
         </div>
 
-        {/* Database Status Placeholder */}
-        <div className="hidden xl:flex items-center gap-2 text-xs text-[#94A3B8] border-r border-[#263244] pr-4">
-          <Activity className="w-3.5 h-3.5 text-[#22C55E]" />
-          <span className="font-mono-num text-[11px]">DB:</span>
-          <Badge variant={dbStatus ? 'success' : 'outline'}>
-            {dbStatus ? 'PostgreSQL' : 'Standby'}
-          </Badge>
-        </div>
+        {/* Notification Bell Trigger */}
+        <button
+          onClick={toggleNotificationCenter}
+          className="p-1.5 rounded text-[#94A3B8] hover:text-[#E5E7EB] hover:bg-[#151F2E] transition-colors relative"
+          title="Notification Center"
+        >
+          <Bell className="w-4 h-4" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 flex items-center justify-center min-w-[14px] h-[14px] px-1 bg-[#3B82F6] text-white rounded-full text-[9px] font-mono-num font-bold">
+              {unreadCount}
+            </span>
+          )}
+        </button>
 
-        {/* Provider Status Placeholder */}
-        <div className="hidden 2xl:flex items-center gap-2 text-xs text-[#94A3B8] border-r border-[#263244] pr-4">
-          <Clock className="w-3.5 h-3.5 text-[#F59E0B]" />
-          <span className="font-mono-num text-[11px]">Provider:</span>
-          <span className="font-mono-num text-[11px] text-[#64748B]">Unconnected</span>
-        </div>
-
-        {/* Notifications & Profile Area Placeholders */}
-        <div className="flex items-center gap-3">
-          <button
-            className="p-1.5 rounded text-[#94A3B8] hover:text-[#E5E7EB] hover:bg-[#151F2E] transition-colors relative"
-            title="Notifications (Placeholder)"
-          >
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#3B82F6] rounded-full" />
-          </button>
-
-          <div className="flex items-center gap-2 pl-2 border-l border-[#263244]">
-            <div className="w-7 h-7 rounded bg-[#151F2E] border border-[#263244] flex items-center justify-center text-[#3B82F6]">
-              <UserCheck className="w-3.5 h-3.5" />
-            </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-xs font-medium text-[#E5E7EB] leading-none">Quant Analyst</span>
-              <span className="text-[10px] font-mono-num text-[#64748B] leading-none mt-0.5">Auth Disabled</span>
-            </div>
+        {/* User Profile / Auth Ready */}
+        <div className="flex items-center gap-2 pl-2 border-l border-[#263244]">
+          <div className="w-7 h-7 rounded bg-[#151F2E] border border-[#263244] flex items-center justify-center text-[#3B82F6]">
+            <UserCheck className="w-3.5 h-3.5" />
+          </div>
+          <div className="hidden md:flex flex-col">
+            <span className="text-xs font-medium text-[#E5E7EB] leading-none">Quant Analyst</span>
+            <span className="text-[10px] font-mono-num text-[#64748B] leading-none mt-0.5">Auth Disabled</span>
           </div>
         </div>
       </div>
