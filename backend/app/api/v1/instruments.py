@@ -1,9 +1,11 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.services.instrument_service import InstrumentService
+from app.services.market_data_service import MarketDataService
 from app.schemas.instrument import InstrumentCreate, InstrumentUpdate, InstrumentResponse
+from app.schemas.market_data import InstrumentSearchResult
 from app.schemas.common import PaginatedResponse
 from app.models.enums import AssetType
 from app.core.exceptions import NotFoundError, ConflictError
@@ -36,6 +38,15 @@ def list_instruments(
         limit=limit,
         offset=offset
     )
+
+@router.get("/search", response_model=List[InstrumentSearchResult], status_code=status.HTTP_200_OK)
+async def search_instruments(
+    q: str = Query(..., min_length=1, description="Search query string (ticker symbol or company name)"),
+    provider: str = Query("yahoo_finance", description="Target provider adapter"),
+    db: Session = Depends(get_db)
+):
+    service = MarketDataService(db)
+    return await service.search_instruments(query=q, provider_name=provider)
 
 @router.get("/{instrument_id}", response_model=InstrumentResponse, status_code=status.HTTP_200_OK)
 def get_instrument_by_id(instrument_id: str, db: Session = Depends(get_db)):

@@ -120,6 +120,25 @@ All list endpoints use a unified pagination wrapper:
 }
 ```
 
+#### `GET /api/v1/instruments/search`
+- **Query Parameters**:
+  - `q`: Search string (e.g. `AAPL`, `Bitcoin`, `SPY`)
+  - `provider`: Provider name (Default: `yahoo_finance`)
+- **Response `200 OK`**:
+```json
+[
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "asset_type": "EQUITY",
+    "exchange": "NASDAQ",
+    "currency": "USD",
+    "provider_symbol": "AAPL",
+    "existing_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc"
+  }
+]
+```
+
 #### `GET /api/v1/instruments/{instrument_id}`
 - **Response `200 OK`**: Returns single `InstrumentResponse`.
 - **Response `404 Not Found`**: Returns `NOT_FOUND` error if UUID does not exist.
@@ -148,14 +167,52 @@ All list endpoints use a unified pagination wrapper:
 
 ### Market Data API
 
+#### `POST /api/v1/market-data/fetch`
+- **Purpose**: Triggers data acquisition from provider adapter, inspects DB cache, validates OHLC bars, deduplicates, and bulk inserts valid bars into PostgreSQL.
+- **Request Body**:
+```json
+{
+  "symbol": "AAPL",
+  "start_date": "2021-01-01T00:00:00Z",
+  "end_date": "2026-09-23T00:00:00Z",
+  "frequency": "DAILY",
+  "provider": "yahoo_finance",
+  "force_refresh": false
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "message": "Market data acquisition for symbol 'AAPL' completed with status 'COMPLETED'.",
+  "summary": {
+    "ingestion_id": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+    "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+    "symbol": "AAPL",
+    "provider": "yahoo_finance",
+    "frequency": "DAILY",
+    "requested_start": "2021-01-01T00:00:00Z",
+    "requested_end": "2026-09-23T00:00:00Z",
+    "actual_start": "2021-01-04T00:00:00Z",
+    "actual_end": "2026-09-23T00:00:00Z",
+    "rows_received": 1442,
+    "rows_inserted": 1442,
+    "rows_skipped": 0,
+    "rows_invalid": 0,
+    "duration_ms": 820,
+    "status": "COMPLETED",
+    "warnings": []
+  }
+}
+```
+
 #### `GET /api/v1/market-data`
 - **Query Parameters**:
-  - `instrument_id`: UUID (Required)
+  - `instrument_id`: UUID (Optional)
   - `frequency`: `DAILY` | `HOURLY` | `MINUTE` (Default: `DAILY`)
   - `start_date`: ISO 8601 UTC timestamp (Optional)
   - `end_date`: ISO 8601 UTC timestamp (Optional)
   - `provider`: Data source name (Optional)
-  - `limit`: int (Default: `1000`, Max: `10000`)
+  - `limit`: int (Default: `50`, Max: `5000`)
   - `offset`: int (Default: `0`)
 - **Response `200 OK`**:
 ```json
@@ -172,14 +229,16 @@ All list endpoints use a unified pagination wrapper:
       "close": 227.80,
       "adjusted_close": 227.80,
       "volume": 45000000.0,
-      "provider": "ABSTRACT",
+      "provider": "yahoo_finance",
       "provider_symbol": "AAPL",
       "retrieved_at": "2026-09-23T22:00:00Z"
     }
   ],
-  "total": 1,
-  "limit": 1000,
+  "total": 1442,
+  "limit": 50,
   "offset": 0
 }
 ```
-- **Response `400 Bad Request`**: If `start_date > end_date`.
+
+#### `GET /api/v1/market-data/{instrument_id}/latest`
+- **Response `200 OK`**: Returns single latest `OHLCVResponse` bar for specified instrument.

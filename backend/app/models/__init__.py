@@ -1,5 +1,7 @@
-from app.models.enums import AssetType, DataFrequency
+from app.models.enums import AssetType, DataFrequency, IngestionStatus
 from app.models.instrument import Instrument
 from app.models.market_data import OHLCV
+from app.models.ingestion import IngestionLog
 
-__all__ = ["AssetType", "DataFrequency", "Instrument", "OHLCV"]
+__all__ = ["AssetType", "DataFrequency", "IngestionStatus", "Instrument", "OHLCV", "IngestionLog"]
+

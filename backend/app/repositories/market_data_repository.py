@@ -1,7 +1,7 @@
-from datetime import datetime
-from typing import List, Optional
+from datetime import datetime, timezone
+from typing import List, Optional, Set, Tuple
+
 from sqlalchemy.orm import Session
-from sqlalchemy.dialects.postgresql import insert
 from app.models.market_data import OHLCV
 from app.models.enums import DataFrequency
 from app.schemas.market_data import OHLCVCreate
@@ -60,23 +60,48 @@ class MarketDataRepository:
 
     def get_bars(
         self,
-        instrument_id: str,
+        instrument_id: Optional[str] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         frequency: DataFrequency = DataFrequency.DAILY,
-        limit: int = 1000
+        provider: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0
     ) -> List[OHLCV]:
-        query = self.db.query(OHLCV).filter(
-            OHLCV.instrument_id == instrument_id,
-            OHLCV.frequency == frequency
-        )
-
+        query = self.db.query(OHLCV)
+        if instrument_id:
+            query = query.filter(OHLCV.instrument_id == instrument_id)
+        if frequency:
+            query = query.filter(OHLCV.frequency == frequency)
+        if provider:
+            query = query.filter(OHLCV.provider == provider)
         if start_date:
             query = query.filter(OHLCV.timestamp >= start_date)
         if end_date:
             query = query.filter(OHLCV.timestamp <= end_date)
 
-        return query.order_by(OHLCV.timestamp.asc()).limit(limit).all()
+        return query.order_by(OHLCV.timestamp.asc()).offset(offset).limit(limit).all()
+
+    def count_bars(
+        self,
+        instrument_id: Optional[str] = None,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
+        frequency: DataFrequency = DataFrequency.DAILY,
+        provider: Optional[str] = None
+    ) -> int:
+        query = self.db.query(OHLCV)
+        if instrument_id:
+            query = query.filter(OHLCV.instrument_id == instrument_id)
+        if frequency:
+            query = query.filter(OHLCV.frequency == frequency)
+        if provider:
+            query = query.filter(OHLCV.provider == provider)
+        if start_date:
+            query = query.filter(OHLCV.timestamp >= start_date)
+        if end_date:
+            query = query.filter(OHLCV.timestamp <= end_date)
+        return query.count()
 
     def get_latest_bar(
         self,
@@ -89,3 +114,56 @@ class MarketDataRepository:
             .order_by(OHLCV.timestamp.desc())
             .first()
         )
+
+    def get_existing_timestamps(
+        self,
+        instrument_id: str,
+        frequency: DataFrequency,
+        start_date: datetime,
+        end_date: datetime
+    ) -> Set[datetime]:
+        rows = (
+            self.db.query(OHLCV.timestamp)
+            .filter(
+                OHLCV.instrument_id == instrument_id,
+                OHLCV.frequency == frequency,
+                OHLCV.timestamp >= start_date,
+                OHLCV.timestamp <= end_date
+            )
+            .all()
+        )
+        result = set()
+        for r in rows:
+            ts = r[0]
+            if isinstance(ts, str):
+                try:
+                    ts = datetime.fromisoformat(ts)
+                except Exception:
+                    continue
+            if isinstance(ts, datetime):
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                else:
+                    ts = ts.astimezone(timezone.utc)
+                result.add(ts)
+        return result
+
+
+    def get_date_bounds(
+        self,
+        instrument_id: str,
+        frequency: DataFrequency = DataFrequency.DAILY
+    ) -> Tuple[Optional[datetime], Optional[datetime]]:
+        min_ts = (
+            self.db.query(OHLCV.timestamp)
+            .filter(OHLCV.instrument_id == instrument_id, OHLCV.frequency == frequency)
+            .order_by(OHLCV.timestamp.asc())
+            .first()
+        )
+        max_ts = (
+            self.db.query(OHLCV.timestamp)
+            .filter(OHLCV.instrument_id == instrument_id, OHLCV.frequency == frequency)
+            .order_by(OHLCV.timestamp.desc())
+            .first()
+        )
+        return (min_ts[0] if min_ts else None, max_ts[0] if max_ts else None)
