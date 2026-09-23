@@ -10,8 +10,10 @@ from app.schemas.market_data import (
     IngestionSummary,
     OHLCVCreate,
     OHLCVResponse,
-    InstrumentSearchResult
+    InstrumentSearchResult,
+    CoverageResponse
 )
+from app.models.ingestion import IngestionLog
 from app.repositories.instrument_repository import InstrumentRepository
 from app.repositories.market_data_repository import MarketDataRepository
 from app.repositories.ingestion_repository import IngestionRepository
@@ -55,6 +57,94 @@ class MarketDataService:
         frequency: DataFrequency = DataFrequency.DAILY
     ):
         return self.market_repo.get_latest_bar(instrument_id=instrument_id, frequency=frequency)
+
+    def get_coverage(
+        self,
+        instrument_id: str,
+        requested_start: Optional[datetime] = None,
+        requested_end: Optional[datetime] = None
+    ) -> CoverageResponse:
+        instrument = self.inst_repo.get_by_id(instrument_id)
+        if not instrument:
+            raise NotFoundError(f"Instrument with ID '{instrument_id}' was not found.")
+
+        min_ts, max_ts = self.market_repo.get_date_bounds(instrument_id)
+        total_bars = self.market_repo.count_bars(instrument_id=instrument_id)
+
+        missing_start = None
+        missing_end = None
+        has_missing = False
+
+        if requested_start and requested_end:
+            if min_ts is None or max_ts is None:
+                missing_start = requested_start
+                missing_end = requested_end
+                has_missing = True
+            else:
+                if requested_start < min_ts:
+                    missing_start = requested_start
+                    missing_end = min_ts - timedelta(days=1)
+                    has_missing = True
+                elif requested_end > max_ts:
+                    missing_start = max_ts + timedelta(days=1)
+                    missing_end = requested_end
+                    has_missing = True
+
+        return CoverageResponse(
+            instrument_id=instrument.id,
+            symbol=instrument.symbol,
+            total_bars=total_bars,
+            min_timestamp=min_ts,
+            max_timestamp=max_ts,
+            requested_start=requested_start,
+            requested_end=requested_end,
+            missing_start=missing_start,
+            missing_end=missing_end,
+            has_missing_range=has_missing
+        )
+
+    def get_ingestion_history(self, instrument_id: str, limit: int = 20) -> List[IngestionLog]:
+        return self.ingest_repo.get_recent_logs(instrument_id=instrument_id, limit=limit)
+
+    def export_csv(
+        self,
+        instrument_id: str,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> str:
+        instrument = self.inst_repo.get_by_id(instrument_id)
+        if not instrument:
+            raise NotFoundError(f"Instrument with ID '{instrument_id}' was not found.")
+
+        bars = self.market_repo.get_bars(
+            instrument_id=instrument_id,
+            start_date=start_date,
+            end_date=end_date,
+            limit=10000
+        )
+
+        import io
+        import csv
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["date", "open", "high", "low", "close", "adjusted_close", "volume", "provider", "symbol"])
+
+        for bar in bars:
+            dt_str = bar.timestamp.strftime("%Y-%m-%d") if isinstance(bar.timestamp, datetime) else str(bar.timestamp)[:10]
+            writer.writerow([
+                dt_str,
+                float(bar.open),
+                float(bar.high),
+                float(bar.low),
+                float(bar.close),
+                float(bar.adjusted_close) if bar.adjusted_close is not None else float(bar.close),
+                float(bar.volume),
+                bar.provider,
+                instrument.symbol
+            ])
+
+        return output.getvalue()
+
 
 
     async def search_instruments(self, query: str, provider_name: str = "yahoo_finance") -> List[InstrumentSearchResult]:

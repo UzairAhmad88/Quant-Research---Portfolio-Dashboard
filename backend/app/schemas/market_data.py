@@ -90,3 +90,35 @@ class InstrumentSearchResult(BaseModel):
     currency: str
     provider_symbol: str
     existing_id: Optional[str] = None
+
+class CoverageResponse(BaseModel):
+    instrument_id: str
+    symbol: str
+    total_bars: int
+    min_timestamp: Optional[datetime] = None
+    max_timestamp: Optional[datetime] = None
+    requested_start: Optional[datetime] = None
+    requested_end: Optional[datetime] = None
+    missing_start: Optional[datetime] = None
+    missing_end: Optional[datetime] = None
+    has_missing_range: bool = False
+
+class IngestionLogResponse(BaseModel):
+    id: str
+    instrument_id: Optional[str]
+    provider: str
+    requested_start: datetime
+    requested_end: datetime
+    actual_start: Optional[datetime] = None
+    actual_end: Optional[datetime] = None
+    frequency: DataFrequency
+    rows_received: int
+    rows_inserted: int
+    rows_skipped: int
+    rows_invalid: int
+    duration_ms: int
+    status: IngestionStatus
+    error_message: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

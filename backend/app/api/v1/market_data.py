@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Optional
-from fastapi import APIRouter, Depends, Query, status
+from typing import Optional, List
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.services.market_data_service import MarketDataService
@@ -9,7 +9,9 @@ from app.repositories.market_data_repository import MarketDataRepository
 from app.schemas.market_data import (
     OHLCVResponse,
     MarketDataFetchRequest,
-    MarketDataFetchResponse
+    MarketDataFetchResponse,
+    CoverageResponse,
+    IngestionLogResponse
 )
 from app.schemas.common import PaginatedResponse
 from app.models.enums import DataFrequency
@@ -67,6 +69,41 @@ def query_market_data(
         total=total_count,
         limit=limit,
         offset=offset
+    )
+
+@router.get("/{instrument_id}/coverage", response_model=CoverageResponse, status_code=status.HTTP_200_OK)
+def get_market_data_coverage(
+    instrument_id: str,
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    db: Session = Depends(get_db)
+):
+    service = MarketDataService(db)
+    return service.get_coverage(instrument_id=instrument_id, requested_start=start_date, requested_end=end_date)
+
+@router.get("/{instrument_id}/ingestions", response_model=List[IngestionLogResponse], status_code=status.HTTP_200_OK)
+def get_ingestion_history(
+    instrument_id: str,
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    service = MarketDataService(db)
+    logs = service.get_ingestion_history(instrument_id=instrument_id, limit=limit)
+    return [IngestionLogResponse.model_validate(l) for l in logs]
+
+@router.get("/{instrument_id}/export", status_code=status.HTTP_200_OK)
+def export_market_data_csv(
+    instrument_id: str,
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    db: Session = Depends(get_db)
+):
+    service = MarketDataService(db)
+    csv_data = service.export_csv(instrument_id=instrument_id, start_date=start_date, end_date=end_date)
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="market_data_{instrument_id[:8]}.csv"'}
     )
 
 @router.get("/{instrument_id}/latest", response_model=OHLCVResponse, status_code=status.HTTP_200_OK)

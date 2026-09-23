@@ -28,6 +28,20 @@ export interface HealthResponse {
   timestamp: string;
 }
 
+export interface InstrumentItem {
+  id: string;
+  symbol: string;
+  name: string;
+  asset_type: string;
+  exchange: string;
+  currency: string;
+  country?: string;
+  provider_symbol?: string;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface InstrumentSearchResult {
   symbol: string;
   name: string;
@@ -87,6 +101,38 @@ export interface OHLCVItem {
   retrieved_at: string;
 }
 
+export interface CoverageInfo {
+  instrument_id: string;
+  symbol: string;
+  total_bars: number;
+  min_timestamp?: string;
+  max_timestamp?: string;
+  requested_start?: string;
+  requested_end?: string;
+  missing_start?: string;
+  missing_end?: string;
+  has_missing_range: boolean;
+}
+
+export interface IngestionLogItem {
+  id: string;
+  instrument_id?: string;
+  provider: string;
+  requested_start: string;
+  requested_end: string;
+  actual_start?: string;
+  actual_end?: string;
+  frequency: string;
+  rows_received: number;
+  rows_inserted: number;
+  rows_skipped: number;
+  rows_invalid: number;
+  duration_ms: number;
+  status: string;
+  error_message?: string;
+  created_at: string;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 export async function fetchHealth(): Promise<HealthResponse> {
@@ -124,13 +170,13 @@ export async function fetchReadiness(): Promise<HealthResponse> {
   }
 }
 
-export async function fetchInstruments<T = unknown>(params?: {
+export async function fetchInstruments(params?: {
   asset_type?: string;
   symbol?: string;
   active?: boolean;
   limit?: number;
   offset?: number;
-}): Promise<PaginatedApiItems<T>> {
+}): Promise<PaginatedApiItems<InstrumentItem>> {
   const query = new URLSearchParams();
   if (params?.asset_type) query.append('asset_type', params.asset_type);
   if (params?.symbol) query.append('symbol', params.symbol);
@@ -142,6 +188,48 @@ export async function fetchInstruments<T = unknown>(params?: {
   if (!response.ok) {
     const errorBody: ApiErrorResponse = await response.json().catch(() => ({
       error: { code: 'HTTP_ERROR', message: `Request failed with status ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function createInstrument(data: {
+  symbol: string;
+  name: string;
+  asset_type: string;
+  exchange: string;
+  currency?: string;
+  provider_symbol?: string;
+}): Promise<InstrumentItem> {
+  const response = await fetch(`${API_BASE_URL}/instruments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to create instrument: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function updateInstrument(
+  instrumentId: string,
+  data: { active?: boolean; name?: string; exchange?: string; provider_symbol?: string }
+): Promise<InstrumentItem> {
+  const response = await fetch(`${API_BASE_URL}/instruments/${instrumentId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to update instrument: ${response.status}` },
     }));
     throw new Error(errorBody.error.message);
   }
@@ -205,14 +293,33 @@ export async function queryMarketData(params: {
   return await response.json();
 }
 
-export async function fetchLatestMarketData(instrumentId: string, frequency: string = 'DAILY'): Promise<OHLCVItem> {
-  const query = new URLSearchParams({ frequency });
-  const response = await fetch(`${API_BASE_URL}/market-data/${instrumentId}/latest?${query.toString()}`);
+export async function fetchCoverage(instrumentId: string, startDate?: string, endDate?: string): Promise<CoverageInfo> {
+  const query = new URLSearchParams();
+  if (startDate) query.append('start_date', startDate);
+  if (endDate) query.append('end_date', endDate);
+  const response = await fetch(`${API_BASE_URL}/market-data/${instrumentId}/coverage?${query.toString()}`);
   if (!response.ok) {
-    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
-      error: { code: 'HTTP_ERROR', message: `Failed to fetch latest bar: ${response.status}` },
-    }));
-    throw new Error(errorBody.error.message);
+    throw new Error(`Failed to fetch coverage: ${response.status}`);
   }
   return await response.json();
+}
+
+export async function fetchIngestionLogs(instrumentId: string, limit: number = 20): Promise<IngestionLogItem[]> {
+  const query = new URLSearchParams({ limit: String(limit) });
+  const response = await fetch(`${API_BASE_URL}/market-data/${instrumentId}/ingestions?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ingestion logs: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export async function exportMarketDataCsv(instrumentId: string, startDate?: string, endDate?: string): Promise<string> {
+  const query = new URLSearchParams();
+  if (startDate) query.append('start_date', startDate);
+  if (endDate) query.append('end_date', endDate);
+  const response = await fetch(`${API_BASE_URL}/market-data/${instrumentId}/export?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`CSV export failed with status: ${response.status}`);
+  }
+  return await response.text();
 }
