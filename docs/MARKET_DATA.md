@@ -51,3 +51,12 @@ Every acquisition run persists a structured log tracking:
 - `rows_received`, `rows_inserted`, `rows_skipped`, `rows_invalid`
 - `duration_ms`, `status` (`COMPLETED`, `COMPLETED_WITH_WARNINGS`, `FAILED`)
 - `error_message`
+
+## 7. Advanced Visualization Architecture (Step 07)
+The research workstation uses TradingView `lightweight-charts` (Canvas-based rendering engine) isolated behind modular React components:
+
+- **Component Layer**: `MarketChart.tsx`, `ChartToolbar.tsx`, `ChartLegend.tsx`, `ChartSettingsPopover.tsx`, `FullscreenChartModal.tsx`, `ChartStates.tsx`.
+- **Data Transformation & Validation**: `lib/chartDataAdapter.ts` validates incoming OHLCV bars (`high >= max(open, close, low)`, numeric types, valid timestamps), normalizes time to `YYYY-MM-DD` strings, maps green (`#22C55E`)/red (`#EF4444`) candle colors, and applies LTTB/step downsampling when bar counts exceed threshold (3,000 bars) without altering stored database records.
+- **Client Preference Store**: `store/useChartStore.ts` (Zustand) manages local chart view state (`chartType`, `priceMode`, `showVolume`, `showCrosshair`, `showGrid`, `isFullscreen`).
+- **Data Synchronization**: Synchronized date range presets (`1M`..`5Y`, `MAX`) and raw/adjusted price mode toggling between chart and historical OHLCV data table.
+

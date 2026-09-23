@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { PriceChart } from '../components/data-display/PriceChart';
+import { MarketChart } from '../components/charts/MarketChart';
+import { ChartToolbar } from '../components/charts/ChartToolbar';
+import { FullscreenChartModal } from '../components/charts/FullscreenChartModal';
 import { AddInstrumentModal } from '../components/modals/AddInstrumentModal';
 import { IngestionDetailModal } from '../components/modals/IngestionDetailModal';
 import {
@@ -35,8 +37,6 @@ import {
   Activity,
   CheckCircle2,
 } from 'lucide-react';
-
-
 
 export const MarketDataPage: React.FC = () => {
   // Instrument Master State
@@ -268,8 +268,8 @@ export const MarketDataPage: React.FC = () => {
   return (
     <PageContainer
       eyebrow="Quantitative Research Workspace"
-      title="Market Data & Instrument Downloader"
-      description="Download, validate, and manage historical OHLCV data. Explore database coverage, dataset provenance, and export CSV series."
+      title="Market Data & Interactive Visualization"
+      description="Interactive OHLCV research charting engine, timestamp validation, database coverage analysis, and historical data export."
       action={
         <button
           onClick={() => setIsAddModalOpen(true)}
@@ -502,7 +502,6 @@ export const MarketDataPage: React.FC = () => {
                 )}
               </Card>
 
-
               {/* Coverage & Missing Range Awareness Banner */}
               {coverage && (
                 <div className="p-3 bg-[#111827] border border-[#263244] rounded-lg text-xs font-mono-num flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
@@ -566,10 +565,25 @@ export const MarketDataPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Close Price Chart */}
-              <Card title={`Close Price Time Series (${selectedInstrument.symbol})`}>
-                <PriceChart bars={bars} height={280} />
-              </Card>
+              {/* Interactive Institutional Market Chart */}
+              <div className="space-y-0">
+                <ChartToolbar activePreset={activePreset} onPresetChange={handlePresetChange} />
+                <MarketChart
+                  bars={bars}
+                  symbol={selectedInstrument.symbol}
+                  height={360}
+                  isLoading={isLoadingBars}
+                  onFetchClick={() => handleFetchData(false)}
+                />
+              </div>
+
+              {/* Fullscreen Modal View */}
+              <FullscreenChartModal
+                bars={bars}
+                symbol={selectedInstrument.symbol}
+                activePreset={activePreset}
+                onPresetChange={handlePresetChange}
+              />
 
               {/* Historical Data Table */}
               <Card

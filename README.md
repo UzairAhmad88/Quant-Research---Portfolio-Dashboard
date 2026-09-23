@@ -1,9 +1,9 @@
-# Quant Research Dashboard — Database Foundation (Step 03)
+# Quant Research Dashboard — Step 07 Complete
 
 A professional institutional quantitative-finance research and portfolio analysis platform.
 
 > [!NOTE]
-> **Step 03 Status**: Database Foundation Complete. Logical PostgreSQL schemas (`core`, `market_data`), SQLAlchemy ORM models (`Instrument`, `OHLCV`), controlled Enums (`AssetType`, `DataFrequency`), Alembic migrations, Repository-Service pattern, reference instrument seeding script (no fake price data), Pytest test suite, and database documentation.
+> **Step 07 Status**: Advanced Market Data Visualization & Research View Complete. Integrated TradingView `lightweight-charts` Canvas engine, Candlestick & Line series views, Volume pane, interactive crosshair with real-time OHLCV legend overlay, date range presets (`1M`..`5Y`, `MAX`), price mode selection (`Raw` vs `Adjusted`), chart settings popover, fullscreen mode with Escape key binding, data quality validation & LTTB downsampling adapter, Vitest test suite, and backend query optimization.
 
 ---
 
@@ -16,7 +16,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 2. **Provider Abstraction Layer**: Market data providers are isolated behind an abstract base class (`MarketDataProvider`), preventing vendor lock-in.
 3. **Multi-Schema Database Architecture**: Segregated PostgreSQL schemas (`core` for application entities, `market_data` for OHLCV time-series).
 4. **Layered Persistence Pattern**: Clean separation between API routes, Services, Repositories, SQLAlchemy ORM, and PostgreSQL.
-5. **Zero Fabricated Financial Data**: Reference instrument seed metadata without mock/fake price bars.
+5. **Interactive Canvas Charting**: `lightweight-charts` integration with strict TypeScript adapters, downsampling, crosshairs, and fullscreen research mode.
 
 ---
 
@@ -24,6 +24,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 
 ### Frontend
 - **Framework**: React 19 + TypeScript 5 + Vite 6
+- **Charting Engine**: TradingView `lightweight-charts` v5
 - **Routing**: `react-router-dom` v7
 - **State Management**: TanStack Query v5 (Server state) + Zustand v5 (Client UI state)
 - **Icons & UI**: Lucide React + Institutional UI Tokens + Tailwind CSS
@@ -41,14 +42,15 @@ Quant Research Dashboard is engineered as serious quantitative research software
 | Path | Module | Step | Status |
 | :--- | :--- | :--- | :--- |
 | `/` | Overview & Roadmap | Step 01 | Active |
-| `/market-data` | Market Data Ingestion | Step 04 | Scaffolded |
-| `/returns` | Return Calculator | Step 05 | Scaffolded |
-| `/portfolio` | Portfolio Analytics | Step 06 | Scaffolded |
-| `/correlation` | Correlation Matrix | Step 07 | Scaffolded |
-| `/volatility` | Volatility Analytics | Step 08 | Scaffolded |
-| `/strategies` | Quantitative Strategies | Step 09 | Scaffolded |
-| `/backtesting` | Backtesting Engine | Step 10 | Scaffolded |
+| `/market-data` | Market Data Workspace & Visualization | Step 06 & 07 | Complete |
+| `/returns` | Return Calculator | Step 08 | Next |
+| `/portfolio` | Portfolio Analytics | Step 09 | Scaffolded |
+| `/correlation` | Correlation Matrix | Step 10 | Scaffolded |
+| `/volatility` | Volatility Analytics | Step 11 | Scaffolded |
+| `/strategies` | Quantitative Strategies | Step 12 | Scaffolded |
+| `/backtesting` | Backtesting Engine | Step 13 | Scaffolded |
 | `/settings` | System Settings | Step 02 | Active |
+
 
 ---
 

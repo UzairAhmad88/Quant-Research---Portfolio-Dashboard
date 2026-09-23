@@ -1,14 +1,19 @@
 # Module Implementation Checklist
 
-## 01 Market Data Downloader
-- [ ] Provider interface
-- [ ] Historical download
-- [ ] Symbol validation
-- [ ] OHLCV normalization
-- [ ] Missing-data validation
-- [ ] Data table
-- [ ] Price chart
-- [ ] Export
+## 01 Market Data Workspace & Visualization (Step 06 & Step 07)
+- [x] Provider interface
+- [x] Historical download
+- [x] Symbol search & validation
+- [x] OHLCV normalization & validation
+- [x] Data quality & coverage panel
+- [x] Historical OHLCV table
+- [x] Interactive Candlestick & Line Chart
+- [x] Volume pane visualization
+- [x] Crosshair & OHLC tooltip
+- [x] Date range presets & custom range selection
+- [x] Raw vs Adjusted price selection
+- [x] Settings popover & Fullscreen research mode
+- [x] CSV Export
 
 ## 02 Return Calculator
 - [ ] Simple return
