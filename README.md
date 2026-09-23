@@ -1,9 +1,9 @@
-# Quant Research Dashboard — Step 08 Complete
+# Quant Research Dashboard — Step 09 Complete
 
 A professional institutional quantitative-finance research and portfolio analysis platform.
 
 > [!NOTE]
-> **Step 08 Status**: Data Validation, Quality Control & Storage Integrity Layer Complete. Implemented modular backend validation pipeline (`app/validators/`), market calendar awareness (`EquityCalendar` vs `CryptoCalendar`), pre-persistence deduplication, OHLC logical bounds, UTC normalization, anomaly detection (>20% price jump warnings, volume spikes), dataset quality scoring (`GOOD`, `GOOD_WITH_WARNINGS`, `INVALID`, `NO_DATA`), FastAPI quality endpoints (`/quality`, `/ingestions/{id}`), frontend `DataQualityPanel` & `QualityIssuesDrawer`, 31/31 Pytest test pass rate, and 6/6 Vitest pass rate.
+> **Step 09 Status**: Return Calculator & Return Analytics Engine Complete. Implemented NumPy/Pandas mathematical calculation engine (`app/analytics/returns/`), Simple returns, Log returns, Cumulative simple returns, CAGR Annualized performance (252 trading days for Equities vs 365 days for Crypto), price series selection (`Adjusted Close` vs `Raw Close`), FastAPI `/api/v1/returns` REST API, frontend `/returns` research workspace with metric cards, TradingView `lightweight-charts` cumulative/periodic canvas charts, daily return series table, CSV export, 39/39 Pytest pass rate, and 6/6 Vitest pass rate.
 
 ---
 
@@ -16,7 +16,9 @@ Quant Research Dashboard is engineered as serious quantitative research software
 2. **Provider Abstraction Layer**: Market data providers are isolated behind an abstract base class (`MarketDataProvider`), preventing vendor lock-in.
 3. **Multi-Schema Database Architecture**: Segregated PostgreSQL schemas (`core` for application entities, `market_data` for OHLCV time-series).
 4. **Layered Persistence Pattern**: Clean separation between API routes, Services, Repositories, SQLAlchemy ORM, and PostgreSQL.
-5. **Data Validation & Quality Layer**: Centralized validation pipeline (`ValidationPipeline`) enforcing OHLC bounds, UTC normalization, market calendar session gap awareness, anomaly detection, and zero data fabrication for downstream quantitative modules.
+5. **Data Validation & Quality Layer**: Centralized validation pipeline (`ValidationPipeline`) enforcing OHLC bounds, UTC normalization, market calendar session gap awareness, anomaly detection, and zero data fabrication.
+6. **Return Analytics Engine**: Decoupled numerical returns engine (`ReturnCalculator`) computing simple/log/cumulative returns and CAGR metrics from validated price series.
+
 
 
 ---
@@ -44,13 +46,14 @@ Quant Research Dashboard is engineered as serious quantitative research software
 | :--- | :--- | :--- | :--- |
 | `/` | Overview & Roadmap | Step 01 | Active |
 | `/market-data` | Market Data Workspace, Visualization & Data Quality | Step 06..08 | Complete |
-| `/returns` | Return Calculator | Step 09 | Next |
-| `/portfolio` | Portfolio Analytics | Step 10 | Scaffolded |
+| `/returns` | Return Calculator & Performance Analytics | Step 09 | Complete |
+| `/portfolio` | Portfolio Analytics | Step 10 | Next |
 | `/correlation` | Correlation Matrix | Step 11 | Scaffolded |
 | `/volatility` | Volatility Analytics | Step 12 | Scaffolded |
 | `/strategies` | Quantitative Strategies | Step 13 | Scaffolded |
 | `/backtesting` | Backtesting Engine | Step 14 | Scaffolded |
 | `/settings` | System Settings | Step 02 | Active |
+
 
 
 

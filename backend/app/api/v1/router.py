@@ -1,14 +1,13 @@
 from fastapi import APIRouter
-from app.api.v1 import health, instruments, market_data, placeholders
+from app.api.v1 import health, instruments, market_data, returns, placeholders
 
 api_router = APIRouter()
 
 api_router.include_router(health.router, tags=["Health"])
 api_router.include_router(instruments.router, prefix="/instruments", tags=["Instruments"])
 api_router.include_router(market_data.router, prefix="/market-data", tags=["Market Data"])
+api_router.include_router(returns.router, prefix="/returns", tags=["Returns"])
 
-# Future Module API Router Scaffolding
-api_router.include_router(placeholders.returns_router, prefix="/returns", tags=["Returns"])
 api_router.include_router(placeholders.portfolio_router, prefix="/portfolio", tags=["Portfolio"])
 api_router.include_router(placeholders.correlation_router, prefix="/correlation", tags=["Correlation"])
 api_router.include_router(placeholders.volatility_router, prefix="/volatility", tags=["Volatility"])

@@ -390,3 +390,61 @@ export async function fetchIngestionDetail(
   return await response.json();
 }
 
+export interface ReturnObservationItem {
+  timestamp: string;
+  price: number;
+  simple_return?: number;
+  log_return?: number;
+  cumulative_return: number;
+}
+
+export interface ReturnSummaryItem {
+  period_return: number;
+  annualized_return: number;
+  cumulative_return: number;
+  positive_periods: number;
+  negative_periods: number;
+  best_period?: number;
+  worst_period?: number;
+  annualization_factor: number;
+}
+
+export interface ReturnAnalysisResponse {
+  instrument_id: string;
+  symbol: string;
+  asset_type: string;
+  price_source: string;
+  return_type: string;
+  frequency: string;
+  quality_status: string;
+  quality_warning?: string;
+  summary: ReturnSummaryItem;
+  series: ReturnObservationItem[];
+}
+
+export async function fetchReturns(params: {
+  instrument_id: string;
+  start_date?: string;
+  end_date?: string;
+  price_source?: string;
+  return_type?: string;
+  frequency?: string;
+}): Promise<ReturnAnalysisResponse> {
+  const query = new URLSearchParams({ instrument_id: params.instrument_id });
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.price_source) query.append('price_source', params.price_source);
+  if (params.return_type) query.append('return_type', params.return_type);
+  if (params.frequency) query.append('frequency', params.frequency);
+
+  const response = await fetch(`${API_BASE_URL}/returns?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Return analysis failed with status ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+

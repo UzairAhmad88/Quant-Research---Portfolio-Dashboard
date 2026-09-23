@@ -276,3 +276,56 @@ All list endpoints use a unified pagination wrapper:
 #### `GET /api/v1/market-data/{instrument_id}/ingestions/{ingestion_id}`
 - **Response `200 OK`**: Returns detailed ingestion audit log along with `quality_report`.
 
+---
+
+### Returns API
+
+#### `GET /api/v1/returns`
+- **Query Parameters**:
+  - `instrument_id`: UUID (Required)
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+  - `return_type`: `simple` | `log` (Default: `simple`)
+  - `frequency`: `DAILY` | `HOURLY` | `MINUTE` (Default: `DAILY`)
+- **Response `200 OK`**:
+```json
+{
+  "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+  "symbol": "SPY",
+  "asset_type": "ETF",
+  "price_source": "adjusted",
+  "return_type": "simple",
+  "frequency": "DAILY",
+  "quality_status": "GOOD",
+  "quality_warning": null,
+  "summary": {
+    "period_return": 0.2461,
+    "annualized_return": 0.0814,
+    "cumulative_return": 0.2461,
+    "positive_periods": 782,
+    "negative_periods": 660,
+    "best_period": 0.0742,
+    "worst_period": -0.0611,
+    "annualization_factor": 252
+  },
+  "series": [
+    {
+      "timestamp": "2021-09-23T00:00:00Z",
+      "price": 440.50,
+      "simple_return": null,
+      "log_return": null,
+      "cumulative_return": 0.0
+    },
+    {
+      "timestamp": "2021-09-24T00:00:00Z",
+      "price": 443.10,
+      "simple_return": 0.005902,
+      "log_return": 0.005885,
+      "cumulative_return": 0.005902
+    }
+  ]
+}
+```
+
+

@@ -21,12 +21,16 @@
 - [x] CSV Export
 
 
-## 02 Return Calculator
-- [ ] Simple return
-- [ ] Log return
-- [ ] Cumulative return
-- [ ] Return chart
-- [ ] Statistics
+## 02 Return Calculator (Step 09)
+- [x] Simple return ($R_t = P_t/P_{t-1} - 1$)
+- [x] Log return ($r_t = \ln(P_t/P_{t-1})$)
+- [x] Cumulative return ($C_t = \prod(1+R_i) - 1$)
+- [x] Period return & CAGR Annualized return (252-day Equity vs 365-day Crypto)
+- [x] Price source selection (Adjusted Close vs Raw Close)
+- [x] Cumulative & Periodic Canvas Chart Views
+- [x] Summary metrics (Positive/Negative counts, Best/Worst periods)
+- [x] Return series table & CSV Export
+
 
 ## 03 Portfolio Calculator
 - [ ] Add/remove assets

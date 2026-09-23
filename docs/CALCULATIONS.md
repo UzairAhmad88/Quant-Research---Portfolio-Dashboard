@@ -1,12 +1,34 @@
-# Quantitative Calculations
+# Quantitative Calculations Reference
 
-## Simple Return
+## 1. Return Calculations (Step 09)
 
-R_t = (P_t - P_(t-1)) / P_(t-1)
+### Simple Return
+For price observation $P_t$ at time $t$ relative to $P_{t-1}$:
+$$R_t = \frac{P_t}{P_{t-1}} - 1$$
+- First observation $t=0$: $R_0 = \text{null}$.
 
-## Log Return
+### Logarithmic Return
+$$r_t = \ln\left(\frac{P_t}{P_{t-1}}\right)$$
+- Computed only when $P_t > 0$ and $P_{t-1} > 0$.
+- First observation $t=0$: $r_0 = \text{null}$.
 
-r_t = ln(P_t / P_(t-1))
+### Cumulative Simple Return
+Compounded performance accumulation relative to baseline price $P_0$:
+$$C_t = \prod_{i=1}^t (1 + R_i) - 1 = \frac{P_t}{P_0} - 1$$
+- Baseline observation $t=0$: $C_0 = 0.0$ ($0\%$).
+
+### Period Return
+Total period return from first valid price $P_{\text{start}}$ to final valid price $P_{\text{end}}$:
+$$R_{\text{period}} = \frac{P_{\text{end}}}{P_{\text{start}}} - 1$$
+
+### Annualized CAGR Return
+Compounded annual equivalent return based on elapsed periods $N_{\text{bars}}$:
+$$R_{\text{annualized}} = (1 + R_{\text{period}})^{\frac{N_{\text{annual}}}{N_{\text{bars}} - 1}} - 1$$
+
+### Annualization Conventions
+- **Equities, ETFs, Indices**: $N_{\text{annual}} = 252$ trading days.
+- **Cryptocurrencies**: $N_{\text{annual}} = 365$ calendar days (24/7 continuous trading).
+
 
 ## Portfolio Return
 
