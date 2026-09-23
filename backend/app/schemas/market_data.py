@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.models.enums import DataFrequency
 
 class OHLCVBase(BaseModel):
@@ -16,13 +16,11 @@ class OHLCVBase(BaseModel):
     provider: str = Field(default="ABSTRACT", max_length=64)
     provider_symbol: Optional[str] = Field(default=None, max_length=64)
 
-    @field_validator("high")
-    @classmethod
-    def validate_high_gte_low(cls, v: float, info) -> float:
-        low = info.data.get("low")
-        if low is not None and v < low:
-            raise ValueError(f"High price ({v}) cannot be less than low price ({low})")
-        return v
+    @model_validator(mode="after")
+    def validate_high_gte_low(self) -> "OHLCVBase":
+        if self.high < self.low:
+            raise ValueError(f"High price ({self.high}) cannot be less than low price ({self.low})")
+        return self
 
 class OHLCVCreate(OHLCVBase):
     pass
@@ -34,8 +32,7 @@ class OHLCVResponse(OHLCVBase):
     id: str
     retrieved_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OHLCVFilter(BaseModel):
     instrument_id: str
