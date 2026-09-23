@@ -1,0 +1,42 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: quant-dashboard-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: quant-dashboard-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/quant_dashboard
+      - ENVIRONMENT=production
+      - CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173"]
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    container_name: quant-dashboard-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: quant_dashboard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
