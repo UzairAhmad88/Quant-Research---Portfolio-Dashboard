@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.services.market_data_service import MarketDataService
 from app.services.instrument_service import InstrumentService
+from app.services.data_quality_service import DataQualityService
 from app.repositories.market_data_repository import MarketDataRepository
 from app.schemas.market_data import (
     OHLCVResponse,
@@ -13,6 +14,8 @@ from app.schemas.market_data import (
     CoverageResponse,
     IngestionLogResponse
 )
+from app.schemas.data_quality import IngestionDetailResponse
+from app.validators import QualityReport
 from app.schemas.common import PaginatedResponse
 from app.models.enums import DataFrequency
 from app.core.exceptions import NotFoundError, ValidationError
@@ -81,6 +84,22 @@ def get_market_data_coverage(
     service = MarketDataService(db)
     return service.get_coverage(instrument_id=instrument_id, requested_start=start_date, requested_end=end_date)
 
+@router.get("/{instrument_id}/quality", response_model=QualityReport, status_code=status.HTTP_200_OK)
+def get_market_data_quality_report(
+    instrument_id: str,
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    frequency: DataFrequency = Query(DataFrequency.DAILY),
+    db: Session = Depends(get_db)
+):
+    quality_service = DataQualityService(db)
+    return quality_service.get_instrument_quality_report(
+        instrument_id=instrument_id,
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency
+    )
+
 @router.get("/{instrument_id}/ingestions", response_model=List[IngestionLogResponse], status_code=status.HTTP_200_OK)
 def get_ingestion_history(
     instrument_id: str,
@@ -90,6 +109,34 @@ def get_ingestion_history(
     service = MarketDataService(db)
     logs = service.get_ingestion_history(instrument_id=instrument_id, limit=limit)
     return [IngestionLogResponse.model_validate(l) for l in logs]
+
+@router.get("/{instrument_id}/ingestions/{ingestion_id}", response_model=IngestionDetailResponse, status_code=status.HTTP_200_OK)
+def get_ingestion_detail(
+    instrument_id: str,
+    ingestion_id: str,
+    db: Session = Depends(get_db)
+):
+    quality_service = DataQualityService(db)
+    log, report = quality_service.get_ingestion_detail(instrument_id=instrument_id, ingestion_id=ingestion_id)
+    return IngestionDetailResponse(
+        id=log.id,
+        instrument_id=log.instrument_id,
+        provider=log.provider,
+        frequency=log.frequency,
+        requested_start=log.requested_start,
+        requested_end=log.requested_end,
+        actual_start=log.actual_start,
+        actual_end=log.actual_end,
+        rows_received=log.rows_received,
+        rows_inserted=log.rows_inserted,
+        rows_skipped=log.rows_skipped,
+        rows_invalid=log.rows_invalid,
+        duration_ms=log.duration_ms,
+        status=log.status,
+        error_message=log.error_message,
+        created_at=log.created_at,
+        quality_report=report
+    )
 
 @router.get("/{instrument_id}/export", status_code=status.HTTP_200_OK)
 def export_market_data_csv(

@@ -133,6 +133,44 @@ export interface IngestionLogItem {
   created_at: string;
 }
 
+export interface ValidationIssueItem {
+  severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+  code: string;
+  message: string;
+  timestamp?: string;
+  field?: string;
+  record_reference?: string;
+}
+
+export interface ValidationSummaryItem {
+  total_records: number;
+  valid_records: number;
+  invalid_records: number;
+  warning_count: number;
+  error_count: number;
+  critical_count: number;
+  duplicate_records: number;
+  potential_missing_sessions: number;
+}
+
+export interface QualityReportItem {
+  status: 'GOOD' | 'GOOD_WITH_WARNINGS' | 'INVALID' | 'NO_DATA';
+  summary: ValidationSummaryItem;
+  issues: ValidationIssueItem[];
+  instrument_id?: string;
+  symbol?: string;
+  asset_type?: string;
+  provider?: string;
+  start_date?: string;
+  end_date?: string;
+  generated_at: string;
+}
+
+export interface IngestionDetailItem extends IngestionLogItem {
+  quality_report?: QualityReportItem;
+}
+
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 export async function fetchHealth(): Promise<HealthResponse> {
@@ -323,3 +361,32 @@ export async function exportMarketDataCsv(instrumentId: string, startDate?: stri
   }
   return await response.text();
 }
+
+export async function fetchMarketDataQuality(
+  instrumentId: string,
+  startDate?: string,
+  endDate?: string,
+  frequency: string = 'DAILY'
+): Promise<QualityReportItem> {
+  const query = new URLSearchParams({ frequency });
+  if (startDate) query.append('start_date', startDate);
+  if (endDate) query.append('end_date', endDate);
+
+  const response = await fetch(`${API_BASE_URL}/market-data/${instrumentId}/quality?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch quality report: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export async function fetchIngestionDetail(
+  instrumentId: string,
+  ingestionId: string
+): Promise<IngestionDetailItem> {
+  const response = await fetch(`${API_BASE_URL}/market-data/${instrumentId}/ingestions/${ingestionId}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ingestion detail: ${response.status}`);
+  }
+  return await response.json();
+}
+

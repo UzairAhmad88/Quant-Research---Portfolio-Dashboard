@@ -242,3 +242,37 @@ All list endpoints use a unified pagination wrapper:
 
 #### `GET /api/v1/market-data/{instrument_id}/latest`
 - **Response `200 OK`**: Returns single latest `OHLCVResponse` bar for specified instrument.
+
+#### `GET /api/v1/market-data/{instrument_id}/quality`
+- **Query Parameters**:
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `frequency`: `DAILY` | `HOURLY` | `MINUTE` (Default: `DAILY`)
+- **Response `200 OK`**:
+```json
+{
+  "status": "GOOD",
+  "summary": {
+    "total_records": 1256,
+    "valid_records": 1256,
+    "invalid_records": 0,
+    "warning_count": 0,
+    "error_count": 0,
+    "critical_count": 0,
+    "duplicate_records": 0,
+    "potential_missing_sessions": 0
+  },
+  "issues": [],
+  "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+  "symbol": "AAPL",
+  "asset_type": "EQUITY",
+  "provider": "DATABASE",
+  "start_date": "2021-09-23T00:00:00Z",
+  "end_date": "2026-09-23T00:00:00Z",
+  "generated_at": "2026-09-24T00:00:00Z"
+}
+```
+
+#### `GET /api/v1/market-data/{instrument_id}/ingestions/{ingestion_id}`
+- **Response `200 OK`**: Returns detailed ingestion audit log along with `quality_report`.
+

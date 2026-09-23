@@ -7,6 +7,8 @@ import { ChartToolbar } from '../components/charts/ChartToolbar';
 import { FullscreenChartModal } from '../components/charts/FullscreenChartModal';
 import { AddInstrumentModal } from '../components/modals/AddInstrumentModal';
 import { IngestionDetailModal } from '../components/modals/IngestionDetailModal';
+import { DataQualityPanel } from '../components/market-data/DataQualityPanel';
+import { QualityIssuesDrawer } from '../components/market-data/QualityIssuesDrawer';
 import {
   fetchInstruments,
   updateInstrument,
@@ -14,13 +16,16 @@ import {
   queryMarketData,
   fetchCoverage,
   fetchIngestionLogs,
+  fetchMarketDataQuality,
   exportMarketDataCsv,
   InstrumentItem,
   IngestionSummary,
   CoverageInfo,
   IngestionLogItem,
   OHLCVItem,
+  QualityReportItem,
 } from '../lib/apiClient';
+
 import {
   Search,
   Database,
@@ -71,6 +76,11 @@ export const MarketDataPage: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [isLoadingBars, setIsLoadingBars] = useState(false);
 
+  // Data Quality State
+  const [qualityReport, setQualityReport] = useState<QualityReportItem | null>(null);
+  const [isLoadingQuality, setIsLoadingQuality] = useState(false);
+  const [isQualityDrawerOpen, setIsQualityDrawerOpen] = useState(false);
+
   // Ingestion Logs State
   const [ingestionLogs, setIngestionLogs] = useState<IngestionLogItem[]>([]);
   const [selectedLog, setSelectedLog] = useState<IngestionLogItem | null>(null);
@@ -99,10 +109,11 @@ export const MarketDataPage: React.FC = () => {
     loadInstrumentsList();
   }, []);
 
-  // 2. Load Coverage, Ingestion Logs, and OHLCV Data when selected instrument or range changes
+  // 2. Load Coverage, Ingestion Logs, Quality Report, and OHLCV Data when selected instrument or range changes
   const loadWorkspaceData = async () => {
     if (!selectedInstrument) return;
     setIsLoadingBars(true);
+    setIsLoadingQuality(true);
 
     try {
       // Fetch Coverage
@@ -112,6 +123,18 @@ export const MarketDataPage: React.FC = () => {
         new Date(endDate).toISOString()
       );
       setCoverage(cov);
+
+      // Fetch Quality Report
+      fetchMarketDataQuality(
+        selectedInstrument.id,
+        new Date(startDate).toISOString(),
+        new Date(endDate).toISOString(),
+        frequency
+      )
+        .then(setQualityReport)
+        .catch(() => setQualityReport(null))
+        .finally(() => setIsLoadingQuality(false));
+
 
       // Fetch Bars
       const res = await queryMarketData({
@@ -565,6 +588,13 @@ export const MarketDataPage: React.FC = () => {
                 </div>
               )}
 
+              {/* Data Quality & Storage Integrity Panel */}
+              <DataQualityPanel
+                report={qualityReport}
+                isLoading={isLoadingQuality}
+                onOpenIssuesDrawer={() => setIsQualityDrawerOpen(true)}
+              />
+
               {/* Interactive Institutional Market Chart */}
               <div className="space-y-0">
                 <ChartToolbar activePreset={activePreset} onPresetChange={handlePresetChange} />
@@ -576,6 +606,7 @@ export const MarketDataPage: React.FC = () => {
                   onFetchClick={() => handleFetchData(false)}
                 />
               </div>
+
 
               {/* Fullscreen Modal View */}
               <FullscreenChartModal
@@ -789,6 +820,14 @@ export const MarketDataPage: React.FC = () => {
 
       {/* Ingestion Detail Audit Modal */}
       <IngestionDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+
+      {/* Quality Issues Slide-over Drawer */}
+      <QualityIssuesDrawer
+        isOpen={isQualityDrawerOpen}
+        onClose={() => setIsQualityDrawerOpen(false)}
+        report={qualityReport}
+      />
     </PageContainer>
   );
 };
+

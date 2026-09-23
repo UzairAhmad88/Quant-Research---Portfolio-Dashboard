@@ -1,10 +1,14 @@
 # Module Implementation Checklist
 
-## 01 Market Data Workspace & Visualization (Step 06 & Step 07)
+## 01 Market Data Workspace, Visualization & Quality Layer (Step 06..08)
 - [x] Provider interface
 - [x] Historical download
 - [x] Symbol search & validation
 - [x] OHLCV normalization & validation
+- [x] Structural OHLC bounds & UTC normalization
+- [x] Market Calendar session gap detection (Equity vs Crypto)
+- [x] Pre-persistence duplicate detection
+- [x] Anomaly detection (price jumps, volume spikes)
 - [x] Data quality & coverage panel
 - [x] Historical OHLCV table
 - [x] Interactive Candlestick & Line Chart
@@ -13,7 +17,9 @@
 - [x] Date range presets & custom range selection
 - [x] Raw vs Adjusted price selection
 - [x] Settings popover & Fullscreen research mode
+- [x] Validation issues drawer UI
 - [x] CSV Export
+
 
 ## 02 Return Calculator
 - [ ] Simple return

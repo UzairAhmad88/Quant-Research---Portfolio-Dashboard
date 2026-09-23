@@ -18,6 +18,7 @@ from app.repositories.instrument_repository import InstrumentRepository
 from app.repositories.market_data_repository import MarketDataRepository
 from app.repositories.ingestion_repository import IngestionRepository
 from app.providers.registry import ProviderRegistry
+from app.validators import ValidationPipeline, Severity, QualityStatus
 from app.core.exceptions import NotFoundError, ValidationError, DatabaseError
 
 logger = logging.getLogger("quant_api.services.market_data")
@@ -283,59 +284,39 @@ class MarketDataService:
             raise DatabaseError(f"Market data provider error: {str(prov_err)}")
 
         rows_received = len(raw_bars)
+
+        # 6. Pipeline Validation & Normalization
+        pipeline = ValidationPipeline()
+        unique_bars, quality_report = pipeline.validate_dataset(
+            bars=raw_bars,
+            asset_type=instrument.asset_type,
+            existing_timestamps=existing_ts_set,
+            instrument_id=instrument.id,
+            symbol=instrument.symbol,
+            provider=request.provider,
+            requested_start=start_dt,
+            requested_end=end_dt
+        )
+
+        rows_invalid = quality_report.summary.invalid_records
+        rows_skipped = quality_report.summary.duplicate_records
         rows_inserted = 0
-        rows_skipped = 0
-        rows_invalid = 0
+
+        actual_start: Optional[datetime] = quality_report.start_date
+        actual_end: Optional[datetime] = quality_report.end_date
 
         valid_bars_to_insert: List[OHLCVCreate] = []
-        batch_ts_seen = set()
-
-        actual_start: Optional[datetime] = None
-        actual_end: Optional[datetime] = None
-
-        # 6. Normalize, Validate & Deduplicate
-        for bar in raw_bars:
-            ts = bar["timestamp"]
-            open_p = bar["open"]
-            high_p = bar["high"]
-            low_p = bar["low"]
-            close_p = bar["close"]
-            adj_close = bar.get("adjusted_close")
-            vol = bar.get("volume", 0.0)
-
-            # Record actual range bounds
-            if actual_start is None or ts < actual_start:
-                actual_start = ts
-            if actual_end is None or ts > actual_end:
-                actual_end = ts
-
-            # OHLC validation rules
-            is_valid = (
-                open_p > 0 and high_p > 0 and low_p > 0 and close_p > 0 and vol >= 0
-                and high_p >= open_p and high_p >= close_p and high_p >= low_p
-                and low_p <= open_p and low_p <= close_p
-            )
-
-            if not is_valid:
-                rows_invalid += 1
-                continue
-
-            # Skip existing database timestamps (Deduplication)
-            if ts in existing_ts_set or ts in batch_ts_seen:
-                rows_skipped += 1
-                continue
-
-            batch_ts_seen.add(ts)
+        for bar in unique_bars:
             valid_bars_to_insert.append(OHLCVCreate(
                 instrument_id=instrument.id,
-                timestamp=ts,
+                timestamp=bar["timestamp"],
                 frequency=request.frequency,
-                open=open_p,
-                high=high_p,
-                low=low_p,
-                close=close_p,
-                adjusted_close=adj_close,
-                volume=vol,
+                open=bar["open"],
+                high=bar["high"],
+                low=bar["low"],
+                close=bar["close"],
+                adjusted_close=bar.get("adjusted_close"),
+                volume=bar.get("volume", 0.0),
                 provider=request.provider,
                 provider_symbol=instrument.provider_symbol or instrument.symbol
             ))
@@ -359,13 +340,18 @@ class MarketDataService:
         status = IngestionStatus.COMPLETED
         if rows_invalid > 0 or rows_received == 0:
             status = IngestionStatus.COMPLETED_WITH_WARNINGS
-            if rows_received == 0:
-                warnings.append("No market data bars returned by provider for specified window.")
-            if rows_invalid > 0:
-                warnings.append(f"Filtered out {rows_invalid} invalid price observation(s).")
-        
+
+        for issue in quality_report.issues:
+            if issue.severity in (Severity.WARNING, Severity.ERROR, Severity.CRITICAL):
+                warnings.append(f"[{issue.code.value}] {issue.message}")
+
+        if rows_received == 0:
+            warnings.append("No market data bars returned by provider for specified window.")
+        if rows_invalid > 0:
+            warnings.append(f"Filtered out {rows_invalid} invalid price observation(s).")
         if rows_skipped > 0:
             warnings.append(f"Skipped {rows_skipped} existing cached observation(s).")
+
 
         self.ingest_repo.update_log(
             log_id=log.id,
@@ -397,3 +383,4 @@ class MarketDataService:
             status=status,
             warnings=warnings
         )
+

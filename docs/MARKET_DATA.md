@@ -52,11 +52,19 @@ Every acquisition run persists a structured log tracking:
 - `duration_ms`, `status` (`COMPLETED`, `COMPLETED_WITH_WARNINGS`, `FAILED`)
 - `error_message`
 
-## 7. Advanced Visualization Architecture (Step 07)
-The research workstation uses TradingView `lightweight-charts` (Canvas-based rendering engine) isolated behind modular React components:
+## 8. Data Validation & Quality Control Layer (Step 08)
+The unified backend validation pipeline (`app/validators/`) enforces strict data integrity before storage and downstream analytics consumption:
 
-- **Component Layer**: `MarketChart.tsx`, `ChartToolbar.tsx`, `ChartLegend.tsx`, `ChartSettingsPopover.tsx`, `FullscreenChartModal.tsx`, `ChartStates.tsx`.
-- **Data Transformation & Validation**: `lib/chartDataAdapter.ts` validates incoming OHLCV bars (`high >= max(open, close, low)`, numeric types, valid timestamps), normalizes time to `YYYY-MM-DD` strings, maps green (`#22C55E`)/red (`#EF4444`) candle colors, and applies LTTB/step downsampling when bar counts exceed threshold (3,000 bars) without altering stored database records.
-- **Client Preference Store**: `store/useChartStore.ts` (Zustand) manages local chart view state (`chartType`, `priceMode`, `showVolume`, `showCrosshair`, `showGrid`, `isFullscreen`).
-- **Data Synchronization**: Synchronized date range presets (`1M`..`5Y`, `MAX`) and raw/adjusted price mode toggling between chart and historical OHLCV data table.
+- **Modular Validators**:
+  - `ohlcv.py`: Enforces positive price bounds and structural OHLC relationships (`High >= max(Open, Close, Low)`, `Low <= min(Open, Close)`).
+  - `timestamps.py`: Normalizes timezone-aware UTC timestamps, checks sanity bounds, and verifies strict chronological sequence ($t_1 < t_2 < t_3$).
+  - `duplicates.py`: Pre-persistence deduplication against `(instrument_id, timestamp, frequency, provider)`.
+  - `gaps.py`: Calendar awareness via `EquityCalendar` (tracks trading days vs weekend/holiday closures) and `CryptoCalendar` (24/7 continuous trading). Flags missing sessions without generating synthetic prices.
+  - `anomalies.py`: Heuristic anomaly detection flagging single-day price jumps (>20%), volume spikes (>10x 20-period median), zero volume on equities, and repeated identical bars.
+  - `quality.py` & `pipeline.py`: Aggregates validation issues into standard severities (`INFO`, `WARNING`, `ERROR`, `CRITICAL`), assigns dataset quality status (`GOOD`, `GOOD_WITH_WARNINGS`, `INVALID`, `NO_DATA`), and produces typed `QualityReport` objects.
+- **Data Quality Endpoints**:
+  - `GET /api/v1/market-data/{instrument_id}/quality`: Evaluates stored series and returns comprehensive quality report.
+  - `GET /api/v1/market-data/{instrument_id}/ingestions/{ingestion_id}`: Detailed audit log with full issue log.
+- **Frontend Quality Workspace**: `DataQualityPanel.tsx` badge counters and `QualityIssuesDrawer.tsx` slide-over drawer with severity filters.
+
 
