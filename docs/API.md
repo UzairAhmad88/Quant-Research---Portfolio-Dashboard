@@ -339,3 +339,39 @@ All list endpoints use a unified pagination wrapper:
   "performance_series": []
 }
 ```
+
+---
+
+### Correlation API (Step 11)
+
+#### `GET /api/v1/correlation`
+- **Query Parameters**:
+  - `instrument_ids`: List of UUID strings (Required, min 2, max 20)
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `return_type`: `simple` | `log` (Default: `simple`)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+  - `alignment_mode`: `pairwise_complete` | `common_intersection` (Default: `pairwise_complete`)
+- **Response `200 OK`**: Returns `CorrelationMatrixResponse` ($N \times N$ matrix and flat pairwise items).
+
+#### `GET /api/v1/correlation/pair`
+- **Query Parameters**:
+  - `instrument_a`: UUID string (Required)
+  - `instrument_b`: UUID string (Required)
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `return_type`: `simple` | `log` (Default: `simple`)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+- **Response `200 OK`**: Returns `CorrelationPairwiseResponse` (Pearson coefficient, observation count, qualitative interpretation, and aligned scatter points).
+
+#### `GET /api/v1/correlation/rolling`
+- **Query Parameters**:
+  - `instrument_a`: UUID string (Required)
+  - `instrument_b`: UUID string (Required)
+  - `window`: int observation window size (Default: `60`, min 5, max 500)
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `return_type`: `simple` | `log` (Default: `simple`)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+- **Response `200 OK`**: Returns `RollingCorrelationResponse` (time-varying rolling correlation points).
+

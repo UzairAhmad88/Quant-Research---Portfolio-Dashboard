@@ -683,3 +683,147 @@ export async function fetchPortfolioAnalytics(params: {
   }
   return await response.json();
 }
+
+// Correlation API types
+export interface MatrixCellItem {
+  symbol_a: string;
+  symbol_b: string;
+  correlation?: number;
+  observations: number;
+  interpretation: string;
+}
+
+export interface CorrelationMatrixResponse {
+  instruments: string[];
+  instrument_ids: string[];
+  method: string;
+  return_type: string;
+  price_source: string;
+  alignment: string;
+  matrix: (number | null)[][];
+  pairwise: MatrixCellItem[];
+  quality_status: string;
+  quality_warnings: string[];
+}
+
+export interface ScatterPointItem {
+  timestamp: string;
+  return_a: number;
+  return_b: number;
+}
+
+export interface CorrelationPairwiseResponse {
+  instrument_a: string;
+  instrument_b: string;
+  symbol_a: string;
+  symbol_b: string;
+  correlation?: number;
+  observations: number;
+  interpretation: string;
+  min_observations_met: boolean;
+  return_type: string;
+  price_source: string;
+  quality_status: string;
+  quality_warnings: string[];
+  scatter_points: ScatterPointItem[];
+}
+
+export interface RollingPointItem {
+  timestamp: string;
+  correlation?: number;
+}
+
+export interface RollingCorrelationResponse {
+  instrument_a: string;
+  instrument_b: string;
+  symbol_a: string;
+  symbol_b: string;
+  window: number;
+  return_type: string;
+  price_source: string;
+  quality_status: string;
+  quality_warnings: string[];
+  series: RollingPointItem[];
+}
+
+export async function fetchCorrelationMatrix(params: {
+  instrument_ids: string[];
+  start_date?: string;
+  end_date?: string;
+  return_type?: string;
+  price_source?: string;
+  alignment_mode?: string;
+}): Promise<CorrelationMatrixResponse> {
+  const query = new URLSearchParams();
+  params.instrument_ids.forEach((id) => query.append('instrument_ids', id));
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.return_type) query.append('return_type', params.return_type);
+  if (params.price_source) query.append('price_source', params.price_source);
+  if (params.alignment_mode) query.append('alignment_mode', params.alignment_mode);
+
+  const response = await fetch(`${API_BASE_URL}/correlation?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Correlation matrix request failed: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function fetchPairwiseCorrelation(params: {
+  instrument_a: string;
+  instrument_b: string;
+  start_date?: string;
+  end_date?: string;
+  return_type?: string;
+  price_source?: string;
+}): Promise<CorrelationPairwiseResponse> {
+  const query = new URLSearchParams({
+    instrument_a: params.instrument_a,
+    instrument_b: params.instrument_b,
+  });
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.return_type) query.append('return_type', params.return_type);
+  if (params.price_source) query.append('price_source', params.price_source);
+
+  const response = await fetch(`${API_BASE_URL}/correlation/pair?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Pairwise correlation request failed: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+export async function fetchRollingCorrelation(params: {
+  instrument_a: string;
+  instrument_b: string;
+  window?: number;
+  start_date?: string;
+  end_date?: string;
+  return_type?: string;
+  price_source?: string;
+}): Promise<RollingCorrelationResponse> {
+  const query = new URLSearchParams({
+    instrument_a: params.instrument_a,
+    instrument_b: params.instrument_b,
+  });
+  if (params.window) query.append('window', String(params.window));
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.return_type) query.append('return_type', params.return_type);
+  if (params.price_source) query.append('price_source', params.price_source);
+
+  const response = await fetch(`${API_BASE_URL}/correlation/rolling?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Rolling correlation request failed: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}

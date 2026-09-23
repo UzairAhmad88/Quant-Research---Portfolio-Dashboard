@@ -59,12 +59,30 @@ $$\text{Contribution}_i = w_{\text{invested},i} \times \text{P\&L}_{\%,i}$$
 Cumulative return of portfolio relative to total initial capital $C_0$:
 $$R_p(t) = \frac{V_{p,t}}{C_0} - 1$$
 
+## 3. Correlation Analyzer (Step 11)
+
+### Return Series Input & Timestamp Alignment
+For returns $R_A(t)$ and $R_B(t)$ of instruments $A$ and $B$, correlation is calculated exclusively on aligned return observations where both series have valid data:
+$$T_{\text{aligned}} = \{t \mid R_A(t) \ne \text{null} \land R_B(t) \ne \text{null}\}$$
+
+Minimum observation requirement: $|T_{\text{aligned}}| \ge 30$.
+
+### Pearson Correlation Coefficient
+$$\rho(A,B) = \frac{\text{Cov}(R_A, R_B)}{\sigma_A \sigma_B} = \frac{\sum_{t \in T_{\text{aligned}}} (R_A(t) - \bar{R}_A)(R_B(t) - \bar{R}_B)}{\sqrt{\sum_{t \in T_{\text{aligned}}} (R_A(t) - \bar{R}_A)^2} \sqrt{\sum_{t \in T_{\text{aligned}}} (R_B(t) - \bar{R}_B)^2}}$$
+
+Properties:
+- Bounds: $-1.0 \le \rho(A,B) \le 1.0$
+- Self-Correlation: $\rho(A,A) = 1.0$
+- Matrix Symmetry: $\rho(A,B) = \rho(B,A)$
+
+### Rolling Window Correlation
+For moving observation window size $N$ at aligned step $k$:
+$$\rho_k(A,B) = \text{Correlation}(R_{A, k-N+1:k}, R_{B, k-N+1:k})$$
+- Observations $k < N$: $\rho_k = \text{null}$ (no artificial zero-filling).
+
 ---
 
-## 3. Future Analytics Modules (Scaffolded)
-
-### Pearson Correlation
-$$\rho(X,Y) = \frac{\text{Cov}(X,Y)}{\sigma_X \sigma_Y}$$
+## 4. Future Analytics Modules (Scaffolded)
 
 ### Volatility
 Annualized daily volatility:

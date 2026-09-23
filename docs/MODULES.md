@@ -47,12 +47,20 @@
 - [x] Portfolio creation & add-holding modal workflows
 - [x] Data quality integration & coverage warning alerts
 
-## 04 Correlation Analyzer
-- [ ] Asset selection
-- [ ] Correlation matrix
-- [ ] Heatmap
-- [ ] Pair analysis
-- [ ] Rolling correlation
+## 04 Correlation Analyzer & Correlation Matrix (Step 11)
+- [x] Multi-instrument selection (2 to 20 instruments)
+- [x] Return-based correlation engine (Simple & Log returns)
+- [x] Price source selection (Adjusted Close vs Raw Close)
+- [x] Aligned return series timestamp inner joins & pairwise complete handling
+- [x] Minimum observation enforcement ($\ge 30$ observations)
+- [x] Pearson correlation matrix ($N \times N$, diagonal = 1.0, symmetric)
+- [x] Interactive correlation matrix heatmap with qualitative interpretation
+- [x] Pairwise return scatter plot visualization ($X$ vs $Y$)
+- [x] Rolling window correlation series (30D..252D observations)
+- [x] Insufficient window handling (no synthetic zero-filling)
+- [x] Data quality integration & coverage warning alerts
+- [x] REST API endpoints (`/api/v1/correlation`, `/pair`, `/rolling`)
+- [x] Correlation matrix CSV export
 
 ## 05 Volatility Analyzer
 - [ ] Daily volatility
