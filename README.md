@@ -1,9 +1,9 @@
-# Quant Research Dashboard — Step 13 Complete
+# Quant Research Dashboard — Step 14 Complete
 
 A professional institutional quantitative-finance research and portfolio analysis platform.
 
 > [!NOTE]
-> **Step 13 Status**: Moving Average Strategy Engine Complete. Implemented vectorized SMA/EMA numerical calculators (`app/analytics/strategies/`), Fast MA vs Slow MA crossover detector with strict look-ahead bias prevention, research signal generator (`BUY`, `SELL`, `HOLD`), FastAPI `/api/v1/strategies/moving-average` REST API endpoint, frontend `/strategies` research workstation with parameter configuration panel, interactive Price + MA overlay chart with visual crossover markers (`▲` BUY, `▼` SELL), signal summary cards, crossover signal history log table, 100% Pytest pass rate (80 tests), and 100% Vitest pass rate.
+> **Step 14 Status**: Strategy Visualization & Signal Research Workspace Complete. Enhanced backend `StrategyService` with pre-warmup lookback fetching ($3 \times slow\_window$), created frontend `strategyChartAdapter.ts` with dedicated Vitest unit test suite, built Strategy Header with Research Signal State badge (`BUY`, `SELL`, `HOLD`), updated Strategy Config Panel with Candlestick vs Line price selectors and overlay toggles (`Fast MA`, `Slow MA`, `Signals`, `Volume`), built interactive strategy price chart with `▲` BUY and `▼` SELL crossover markers, crosshairs, tooltips, and Fullscreen mode, added Crossover Signal History Log table with `BUY`/`SELL`/`ALL` filtering and sorting, Methodology Panel, Data Quality Provenance Panel, Market Data Context navigation link, 100% Pytest pass rate (80 tests), and 100% Vitest pass rate (10 tests).
 
 ---
 
@@ -17,7 +17,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 3. **Multi-Schema Database Architecture**: Segregated PostgreSQL schemas (`core` for application entities, `market_data` for OHLCV time-series).
 4. **Layered Persistence Pattern**: Clean separation between API routes, Services, Repositories, SQLAlchemy ORM, and PostgreSQL.
 5. **Data Validation & Quality Layer**: Centralized validation pipeline (`ValidationPipeline`) enforcing OHLC bounds, UTC normalization, market calendar session gap awareness, anomaly detection, and zero data fabrication.
-6. **Analytics & Strategy Signal Engine**: Decoupled numerical analytics engine computing simple/log/cumulative returns, CAGR metrics, portfolio valuation/allocation, position contributions, Pearson correlation matrices, volatility metrics, SMA/EMA moving averages, and look-ahead-free research signals.
+6. **Analytics & Strategy Signal Engine**: Decoupled numerical analytics engine computing simple/log/cumulative returns, CAGR metrics, portfolio valuation/allocation, position contributions, Pearson correlation matrices, volatility metrics, SMA/EMA moving averages, and look-ahead-free research signals with warm-up lookback.
 
 ---
 
@@ -25,7 +25,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 
 ### Frontend
 - **Framework**: React 19 + TypeScript 5 + Vite 6
-- **Charting Engine**: Custom Canvas / SVG Time Series & Histograms & Technical Overlays
+- **Charting Engine**: Custom Canvas / SVG Time Series & Technical Overlays & Fullscreen Workstation
 - **Routing**: `react-router-dom` v7
 - **State Management**: TanStack Query v5 (Server state) + Zustand v5 (Client UI state)
 - **Icons & UI**: Lucide React + Institutional UI Tokens + Tailwind CSS
@@ -48,8 +48,8 @@ Quant Research Dashboard is engineered as serious quantitative research software
 | `/portfolio` | Portfolio Calculator & Portfolio Analytics | Step 10 | Complete |
 | `/correlation` | Correlation Analyzer & Correlation Matrix | Step 11 | Complete |
 | `/volatility` | Volatility Analyzer & Risk Measurement | Step 12 | Complete |
-| `/strategies` | Moving Average Strategy Engine | Step 13 | Complete |
-| `/backtesting` | Backtesting Engine | Step 14 | Scaffolded |
+| `/strategies` | Strategy Visualization & Signal Research Workspace | Step 13..14 | Complete |
+| `/backtesting` | Backtesting Engine | Step 15 | Scaffolded |
 | `/settings` | System Settings | Step 02 | Active |
 
 

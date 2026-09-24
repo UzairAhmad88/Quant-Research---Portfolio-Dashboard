@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Sliders, AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, AlertTriangle } from 'lucide-react';
 import {
   fetchInstruments,
   fetchMovingAverageStrategy,
   InstrumentItem,
   MovingAverageStrategyResponse,
 } from '../lib/apiClient';
+import { StrategyHeader } from '../components/strategies/StrategyHeader';
 import { StrategyConfigPanel, StrategyConfig } from '../components/strategies/StrategyConfigPanel';
 import { StrategySummaryCards } from '../components/strategies/StrategySummaryCards';
 import { StrategyPriceChart } from '../components/strategies/StrategyPriceChart';
 import { CrossoverTable } from '../components/strategies/CrossoverTable';
+import { MethodologyPanel } from '../components/strategies/MethodologyPanel';
+import { StrategyDataQuality } from '../components/strategies/StrategyDataQuality';
 
 export const StrategiesPage: React.FC = () => {
   // Available instruments
   const [availableInstruments, setAvailableInstruments] = useState<InstrumentItem[]>([]);
+  const [selectedInstrument, setSelectedInstrument] = useState<InstrumentItem | null>(null);
 
   // Default configuration
   const [config, setConfig] = useState<StrategyConfig>({
@@ -23,6 +27,11 @@ export const StrategiesPage: React.FC = () => {
     maType: 'sma',
     fastWindow: 20,
     slowWindow: 50,
+    chartType: 'candlestick',
+    showFastMA: true,
+    showSlowMA: true,
+    showSignals: true,
+    showVolume: false,
   });
 
   // Strategy response state
@@ -38,6 +47,7 @@ export const StrategiesPage: React.FC = () => {
       .then((res) => {
         setAvailableInstruments(res.items);
         if (res.items.length > 0) {
+          setSelectedInstrument(res.items[0]);
           setConfig((prev) => ({
             ...prev,
             instrumentId: res.items[0].id,
@@ -62,6 +72,9 @@ export const StrategiesPage: React.FC = () => {
   // Load strategy analytics
   const loadStrategy = async (cfg: StrategyConfig) => {
     if (!cfg.instrumentId) return;
+
+    const inst = availableInstruments.find((i) => i.id === cfg.instrumentId);
+    if (inst) setSelectedInstrument(inst);
 
     try {
       setIsLoading(true);
@@ -103,6 +116,11 @@ export const StrategiesPage: React.FC = () => {
       maType: 'sma',
       fastWindow: 20,
       slowWindow: 50,
+      chartType: 'candlestick',
+      showFastMA: true,
+      showSlowMA: true,
+      showSignals: true,
+      showVolume: false,
     };
     setConfig(defaultConfig);
     loadStrategy(defaultConfig);
@@ -110,27 +128,22 @@ export const StrategiesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0B1220] text-slate-100 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#263244] pb-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
-            <Sliders className="w-6 h-6 text-blue-400" />
-            Moving Average Strategy Engine
-          </h1>
-          <p className="text-xs text-slate-400 mt-1 font-mono">
-            Quantitative research signal generator (BUY / SELL / HOLD) &amp; bullish/bearish crossover detector
+      {/* Strategy Header */}
+      {selectedInstrument ? (
+        <StrategyHeader
+          symbol={selectedInstrument.symbol}
+          name={selectedInstrument.name}
+          assetType={selectedInstrument.asset_type}
+          currentSignal={strategyData?.summary.current_signal || 'HOLD'}
+        />
+      ) : (
+        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5">
+          <h1 className="text-xl font-bold text-slate-100 font-mono">Moving Average Strategy Engine</h1>
+          <p className="text-xs text-slate-400 mt-1 font-sans">
+            Historical moving-average crossover research &amp; signal inspection
           </p>
         </div>
-
-        {strategyData && (
-          <div className="flex items-center gap-2 font-mono text-xs text-slate-400 bg-[#151F2E] border border-[#263244] px-3 py-1.5 rounded-lg">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>
-              Quality: <strong className="text-slate-200">{strategyData.quality_status}</strong>
-            </span>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Configuration Panel */}
       <StrategyConfigPanel
@@ -162,16 +175,16 @@ export const StrategiesPage: React.FC = () => {
 
       {/* Main Content Area */}
       {isLoading ? (
-        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400">
+        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400 font-mono text-xs">
           <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-500 mb-3" />
-          <span>Executing moving average strategy &amp; evaluating crossover signals...</span>
+          <span>Calculating moving averages &amp; detecting crossover signals...</span>
         </div>
       ) : strategyData && strategyData.is_sufficient ? (
         <div className="space-y-6">
-          {/* Summary Metric Cards */}
+          {/* Strategy Summary Metric Cards */}
           <StrategySummaryCards summary={strategyData.summary} />
 
-          {/* Strategy Price Chart */}
+          {/* Main Strategy Research Chart */}
           <StrategyPriceChart
             series={strategyData.series}
             crossovers={strategyData.crossovers}
@@ -179,16 +192,37 @@ export const StrategiesPage: React.FC = () => {
             fastWindow={strategyData.summary.fast_window}
             slowWindow={strategyData.summary.slow_window}
             maType={strategyData.summary.ma_type}
+            chartType={config.chartType}
+            showFastMA={config.showFastMA}
+            showSlowMA={config.showSlowMA}
+            showSignals={config.showSignals}
+            showVolume={config.showVolume}
           />
 
-          {/* Crossover Table */}
+          {/* Crossover History Log Table */}
           <CrossoverTable
             crossovers={strategyData.crossovers}
             symbol={strategyData.summary.symbol}
           />
+
+          {/* Bottom Side-by-Side: Methodology & Data Quality Panels */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <MethodologyPanel
+              maType={strategyData.summary.ma_type}
+              fastWindow={strategyData.summary.fast_window}
+              slowWindow={strategyData.summary.slow_window}
+              priceSource={strategyData.summary.price_source}
+            />
+            <StrategyDataQuality
+              qualityStatus={strategyData.quality_status}
+              qualityWarning={strategyData.quality_warning}
+              observationCount={strategyData.summary.observation_count}
+              priceSource={strategyData.summary.price_source}
+            />
+          </div>
         </div>
       ) : availableInstruments.length === 0 ? (
-        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400">
+        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400 font-mono text-xs">
           No instruments available in database. Add instruments in the Market Data workspace.
         </div>
       ) : null}

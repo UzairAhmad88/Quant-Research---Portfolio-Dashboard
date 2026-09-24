@@ -78,10 +78,10 @@
 - [x] Data quality integration & coverage warning alerts
 - [x] REST API endpoint (`GET /api/v1/volatility`)
 
-## 06 Moving Average Strategy Engine (Step 13)
+## 06 Moving Average Strategy Engine & Visualization Workstation (Step 13..14)
 - [x] Vectorized Simple Moving Average (SMA) calculation
 - [x] Exponential Moving Average (EMA) calculation ($\alpha = 2/(n+1)$)
-- [x] Warm-up offset handling (first $n-1$ entries return null)
+- [x] Warm-up offset & pre-warmup lookback fetching ($3 \times slow\_window$)
 - [x] Fast MA vs Slow MA crossover detector (Bullish & Bearish)
 - [x] Research signal generator (`BUY`, `SELL`, `HOLD`)
 - [x] Current strategy state vs discrete signal event tracking
@@ -90,8 +90,14 @@
 - [x] Insufficient data handling ($n < slow\_window$)
 - [x] Data quality integration & coverage warning alerts
 - [x] REST API endpoint (`GET /api/v1/strategies/moving-average`)
-- [x] Research workstation price overlay chart & crossover markers (`▲` BUY, `▼` SELL)
-- [x] Crossover signal history log table
+- [x] Frontend chart adapter (`strategyChartAdapter.ts`) with Vitest test suite
+- [x] Research workstation header with Research Signal State badge (`BUY`, `SELL`, `HOLD`)
+- [x] Strategy configuration panel with Candlestick & Line price toggles
+- [x] Interactive Price + Fast MA + Slow MA overlay chart with Fullscreen mode
+- [x] Visual crossover markers (`▲` BUY, `▼` SELL) & crosshair tooltips
+- [x] Crossover signal history log table with `BUY`/`SELL`/`ALL` filters & sorting
+- [x] Methodology panel & Data provenance quality panel
+- [x] Market Data context quick navigation link
 
 ## 07 Backtesting Engine
 - [ ] Historical simulation

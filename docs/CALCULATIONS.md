@@ -138,6 +138,9 @@ Signal evaluation at time $t$ uses exclusively information available at $t-1$ an
 - **No Crossover (`HOLD`)**:
   $$\text{Otherwise} \implies \text{Signal}_t = \text{HOLD}$$
 
+### Warm-Up Data Lookback (Step 14)
+When a user specifies a date range starting at $T_{\text{start}}$, the backend fetches prior historical observations starting at $T_{\text{fetch}} = T_{\text{start}} - 3 \times n_{\text{slow}}$ to pre-warm moving averages. Strategy outputs and crossover events are then filtered to $t \ge T_{\text{start}}$, ensuring pre-warmed moving averages from Day 1 of the requested display range.
+
 ---
 
 ## 6. Future Analytics Modules (Scaffolded)
