@@ -942,3 +942,83 @@ export async function fetchVolatilityAnalytics(params: {
   return await response.json();
 }
 
+// ---------------------------------------------------------------------------
+// Moving Average Strategy Types & Endpoints (Step 13)
+// ---------------------------------------------------------------------------
+
+export interface CrossoverEvent {
+  timestamp: string;
+  event_type: string; // 'BULLISH' or 'BEARISH'
+  signal: string; // 'BUY' or 'SELL'
+  price: number;
+  fast_ma: number;
+  slow_ma: number;
+}
+
+export interface StrategyObservation {
+  timestamp: string;
+  price: number;
+  fast_ma: number | null;
+  slow_ma: number | null;
+  signal: string; // 'BUY', 'SELL', 'HOLD'
+}
+
+export interface StrategySummary {
+  instrument_id: string;
+  symbol: string;
+  name?: string | null;
+  asset_type: string;
+  price_source: string;
+  ma_type: string;
+  fast_window: number;
+  slow_window: number;
+  start_date?: string | null;
+  end_date?: string | null;
+  observation_count: number;
+  current_signal: string;
+  latest_signal_event?: string | null;
+  last_crossover?: string | null;
+  bullish_crossover_count: number;
+  bearish_crossover_count: number;
+}
+
+export interface MovingAverageStrategyResponse {
+  summary: StrategySummary;
+  crossovers: CrossoverEvent[];
+  series: StrategyObservation[];
+  quality_status: string;
+  quality_warning?: string | null;
+  is_sufficient: boolean;
+  message?: string | null;
+}
+
+export async function fetchMovingAverageStrategy(params: {
+  instrument_id: string;
+  start_date?: string;
+  end_date?: string;
+  price_source?: string;
+  ma_type?: string;
+  fast_window?: number;
+  slow_window?: number;
+}): Promise<MovingAverageStrategyResponse> {
+  const query = new URLSearchParams({
+    instrument_id: params.instrument_id,
+  });
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.price_source) query.append('price_source', params.price_source);
+  if (params.ma_type) query.append('ma_type', params.ma_type);
+  if (params.fast_window) query.append('fast_window', String(params.fast_window));
+  if (params.slow_window) query.append('slow_window', String(params.slow_window));
+
+  const response = await fetch(`${API_BASE_URL}/strategies/moving-average?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Moving Average Strategy request failed: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+
+

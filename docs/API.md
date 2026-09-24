@@ -440,6 +440,7 @@ All list endpoints use a unified pagination wrapper:
   }
 }
 ```
+```
 - **Response `200 OK` (Multi-Instrument Comparison Mode)**:
 ```json
 {
@@ -463,5 +464,76 @@ All list endpoints use a unified pagination wrapper:
   ]
 }
 ```
+
+---
+
+### Strategies API (Step 13)
+
+#### `GET /api/v1/strategies/moving-average`
+- **Query Parameters**:
+  - `instrument_id`: UUID string (Required)
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+  - `ma_type`: `sma` | `ema` (Default: `sma`)
+  - `fast_window`: int fast MA observation window size (Default: `20`)
+  - `slow_window`: int slow MA observation window size (Default: `50`)
+- **Response `200 OK`**:
+```json
+{
+  "summary": {
+    "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "asset_type": "EQUITY",
+    "price_source": "adjusted",
+    "ma_type": "SMA",
+    "fast_window": 20,
+    "slow_window": 50,
+    "start_date": "2025-01-01T00:00:00Z",
+    "end_date": "2026-01-01T00:00:00Z",
+    "observation_count": 252,
+    "current_signal": "BUY",
+    "latest_signal_event": "BUY",
+    "last_crossover": "2025-11-14T00:00:00Z",
+    "bullish_crossover_count": 3,
+    "bearish_crossover_count": 2
+  },
+  "crossovers": [
+    {
+      "timestamp": "2025-11-14T00:00:00Z",
+      "event_type": "BULLISH",
+      "signal": "BUY",
+      "price": 182.45,
+      "fast_ma": 179.12,
+      "slow_ma": 178.95
+    }
+  ],
+  "series": [
+    {
+      "timestamp": "2025-01-02T00:00:00Z",
+      "price": 150.0,
+      "fast_ma": null,
+      "slow_ma": null,
+      "signal": "HOLD"
+    },
+    {
+      "timestamp": "2025-11-14T00:00:00Z",
+      "price": 182.45,
+      "fast_ma": 179.12,
+      "slow_ma": 178.95,
+      "signal": "BUY"
+    }
+  ],
+  "quality_status": "GOOD",
+  "quality_warning": null,
+  "is_sufficient": true,
+  "message": null
+}
+```
+- **Error Responses**:
+  - `400 Bad Request`: `fast_window >= slow_window` or non-positive window inputs.
+  - `404 Not Found`: Instrument ID does not exist.
+
 
 

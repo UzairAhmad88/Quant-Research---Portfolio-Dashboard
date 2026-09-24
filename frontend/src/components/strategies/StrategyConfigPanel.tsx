@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+import { InstrumentItem } from '../../lib/apiClient';
+import { SlidersHorizontal, RotateCcw, Play } from 'lucide-react';
+
+export interface StrategyConfig {
+  instrumentId: string;
+  dateRange: string;
+  priceSource: 'adjusted' | 'close';
+  maType: 'sma' | 'ema';
+  fastWindow: number;
+  slowWindow: number;
+}
+
+interface StrategyConfigPanelProps {
+  availableInstruments: InstrumentItem[];
+  currentConfig: StrategyConfig;
+  onApplyConfig: (newConfig: StrategyConfig) => void;
+  onResetConfig: () => void;
+  isLoading: boolean;
+}
+
+export const StrategyConfigPanel: React.FC<StrategyConfigPanelProps> = ({
+  availableInstruments,
+  currentConfig,
+  onApplyConfig,
+  onResetConfig,
+  isLoading,
+}) => {
+  const [instrumentId, setInstrumentId] = useState<string>(currentConfig.instrumentId);
+  const [dateRange, setDateRange] = useState<string>(currentConfig.dateRange);
+  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>(currentConfig.priceSource);
+  const [maType, setMaType] = useState<'sma' | 'ema'>(currentConfig.maType);
+  const [fastWindow, setFastWindow] = useState<number>(currentConfig.fastWindow);
+  const [slowWindow, setSlowWindow] = useState<number>(currentConfig.slowWindow);
+
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const handleApply = (e: React.FormEvent) => {
+    e.preventDefault();
+    setValidationError(null);
+
+    if (fastWindow <= 0 || slowWindow <= 0) {
+      setValidationError('Window sizes must be positive integers.');
+      return;
+    }
+
+    if (fastWindow >= slowWindow) {
+      setValidationError(`Fast window (${fastWindow}) must be strictly less than slow window (${slowWindow}).`);
+      return;
+    }
+
+    onApplyConfig({
+      instrumentId,
+      dateRange,
+      priceSource,
+      maType,
+      fastWindow,
+      slowWindow,
+    });
+  };
+
+  const handleReset = () => {
+    setValidationError(null);
+    onResetConfig();
+  };
+
+  return (
+    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4 space-y-4">
+      <div className="flex items-center justify-between border-b border-[#263244] pb-3">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-blue-400" />
+          <h3 className="text-sm font-semibold text-slate-200">Strategy Parameters &amp; Rule Engine</h3>
+        </div>
+        <div className="text-xs text-slate-500 font-mono">
+          Moving Average Crossover Generator
+        </div>
+      </div>
+
+      <form onSubmit={handleApply} className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 text-xs">
+          {/* Instrument Select */}
+          <div>
+            <label className="text-slate-400 block mb-1">Target Instrument</label>
+            <select
+              value={instrumentId}
+              onChange={(e) => setInstrumentId(e.target.value)}
+              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+            >
+              {availableInstruments.map((inst) => (
+                <option key={inst.id} value={inst.id}>
+                  {inst.symbol} ({inst.asset_type})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date Range Preset */}
+          <div>
+            <label className="text-slate-400 block mb-1">Date Range</label>
+            <select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+            >
+              <option value="1M">1 Month</option>
+              <option value="3M">3 Months</option>
+              <option value="6M">6 Months</option>
+              <option value="1Y">1 Year (Default)</option>
+              <option value="3Y">3 Years</option>
+              <option value="5Y">5 Years</option>
+              <option value="MAX">Max Available</option>
+            </select>
+          </div>
+
+          {/* Price Source */}
+          <div>
+            <label className="text-slate-400 block mb-1">Price Source</label>
+            <select
+              value={priceSource}
+              onChange={(e) => setPriceSource(e.target.value as 'adjusted' | 'close')}
+              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+            >
+              <option value="adjusted">Adjusted Close</option>
+              <option value="close">Unadjusted Close</option>
+            </select>
+          </div>
+
+          {/* MA Type */}
+          <div>
+            <label className="text-slate-400 block mb-1">MA Type</label>
+            <select
+              value={maType}
+              onChange={(e) => setMaType(e.target.value as 'sma' | 'ema')}
+              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+            >
+              <option value="sma">SMA (Simple)</option>
+              <option value="ema">EMA (Exponential)</option>
+            </select>
+          </div>
+
+          {/* Fast Window */}
+          <div>
+            <label className="text-slate-400 block mb-1">Fast Window (obs)</label>
+            <input
+              type="number"
+              min={1}
+              max={500}
+              value={fastWindow}
+              onChange={(e) => setFastWindow(Number(e.target.value))}
+              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {/* Slow Window */}
+          <div>
+            <label className="text-slate-400 block mb-1">Slow Window (obs)</label>
+            <input
+              type="number"
+              min={2}
+              max={1000}
+              value={slowWindow}
+              onChange={(e) => setSlowWindow(Number(e.target.value))}
+              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* Local Validation Error */}
+        {validationError && (
+          <div className="text-xs text-rose-400 font-mono bg-rose-950/40 p-2 rounded border border-rose-900/60">
+            {validationError}
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#263244]">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-3 py-1.5 bg-[#0B1220] border border-[#263244] text-slate-400 hover:text-slate-200 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Reset Defaults
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-colors disabled:opacity-50"
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            {isLoading ? 'Executing...' : 'Apply Strategy'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};

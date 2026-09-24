@@ -117,9 +117,30 @@ $$\text{Bin}_k = [b_k, b_{k+1}), \quad f_k = \sum_{i=1}^n \mathbb{I}(r_i \in \te
 ### Minimum Observations Cutoff
 Minimum 30 valid return observations required ($n \ge 30$). If $n < 30$, `is_sufficient = False` is returned.
 
+## 5. Moving Average Strategy Engine (Step 13)
+
+### Simple Moving Average (SMA)
+For observation price $P_t$ over rolling window size $n$:
+$$\text{SMA}_{t, n} = \frac{1}{n} \sum_{i=0}^{n-1} P_{t-i}$$
+- Observations $t < n - 1$: $\text{SMA}_{t, n} = \text{null}$ (warm-up period).
+
+### Exponential Moving Average (EMA)
+Weighted moving average prioritizing recent observations with smoothing factor $\alpha = \frac{2}{n + 1}$:
+$$\text{EMA}_{t, n} = \alpha P_t + (1 - \alpha) \text{EMA}_{t-1, n}$$
+- Observations $t < n - 1$: $\text{EMA}_{t, n} = \text{null}$.
+
+### Crossover Signal Rules & Look-Ahead Bias Prevention
+Signal evaluation at time $t$ uses exclusively information available at $t-1$ and $t$:
+- **Bullish Crossover (`BUY`)**:
+  $$\text{Fast}_{t-1} \le \text{Slow}_{t-1} \quad \land \quad \text{Fast}_t > \text{Slow}_t \implies \text{Signal}_t = \text{BUY}$$
+- **Bearish Crossover (`SELL`)**:
+  $$\text{Fast}_{t-1} \ge \text{Slow}_{t-1} \quad \land \quad \text{Fast}_t < \text{Slow}_t \implies \text{Signal}_t = \text{SELL}$$
+- **No Crossover (`HOLD`)**:
+  $$\text{Otherwise} \implies \text{Signal}_t = \text{HOLD}$$
+
 ---
 
-## 5. Future Analytics Modules (Scaffolded)
+## 6. Future Analytics Modules (Scaffolded)
 
 ### Maximum Drawdown
 $$\text{Drawdown}_t = \frac{V_{p,t} - \max_{s \le t} V_{p,s}}{\max_{s \le t} V_{p,s}}$$

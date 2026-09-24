@@ -78,12 +78,20 @@
 - [x] Data quality integration & coverage warning alerts
 - [x] REST API endpoint (`GET /api/v1/volatility`)
 
-## 06 Moving-Average Strategy
-- [ ] SMA
-- [ ] EMA
-- [ ] Crossover signals
-- [ ] Signal history
-- [ ] Strategy chart
+## 06 Moving Average Strategy Engine (Step 13)
+- [x] Vectorized Simple Moving Average (SMA) calculation
+- [x] Exponential Moving Average (EMA) calculation ($\alpha = 2/(n+1)$)
+- [x] Warm-up offset handling (first $n-1$ entries return null)
+- [x] Fast MA vs Slow MA crossover detector (Bullish & Bearish)
+- [x] Research signal generator (`BUY`, `SELL`, `HOLD`)
+- [x] Current strategy state vs discrete signal event tracking
+- [x] Look-ahead bias prevention & automated validation
+- [x] Parameter validation ($fast\_window < slow\_window$)
+- [x] Insufficient data handling ($n < slow\_window$)
+- [x] Data quality integration & coverage warning alerts
+- [x] REST API endpoint (`GET /api/v1/strategies/moving-average`)
+- [x] Research workstation price overlay chart & crossover markers (`▲` BUY, `▼` SELL)
+- [x] Crossover signal history log table
 
 ## 07 Backtesting Engine
 - [ ] Historical simulation
