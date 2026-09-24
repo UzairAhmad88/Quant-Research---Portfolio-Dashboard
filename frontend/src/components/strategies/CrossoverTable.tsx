@@ -1,21 +1,47 @@
 import React, { useState, useMemo } from 'react';
 import { CrossoverEvent } from '../../lib/apiClient';
 import { filterCrossoverEvents, sortCrossoverEvents, formatDateLabel, formatCurrency } from '../../lib/strategyChartAdapter';
-import { Filter, ArrowUpDown } from 'lucide-react';
+import { Filter, ArrowUpDown, Info } from 'lucide-react';
+import { SignalDetailModal } from '../signals/SignalDetailModal';
+import { SignalEvent } from '../../types/signal';
 
 interface CrossoverTableProps {
   crossovers: CrossoverEvent[];
   symbol: string;
+  onViewOnChart?: (timestamp: string) => void;
 }
 
-export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symbol }) => {
+export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symbol, onViewOnChart }) => {
   const [filterMode, setFilterMode] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [selectedSignal, setSelectedSignal] = useState<SignalEvent | null>(null);
 
   const processedCrossovers = useMemo(() => {
     const filtered = filterCrossoverEvents(crossovers, filterMode);
     return sortCrossoverEvents(filtered, sortOrder);
   }, [crossovers, filterMode, sortOrder]);
+
+  const handleRowClick = (cross: CrossoverEvent) => {
+    const sigType = cross.signal as 'BUY' | 'SELL';
+    const sigEvent: SignalEvent = {
+      id: `sig-${cross.timestamp}-${cross.signal}`,
+      strategy_configuration_id: 'config-moving-average',
+      instrument_id: symbol,
+      strategy_type: 'MOVING_AVERAGE',
+      timestamp: cross.timestamp,
+      signal_type: sigType,
+      signal_state: sigType === 'BUY' ? 'BULLISH' : 'BEARISH',
+      price: cross.price,
+      source: 'STRATEGY_ENGINE',
+      metadata: {
+        fast_ma: cross.fast_ma,
+        slow_ma: cross.slow_ma,
+        event_type: cross.event_type
+      },
+      created_at: cross.timestamp
+    };
+    setSelectedSignal(sigEvent);
+  };
 
   return (
     <div className="bg-[#151F2E] border border-[#263244] rounded-lg overflow-hidden">
@@ -26,7 +52,7 @@ export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symb
             Signal &amp; Crossover History Log ({symbol})
           </h3>
           <p className="text-xs text-slate-400">
-            Discrete moving-average crossover events generated from validated price observations
+            Standardized signal events generated from validated price observations
           </p>
         </div>
 
@@ -67,37 +93,56 @@ export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symb
               <tr>
                 <th className="py-3 px-4 font-medium">Date</th>
                 <th className="py-3 px-4 font-medium">Signal Event</th>
-                <th className="py-3 px-4 font-medium">Crossover Type</th>
+                <th className="py-3 px-4 font-medium">Research State</th>
                 <th className="py-3 px-4 font-medium text-right">Observation Price</th>
                 <th className="py-3 px-4 font-medium text-right">Fast MA</th>
                 <th className="py-3 px-4 font-medium text-right">Slow MA</th>
+                <th className="py-3 px-4 font-medium text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#263244] text-slate-200">
               {processedCrossovers.map((cross, idx) => {
                 const isBullish = cross.event_type === 'BULLISH';
                 return (
-                  <tr key={idx} className="hover:bg-[#1E293B]/50 transition-colors">
+                  <tr
+                    key={idx}
+                    onClick={() => handleRowClick(cross)}
+                    className="hover:bg-[#1E293B]/70 transition-colors cursor-pointer group"
+                  >
                     <td className="py-3 px-4 text-slate-300">{formatDateLabel(cross.timestamp)}</td>
                     <td className="py-3 px-4">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded border text-[11px] font-bold ${
                           isBullish
                             ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800/80'
-                            : 'text-amber-400 bg-amber-950/60 border-amber-800/80'
+                            : 'text-rose-400 bg-rose-950/60 border-rose-800/80'
                         }`}
                       >
                         {cross.signal}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-slate-400">{cross.event_type}</span>
+                      <span className={`text-[11px] font-medium ${isBullish ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        {cross.event_type}
+                      </span>
                     </td>
                     <td className="py-3 px-4 text-right font-semibold text-slate-100">
                       {formatCurrency(cross.price)}
                     </td>
                     <td className="py-3 px-4 text-right text-blue-400">{formatCurrency(cross.fast_ma)}</td>
                     <td className="py-3 px-4 text-right text-amber-400">{formatCurrency(cross.slow_ma)}</td>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRowClick(cross);
+                        }}
+                        className="p-1 rounded text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors inline-flex items-center gap-1 text-[11px]"
+                        title="Inspect Signal Detail"
+                      >
+                        <Info className="w-3.5 h-3.5" /> Details
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -105,6 +150,15 @@ export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symb
           </table>
         </div>
       )}
+
+      {/* Signal Detail Inspection Modal */}
+      <SignalDetailModal
+        signal={selectedSignal}
+        isOpen={Boolean(selectedSignal)}
+        onClose={() => setSelectedSignal(null)}
+        onViewOnChart={onViewOnChart}
+      />
     </div>
   );
 };
+

@@ -99,7 +99,22 @@
 - [x] Methodology panel & Data provenance quality panel
 - [x] Market Data context quick navigation link
 
-## 07 Backtesting Engine
+## 07 Signal Management & Strategy Signal Layer (Step 15)
+- [x] Standardized Signal Domain (`SignalEvent`, `StrategyConfiguration`)
+- [x] Schema `strategy` with `strategy_configurations` and `signal_events` PostgreSQL tables
+- [x] SHA256 Strategy Configuration hashing for parameter uniqueness
+- [x] Idempotent signal persistence via `SignalRepository` & `SignalService`
+- [x] Bulk signal creation with duplicate event prevention
+- [x] Standardized `SignalType` (`BUY`, `SELL`) & `SignalState` (`BULLISH`, `BEARISH`, `NEUTRAL`)
+- [x] Standardized `SignalSource` (`STRATEGY_ENGINE`, `MANUAL`, `EXTERNAL`, `MODEL`)
+- [x] Signal REST API endpoints (`GET /api/v1/signals`, `GET /api/v1/signals/{id}`)
+- [x] Frontend `useSignals` & `useSignalDetail` TanStack Query hooks
+- [x] Frontend `SignalDetailModal` component for structured signal inspection & auditability
+- [x] "Focus on Chart" navigation integration from Signal Detail modal
+- [x] Comprehensive Pytest test suite (`test_signals.py`) covering domain, repository, idempotency, recomputation, and API endpoints
+- [x] Frontend Vitest unit test suite (`signalAdapter.test.ts`)
+
+## 08 Backtesting Engine
 - [ ] Historical simulation
 - [ ] Position management
 - [ ] Execution model
@@ -109,3 +124,4 @@
 - [ ] Drawdown
 - [ ] Performance metrics
 - [ ] Trade history
+

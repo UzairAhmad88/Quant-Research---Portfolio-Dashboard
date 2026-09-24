@@ -535,5 +535,72 @@ All list endpoints use a unified pagination wrapper:
   - `400 Bad Request`: `fast_window >= slow_window` or non-positive window inputs.
   - `404 Not Found`: Instrument ID does not exist.
 
+---
+
+## 11. Signal Management API (`/api/v1/signals`)
+
+### `GET /api/v1/signals`
+Queries standardized signal events across instruments, strategy configurations, and signal types with optional filtering and pagination.
+
+- **Query Parameters**:
+  - `instrument_id` (optional `string`): Filter by instrument UUID.
+  - `strategy_type` (optional `string`): Filter by strategy type (e.g., `'MOVING_AVERAGE'`).
+  - `strategy_configuration_id` (optional `string`): Filter by strategy configuration UUID.
+  - `signal_type` (optional `string`): Filter by `'BUY'` or `'SELL'`.
+  - `signal_state` (optional `string`): Filter by `'BULLISH'`, `'BEARISH'`, or `'NEUTRAL'`.
+  - `start_date` (optional `ISO-8601 string`): Start timestamp filter.
+  - `end_date` (optional `ISO-8601 string`): End timestamp filter.
+  - `limit` (optional `integer`, default `100`, max `1000`): Max records returned.
+  - `offset` (optional `integer`, default `0`): Pagination offset.
+
+- **Example Response (`200 OK`)**:
+```json
+{
+  "items": [
+    {
+      "id": "c1f7b49a-7a8e-4a6d-9b12-5f8e3c12a456",
+      "strategy_configuration_id": "89a3f2b1-1122-3344-5566-778899aabbcc",
+      "instrument_id": "3a12b456-789c-4def-[#]-123456789abc",
+      "strategy_type": "MOVING_AVERAGE",
+      "timestamp": "2026-04-17T00:00:00Z",
+      "signal_type": "BUY",
+      "signal_state": "BULLISH",
+      "price": 184.32,
+      "source": "STRATEGY_ENGINE",
+      "metadata": {
+        "fast_ma": 181.76,
+        "slow_ma": 181.54,
+        "fast_window": 20,
+        "slow_window": 50,
+        "ma_type": "SMA",
+        "price_source": "adjusted"
+      },
+      "created_at": "2026-09-24T21:40:00Z",
+      "configuration": {
+        "id": "89a3f2b1-1122-3344-5566-778899aabbcc",
+        "strategy_type": "MOVING_AVERAGE",
+        "instrument_id": "3a12b456-789c-4def-[#]-123456789abc",
+        "configuration_hash": "a1b2c3d4e5f6...",
+        "ma_type": "SMA",
+        "fast_window": 20,
+        "slow_window": 50,
+        "price_source": "adjusted",
+        "active": true
+      }
+    }
+  ],
+  "total": 1,
+  "limit": 100,
+  "offset": 0
+}
+```
+
+### `GET /api/v1/signals/{signal_id}`
+Retrieves standardized detail for a specific signal event by UUID.
+
+- **Example Response (`200 OK`)**: Standardized `SignalEventResponse` object.
+- **Error Response**: `404 Not Found` if the signal ID does not exist.
+
+
 
 

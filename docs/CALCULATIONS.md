@@ -148,3 +148,24 @@ When a user specifies a date range starting at $T_{\text{start}}$, the backend f
 ### Maximum Drawdown
 $$\text{Drawdown}_t = \frac{V_{p,t} - \max_{s \le t} V_{p,s}}{\max_{s \le t} V_{p,s}}$$
 
+
+## 7. Signal Management & Strategy Signal Layer (Step 15)
+
+### Strategy Configuration Identity & Hash
+Each strategy configuration parameter set is normalized into a deterministic SHA256 configuration hash:
+$$H(\text{config}) = \text{SHA256}\left(\text{STRATEGY\_TYPE} \parallel \text{instrument\_id} \parallel \text{JSON}(\text{params})\right)$$
+- Guarantees parameter set uniqueness.
+- Distinguishes SMA vs EMA and different window sizes ($N_{\text{fast}}, N_{\text{slow}}$).
+
+### Signal Event & Research State Normalization
+Standardizes discrete strategy triggers into domain signal events:
+- **BUY Event**: Triggered when $FastMA_{t-1} \le SlowMA_{t-1}$ and $FastMA_t > SlowMA_t$. Implies `BULLISH` research state.
+- **SELL Event**: Triggered when $FastMA_{t-1} \ge SlowMA_{t-1}$ and $FastMA_t < SlowMA_t$. Implies `BEARISH` research state.
+- **HOLD**: Absence of a crossover event. Not persisted as individual rows to avoid database bloat.
+
+### Idempotency & Look-Ahead Protection
+- Unique database constraint: $(strategy\_configuration\_id, timestamp, signal\_type)$.
+- Signals are evaluated at time $t$ strictly using observations available up to $(t-1)$ and $t$.
+- Signal events represent historical quantitative strategy outputs, decoupled from portfolio trade execution and backtesting performance metrics.
+
+

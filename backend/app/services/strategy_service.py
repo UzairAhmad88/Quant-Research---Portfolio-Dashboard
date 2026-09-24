@@ -7,6 +7,7 @@ from app.models.enums import DataFrequency
 from app.repositories.instrument_repository import InstrumentRepository
 from app.repositories.market_data_repository import MarketDataRepository
 from app.services.data_quality_service import DataQualityService
+from app.services.signal_service import SignalService
 from app.analytics.strategies import run_moving_average_strategy
 from app.schemas.strategies import (
     MovingAverageStrategyResponse,
@@ -24,6 +25,7 @@ class StrategyService:
         self.inst_repo = InstrumentRepository(db)
         self.market_repo = MarketDataRepository(db)
         self.quality_service = DataQualityService(db)
+        self.signal_service = SignalService(db)
 
     def calculate_moving_average_strategy(
         self,
@@ -146,7 +148,19 @@ class StrategyService:
             filtered_obs = all_obs
             filtered_crossovers = all_crossovers
 
-        # 9. Construct Response
+        # 9. Persist Signals to Signal Management Layer
+        if all_crossovers:
+            self.signal_service.persist_moving_average_signals(
+                instrument_id=instrument.id,
+                crossovers=all_crossovers,
+                ma_type=clean_ma_type,
+                fast_window=fast_window,
+                slow_window=slow_window,
+                price_source=clean_price_source
+            )
+
+        # 10. Construct Response
+
         summary_dict = res["summary"]
 
         # Recalculate summary metrics for display range

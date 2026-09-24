@@ -7,6 +7,7 @@ from app.db.base import Base
 from app.models.instrument import Instrument
 from app.models.market_data import OHLCV
 from app.models.portfolio import Portfolio, PortfolioHolding
+from app.models.strategy import StrategyConfiguration, SignalEvent
 from app.main import app
 from app.db.session import get_db
 
@@ -24,6 +25,7 @@ def sqlite_db():
         cursor = dbapi_connection.cursor()
         cursor.execute("ATTACH DATABASE ':memory:' AS core;")
         cursor.execute("ATTACH DATABASE ':memory:' AS market_data;")
+        cursor.execute("ATTACH DATABASE ':memory:' AS strategy;")
         cursor.close()
 
     # Restore schema names if changed
@@ -31,6 +33,8 @@ def sqlite_db():
     OHLCV.__table__.schema = "market_data"
     Portfolio.__table__.schema = "core"
     PortfolioHolding.__table__.schema = "core"
+    StrategyConfiguration.__table__.schema = "strategy"
+    SignalEvent.__table__.schema = "strategy"
 
     Base.metadata.create_all(engine)
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
