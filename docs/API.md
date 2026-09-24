@@ -375,3 +375,93 @@ All list endpoints use a unified pagination wrapper:
   - `price_source`: `adjusted` | `close` (Default: `adjusted`)
 - **Response `200 OK`**: Returns `RollingCorrelationResponse` (time-varying rolling correlation points).
 
+---
+
+### Volatility API (Step 12)
+
+#### `GET /api/v1/volatility`
+- **Query Parameters**:
+  - `instrument_id`: UUID string for single instrument detailed analysis (Optional)
+  - `instrument_ids`: List of UUID strings for multi-instrument comparison (Optional)
+  - `start_date`: ISO 8601 UTC timestamp (Optional)
+  - `end_date`: ISO 8601 UTC timestamp (Optional)
+  - `price_source`: `adjusted` | `close` (Default: `adjusted`)
+  - `return_type`: `simple` | `log` (Default: `simple`)
+  - `rolling_window`: int observation size (Default: `20`, e.g. 10, 20, 30, 60, 90, 120, 252)
+  - `annualized`: boolean (Default: `true`)
+- **Response `200 OK` (Single Instrument Mode)**:
+```json
+{
+  "instrument_id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+  "symbol": "AAPL",
+  "name": "Apple Inc.",
+  "asset_type": "EQUITY",
+  "price_source": "adjusted",
+  "return_type": "simple",
+  "rolling_window": 20,
+  "annualized": true,
+  "quality_status": "GOOD",
+  "quality_warning": null,
+  "is_sufficient": true,
+  "message": null,
+  "summary": {
+    "daily_volatility": 0.0142,
+    "annualized_volatility": 0.2254,
+    "upside_volatility": 0.0118,
+    "downside_volatility": 0.0162,
+    "observation_count": 252,
+    "annualization_factor": 252
+  },
+  "rolling_series": [
+    { "timestamp": "2025-01-02T00:00:00Z", "rolling_volatility": null },
+    { "timestamp": "2025-01-30T00:00:00Z", "rolling_volatility": 0.2185 }
+  ],
+  "distribution": {
+    "summary": {
+      "mean": 0.0008,
+      "median": 0.0005,
+      "min": -0.045,
+      "max": 0.052,
+      "std_dev": 0.0142,
+      "positive_observations": 135,
+      "negative_observations": 115,
+      "zero_observations": 2,
+      "total_observations": 252
+    },
+    "histogram": [
+      {
+        "bin_start": -0.045,
+        "bin_end": -0.040,
+        "bin_center": -0.0425,
+        "count": 3,
+        "frequency_pct": 1.19
+      }
+    ]
+  }
+}
+```
+- **Response `200 OK` (Multi-Instrument Comparison Mode)**:
+```json
+{
+  "return_type": "simple",
+  "price_source": "adjusted",
+  "instruments": [
+    {
+      "instrument_id": "...",
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "asset_type": "EQUITY",
+      "observation_count": 252,
+      "daily_volatility": 0.0142,
+      "annualized_volatility": 0.2254,
+      "upside_volatility": 0.0118,
+      "downside_volatility": 0.0162,
+      "annualization_factor": 252,
+      "is_sufficient": true,
+      "message": null
+    }
+  ]
+}
+```
+
+

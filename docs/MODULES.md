@@ -62,11 +62,21 @@
 - [x] REST API endpoints (`/api/v1/correlation`, `/pair`, `/rolling`)
 - [x] Correlation matrix CSV export
 
-## 05 Volatility Analyzer
-- [ ] Daily volatility
-- [ ] Annualized volatility
-- [ ] Rolling volatility
-- [ ] Volatility chart
+## 05 Volatility Analyzer & Risk Measurement (Step 12)
+- [x] Return-derived calculation engine (Simple & Log returns)
+- [x] Sample standard deviation ($ddof=1$)
+- [x] Asset-aware annualization (252-day Equity/ETF/Index vs 365-day Crypto)
+- [x] Daily & Annualized volatility metrics
+- [x] Rolling volatility time series (10D..252D observation windows)
+- [x] Window offset handling (first $N-1$ points return null)
+- [x] Upside volatility ($\text{StdDev}(R_i \mid R_i > 0)$)
+- [x] Downside volatility ($\text{StdDev}(R_i \mid R_i < 0)$)
+- [x] Return distribution statistics (Mean, Median, Min, Max, StdDev, Pos/Neg counts)
+- [x] Return distribution histogram with 0.0% reference line
+- [x] Multi-instrument volatility comparison bar chart & detailed table
+- [x] Minimum observation cutoff ($\ge 30$ observations)
+- [x] Data quality integration & coverage warning alerts
+- [x] REST API endpoint (`GET /api/v1/volatility`)
 
 ## 06 Moving-Average Strategy
 - [ ] SMA

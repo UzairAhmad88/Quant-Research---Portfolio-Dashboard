@@ -827,3 +827,118 @@ export async function fetchRollingCorrelation(params: {
   }
   return await response.json();
 }
+
+// ---------------------------------------------------------------------------
+// Volatility Types & Endpoints (Step 12)
+// ---------------------------------------------------------------------------
+
+export interface VolatilitySummary {
+  daily_volatility: number | null;
+  annualized_volatility: number | null;
+  upside_volatility: number | null;
+  downside_volatility: number | null;
+  observation_count: number;
+  annualization_factor: number;
+}
+
+export interface RollingVolatilityPoint {
+  timestamp: string;
+  rolling_volatility: number | null;
+}
+
+export interface ReturnHistogramBin {
+  bin_start: number;
+  bin_end: number;
+  bin_center: number;
+  count: number;
+  frequency_pct: number;
+}
+
+export interface ReturnDistributionSummary {
+  mean: number;
+  median: number;
+  min: number;
+  max: number;
+  std_dev: number;
+  positive_observations: number;
+  negative_observations: number;
+  zero_observations: number;
+  total_observations: number;
+}
+
+export interface ReturnDistributionResponse {
+  summary: ReturnDistributionSummary;
+  histogram: ReturnHistogramBin[];
+}
+
+export interface SingleVolatilityResponse {
+  instrument_id: string;
+  symbol: string;
+  name?: string | null;
+  asset_type: string;
+  price_source: string;
+  return_type: string;
+  rolling_window: number;
+  annualized: boolean;
+  quality_status: string;
+  quality_warning?: string | null;
+  is_sufficient: boolean;
+  message?: string | null;
+  summary: VolatilitySummary;
+  rolling_series: RollingVolatilityPoint[];
+  distribution: ReturnDistributionResponse;
+}
+
+export interface InstrumentVolatilityItem {
+  instrument_id: string;
+  symbol: string;
+  name?: string | null;
+  asset_type: string;
+  observation_count: number;
+  daily_volatility: number | null;
+  annualized_volatility: number | null;
+  upside_volatility: number | null;
+  downside_volatility: number | null;
+  annualization_factor: number;
+  is_sufficient: boolean;
+  message?: string | null;
+}
+
+export interface MultiVolatilityResponse {
+  return_type: string;
+  price_source: string;
+  instruments: InstrumentVolatilityItem[];
+}
+
+export async function fetchVolatilityAnalytics(params: {
+  instrument_id?: string;
+  instrument_ids?: string[];
+  start_date?: string;
+  end_date?: string;
+  price_source?: string;
+  return_type?: string;
+  rolling_window?: number;
+  annualized?: boolean;
+}): Promise<SingleVolatilityResponse | MultiVolatilityResponse> {
+  const query = new URLSearchParams();
+  if (params.instrument_id) query.append('instrument_id', params.instrument_id);
+  if (params.instrument_ids && params.instrument_ids.length > 0) {
+    params.instrument_ids.forEach((id) => query.append('instrument_ids', id));
+  }
+  if (params.start_date) query.append('start_date', params.start_date);
+  if (params.end_date) query.append('end_date', params.end_date);
+  if (params.price_source) query.append('price_source', params.price_source);
+  if (params.return_type) query.append('return_type', params.return_type);
+  if (params.rolling_window) query.append('rolling_window', String(params.rolling_window));
+  if (params.annualized !== undefined) query.append('annualized', String(params.annualized));
+
+  const response = await fetch(`${API_BASE_URL}/volatility?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Volatility request failed: ${response.status}` },
+    }));
+    throw new Error(errorBody.error.message);
+  }
+  return await response.json();
+}
+

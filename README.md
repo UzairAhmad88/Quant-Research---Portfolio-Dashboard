@@ -1,9 +1,9 @@
-# Quant Research Dashboard — Step 11 Complete
+# Quant Research Dashboard — Step 12 Complete
 
 A professional institutional quantitative-finance research and portfolio analysis platform.
 
 > [!NOTE]
-> **Step 11 Status**: Correlation Analyzer & Correlation Matrix Complete. Implemented return-based correlation calculation engine (`app/analytics/correlation/`), Pearson correlation matrices ($N \times N$, diagonal = 1.0, symmetric), pairwise complete observation alignment, min 30 observations rule, rolling window correlation, FastAPI `/api/v1/correlation` REST API, frontend `/correlation` research workstation with interactive heatmap, pairwise scatter plot, lightweight-charts rolling correlation canvas, summary stats, matrix CSV export, 100% Pytest pass rate, and 100% Vitest pass rate.
+> **Step 12 Status**: Volatility Analyzer & Risk Measurement Foundation Complete. Implemented return-derived volatility numerical engine (`app/analytics/volatility/`), sample standard deviation ($ddof=1$), asset-class-aware annualization (252 days for Equities/ETFs/Indices vs 365 days for Crypto), daily & annualized volatility, rolling volatility time series (10D..252D observation windows) with initial offset handling, upside/downside volatility, return distribution summary & 20-bin histogram with 0% reference line, FastAPI `/api/v1/volatility` REST API endpoint, frontend `/volatility` research workstation with single instrument and multi-instrument comparison modes, 100% Pytest pass rate (70 tests), and 100% Vitest pass rate.
 
 ---
 
@@ -17,7 +17,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 3. **Multi-Schema Database Architecture**: Segregated PostgreSQL schemas (`core` for application entities, `market_data` for OHLCV time-series).
 4. **Layered Persistence Pattern**: Clean separation between API routes, Services, Repositories, SQLAlchemy ORM, and PostgreSQL.
 5. **Data Validation & Quality Layer**: Centralized validation pipeline (`ValidationPipeline`) enforcing OHLC bounds, UTC normalization, market calendar session gap awareness, anomaly detection, and zero data fabrication.
-6. **Return, Portfolio & Correlation Analytics Engine**: Decoupled numerical analytics engine computing simple/log/cumulative returns, CAGR metrics, portfolio valuation/allocation, position contributions, Pearson correlation matrices, pairwise return distributions, and time-varying rolling correlations.
+6. **Return, Portfolio, Correlation & Volatility Analytics Engine**: Decoupled numerical analytics engine computing simple/log/cumulative returns, CAGR metrics, portfolio valuation/allocation, position contributions, Pearson correlation matrices, upside/downside volatility, rolling volatility, and return distribution histograms.
 
 ---
 
@@ -25,7 +25,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 
 ### Frontend
 - **Framework**: React 19 + TypeScript 5 + Vite 6
-- **Charting Engine**: TradingView `lightweight-charts` v5 & Custom SVG Heatmap / Scatter Plot
+- **Charting Engine**: Custom Canvas / SVG Time Series & Histograms & Heatmaps
 - **Routing**: `react-router-dom` v7
 - **State Management**: TanStack Query v5 (Server state) + Zustand v5 (Client UI state)
 - **Icons & UI**: Lucide React + Institutional UI Tokens + Tailwind CSS
@@ -47,7 +47,7 @@ Quant Research Dashboard is engineered as serious quantitative research software
 | `/returns` | Return Calculator & Performance Analytics | Step 09 | Complete |
 | `/portfolio` | Portfolio Calculator & Portfolio Analytics | Step 10 | Complete |
 | `/correlation` | Correlation Analyzer & Correlation Matrix | Step 11 | Complete |
-| `/volatility` | Volatility Analytics | Step 12 | Scaffolded |
+| `/volatility` | Volatility Analyzer & Risk Measurement | Step 12 | Complete |
 | `/strategies` | Quantitative Strategies | Step 13 | Scaffolded |
 | `/backtesting` | Backtesting Engine | Step 14 | Scaffolded |
 | `/settings` | System Settings | Step 02 | Active |

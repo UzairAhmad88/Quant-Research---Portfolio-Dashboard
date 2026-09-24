@@ -82,11 +82,44 @@ $$\rho_k(A,B) = \text{Correlation}(R_{A, k-N+1:k}, R_{B, k-N+1:k})$$
 
 ---
 
-## 4. Future Analytics Modules (Scaffolded)
+## 4. Volatility Analyzer & Risk Measurement (Step 12)
 
-### Volatility
-Annualized daily volatility:
+### Return-Derived Input
+Volatility is calculated strictly from validated return series ($r_1, r_2, \dots, r_n$), NOT raw price levels:
+$$r_t = \text{ReturnCalculator}(P_t, P_{t-1})$$
+
+### Historical Sample Standard Deviation
+Using sample standard deviation ($ddof=1$):
+$$\sigma_{\text{daily}} = \sqrt{\frac{\sum_{i=1}^n (r_i - \bar{r})^2}{n - 1}}$$
+
+### Asset-Aware Annualized Volatility
+Reuses asset-class-aware annualization conventions:
 $$\sigma_{\text{annual}} = \sigma_{\text{daily}} \times \sqrt{N_{\text{annual}}}$$
+- **Equities, ETFs, Indices**: $N_{\text{annual}} = 252$ trading days.
+- **Cryptocurrencies**: $N_{\text{annual}} = 365$ calendar days.
+
+### Rolling Volatility
+For moving observation window size $N$ at observation $t$:
+$$\sigma_{t, N} = \text{StdDev}(r_{t-N+1}, \dots, r_t, ddof=1)$$
+- Observations $t < N - 1$: $\sigma_{t, N} = \text{null}$ (no zero-filling).
+- Annualized rolling volatility: $\sigma_{\text{rolling, annual}} = \sigma_{t, N} \times \sqrt{N_{\text{annual}}}$.
+
+### Upside & Downside Volatility
+- **Upside Volatility ($\sigma_+$)**: Sample standard deviation of strictly positive returns ($r_i > 0$):
+  $$\sigma_+ = \text{StdDev}(\{r_i \mid r_i > 0\}, ddof=1)$$
+- **Downside Volatility ($\sigma_-$)**: Sample standard deviation of strictly negative returns ($r_i < 0$):
+  $$\sigma_- = \text{StdDev}(\{r_i \mid r_i < 0\}, ddof=1)$$
+
+### Return Distribution Summary & Histogram Bins
+Descriptive statistics ($\bar{r}, r_{\text{med}}, r_{\min}, r_{\max}, \sigma$) and histogram bin counts:
+$$\text{Bin}_k = [b_k, b_{k+1}), \quad f_k = \sum_{i=1}^n \mathbb{I}(r_i \in \text{Bin}_k)$$
+
+### Minimum Observations Cutoff
+Minimum 30 valid return observations required ($n \ge 30$). If $n < 30$, `is_sufficient = False` is returned.
+
+---
+
+## 5. Future Analytics Modules (Scaffolded)
 
 ### Maximum Drawdown
 $$\text{Drawdown}_t = \frac{V_{p,t} - \max_{s \le t} V_{p,s}}{\max_{s \le t} V_{p,s}}$$
