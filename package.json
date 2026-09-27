@@ -1,0 +1,13 @@
+{
+  "name": "quant-research-dashboard-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev",
+    "test": "npm --prefix frontend test"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}
