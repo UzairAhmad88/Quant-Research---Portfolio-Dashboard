@@ -1,0 +1,115 @@
+name: CI/CD Quality Gate & Production Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-quality-gate:
+    name: Backend Tests & Security
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: quant_dashboard_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt pytest pytest-cov pytest-asyncio hypothesis
+
+      - name: Run Backend Pytest Suite
+        env:
+          PYTHONPATH: backend
+          DATABASE_URL: postgresql+psycopg://postgres:password@localhost:5432/quant_dashboard_test
+          APP_ENV: testing
+          DEBUG: "false"
+        run: |
+          python -m pytest backend/tests/ --cov=backend/app --cov-report=term-missing
+
+      - name: Run Security Test Suite
+        env:
+          PYTHONPATH: backend
+          DATABASE_URL: postgresql+psycopg://postgres:password@localhost:5432/quant_dashboard_test
+          APP_ENV: testing
+          DEBUG: "false"
+        run: |
+          python -m pytest backend/tests/security/ -v
+
+  frontend-quality-gate:
+    name: Frontend Tests & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Typecheck Frontend
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Run Frontend Vitest Suite
+        working-directory: frontend
+        run: npm test -- --run
+
+      - name: Build Production Bundle
+        working-directory: frontend
+        run: npm run build
+
+  container-build-gate:
+    name: Docker Container Build
+    needs: [backend-quality-gate, frontend-quality-gate]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./docker/backend/Dockerfile
+          push: false
+          tags: quant-backend:latest
+
+      - name: Build Frontend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./docker/frontend/Dockerfile
+          push: false
+          tags: quant-frontend:latest

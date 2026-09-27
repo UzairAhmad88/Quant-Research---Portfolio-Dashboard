@@ -12,12 +12,17 @@ from app.schemas.market_data import (
     MarketDataFetchRequest,
     MarketDataFetchResponse,
     CoverageResponse,
-    IngestionLogResponse
+    IngestionLogResponse,
+    LatestMarketDataResponse,
+    ProviderCapabilitiesResponse,
 )
 from app.schemas.data_quality import IngestionDetailResponse
 from app.validators import QualityReport
 from app.schemas.common import PaginatedResponse
 from app.models.enums import DataFrequency
+from app.export import ExportService, ExportMetadata
+from app.repositories.instrument_repository import InstrumentRepository
+
 from app.core.exceptions import NotFoundError, ValidationError
 
 router = APIRouter()
@@ -74,7 +79,68 @@ def query_market_data(
         offset=offset
     )
 
+@router.get("/providers/capabilities", response_model=List[ProviderCapabilitiesResponse], status_code=status.HTTP_200_OK)
+def get_provider_capabilities(
+    provider: Optional[str] = Query(None, description="Optional provider identifier"),
+    db: Session = Depends(get_db)
+):
+    """
+    Expose market-data provider capabilities (historical, latest, intraday, streaming, delayed vs real-time).
+    """
+    service = MarketDataService(db)
+    return service.get_provider_capabilities(provider_name=provider)
+
+@router.get("/latest/batch", response_model=List[LatestMarketDataResponse], status_code=status.HTTP_200_OK)
+async def get_latest_market_data_batch(
+    instrument_ids: Optional[str] = Query(None, description="Comma-separated instrument UUIDs"),
+    symbols: Optional[str] = Query(None, description="Comma-separated ticker symbols"),
+    frequency: DataFrequency = Query(DataFrequency.DAILY, description="Bar frequency"),
+    force_refresh: bool = Query(False, description="Bypass cache and force provider retrieval"),
+    provider: str = Query("yahoo_finance", description="Market data provider"),
+    db: Session = Depends(get_db)
+):
+    """
+    Batch retrieve the latest market observation for multiple instruments.
+    """
+    service = MarketDataService(db)
+    inst_id_list = [i.strip() for i in instrument_ids.split(",") if i.strip()] if instrument_ids else None
+    symbol_list = [s.strip().upper() for s in symbols.split(",") if s.strip()] if symbols else None
+    
+    return await service.get_latest_market_data_batch(
+        instrument_ids=inst_id_list,
+        symbols=symbol_list,
+        frequency=frequency,
+        force_refresh=force_refresh,
+        provider_name=provider
+    )
+
+@router.get("/latest", response_model=LatestMarketDataResponse, status_code=status.HTTP_200_OK)
+async def get_latest_market_data_observation(
+    instrument_id: Optional[str] = Query(None, description="UUID of target instrument"),
+    symbol: Optional[str] = Query(None, description="Ticker symbol (e.g. AAPL)"),
+    frequency: DataFrequency = Query(DataFrequency.DAILY, description="Bar frequency"),
+    force_refresh: bool = Query(False, description="Bypass cache and force provider retrieval"),
+    provider: str = Query("yahoo_finance", description="Market data provider"),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve the latest available market observation for a single instrument.
+    Database-First: checks local PostgreSQL observations before querying provider.
+    """
+    if not instrument_id and not symbol:
+        raise ValidationError("Either instrument_id or symbol must be provided.")
+
+    service = MarketDataService(db)
+    return await service.get_latest_market_data(
+        instrument_id=instrument_id,
+        symbol=symbol,
+        frequency=frequency,
+        force_refresh=force_refresh,
+        provider_name=provider
+    )
+
 @router.get("/{instrument_id}/coverage", response_model=CoverageResponse, status_code=status.HTTP_200_OK)
+
 def get_market_data_coverage(
     instrument_id: str,
     start_date: Optional[datetime] = Query(None),
@@ -138,19 +204,118 @@ def get_ingestion_detail(
         quality_report=report
     )
 
-@router.get("/{instrument_id}/export", status_code=status.HTTP_200_OK)
-def export_market_data_csv(
+def _build_market_data_export_response(
+    instrument_id: str,
+    start_date: Optional[datetime],
+    end_date: Optional[datetime],
+    frequency: DataFrequency,
+    format_str: str,
+    db: Session
+) -> Response:
+    inst_repo = InstrumentRepository(db)
+    instrument = inst_repo.get_by_id(instrument_id)
+    if not instrument:
+        raise NotFoundError(f"Instrument with ID '{instrument_id}' was not found.")
+
+    market_repo = MarketDataRepository(db)
+    bars = market_repo.get_bars(
+        instrument_id=instrument_id,
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency,
+        limit=10000
+    )
+
+    metadata = ExportMetadata(
+        export_type="MARKET_DATA",
+        instrument=str(instrument.id),
+        symbol=instrument.symbol,
+        date_range=f"{start_date.isoformat() if start_date else 'START'}_{end_date.isoformat() if end_date else 'END'}",
+        provider="yahoo_finance",
+        frequency=frequency.value if hasattr(frequency, 'value') else str(frequency),
+    )
+
+    fmt_lower = format_str.lower().strip()
+    if fmt_lower == "json":
+        data = [
+            {
+                "timestamp": b.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if isinstance(b.timestamp, datetime) else str(b.timestamp),
+                "open": float(b.open),
+                "high": float(b.high),
+                "low": float(b.low),
+                "close": float(b.close),
+                "adjusted_close": float(b.adjusted_close) if b.adjusted_close is not None else None,
+                "volume": float(b.volume) if b.volume is not None else None,
+                "instrument": instrument.symbol,
+                "provider": b.provider,
+                "frequency": b.frequency.value if hasattr(b.frequency, 'value') else str(b.frequency)
+            }
+            for b in bars
+        ]
+    else:
+        headers = ["timestamp", "open", "high", "low", "close", "adjusted_close", "volume", "instrument", "provider", "frequency"]
+        rows = [
+            [
+                b.timestamp,
+                float(b.open),
+                float(b.high),
+                float(b.low),
+                float(b.close),
+                float(b.adjusted_close) if b.adjusted_close is not None else "",
+                float(b.volume) if b.volume is not None else "",
+                instrument.symbol,
+                b.provider,
+                b.frequency.value if hasattr(b.frequency, 'value') else str(b.frequency)
+            ]
+            for b in bars
+        ]
+        data = {"headers": headers, "rows": rows}
+
+    export_service = ExportService()
+    date_part = f"{bars[0].timestamp.strftime('%Y%m%d')}_{bars[-1].timestamp.strftime('%Y%m%d')}" if bars else "all"
+    freq_str = frequency.value if hasattr(frequency, 'value') else str(frequency)
+    prefix = f"{instrument.symbol}_market_data_{freq_str}_{date_part}"
+    return export_service.create_export_response(
+        data=data,
+        metadata=metadata,
+        format_str=format_str,
+        filename_prefix=prefix
+    )
+
+@router.get("/export", status_code=status.HTTP_200_OK, summary="Export market data in CSV or JSON format")
+def export_market_data_query(
+    instrument_id: str = Query(..., description="Target instrument UUID"),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    frequency: DataFrequency = Query(DataFrequency.DAILY),
+    format: str = Query("csv", description="Export format: 'csv' or 'json'"),
+    db: Session = Depends(get_db)
+):
+    return _build_market_data_export_response(
+        instrument_id=instrument_id,
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency,
+        format_str=format,
+        db=db
+    )
+
+@router.get("/{instrument_id}/export", status_code=status.HTTP_200_OK, summary="Export market data for instrument in CSV or JSON format")
+def export_market_data_for_instrument(
     instrument_id: str,
     start_date: Optional[datetime] = Query(None),
     end_date: Optional[datetime] = Query(None),
+    frequency: DataFrequency = Query(DataFrequency.DAILY),
+    format: str = Query("csv", description="Export format: 'csv' or 'json'"),
     db: Session = Depends(get_db)
 ):
-    service = MarketDataService(db)
-    csv_data = service.export_csv(instrument_id=instrument_id, start_date=start_date, end_date=end_date)
-    return Response(
-        content=csv_data,
-        media_type="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="market_data_{instrument_id[:8]}.csv"'}
+    return _build_market_data_export_response(
+        instrument_id=instrument_id,
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency,
+        format_str=format,
+        db=db
     )
 
 @router.get("/{instrument_id}/latest", response_model=OHLCVResponse, status_code=status.HTTP_200_OK)

@@ -18,6 +18,69 @@ export interface ApiErrorDetail {
 
 export interface ApiErrorResponse {
   error: ApiErrorDetail;
+  request_id?: string;
+  detail?: string;
+}
+
+export class ApiError extends Error {
+  code: string;
+  status: number;
+  details?: unknown;
+  severity?: string;
+  retryable?: boolean;
+  requestId?: string;
+
+  constructor(
+    message: string,
+    code: string = 'INTERNAL_ERROR',
+    status: number = 500,
+    details?: unknown,
+    severity: string = 'ERROR',
+    retryable: boolean = false,
+    requestId?: string
+  ) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = code;
+    this.status = status;
+    this.details = details;
+    this.severity = severity;
+    this.retryable = retryable;
+    this.requestId = requestId;
+  }
+}
+
+export async function parseApiError(response: Response): Promise<ApiError> {
+  const headerReqId = response.headers.get('X-Request-ID') || undefined;
+  try {
+    const data = await response.json();
+    if (data?.error) {
+      return new ApiError(
+        data.error.message || `Request failed with status ${response.status}`,
+        data.error.code || 'HTTP_ERROR',
+        response.status,
+        data.error.details,
+        data.error.severity || (response.status < 500 ? 'WARNING' : 'ERROR'),
+        data.error.retryable ?? [429, 502, 503, 504].includes(response.status),
+        data.request_id || headerReqId
+      );
+    }
+    if (data?.detail) {
+      const msg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+      return new ApiError(msg, 'HTTP_ERROR', response.status, data.detail, 'ERROR', false, headerReqId);
+    }
+  } catch {
+    // response body wasn't JSON
+  }
+  return new ApiError(
+    `API request failed with HTTP ${response.status}`,
+    'HTTP_ERROR',
+    response.status,
+    null,
+    response.status < 500 ? 'WARNING' : 'ERROR',
+    [429, 502, 503, 504].includes(response.status),
+    headerReqId
+  );
 }
 
 export interface HealthResponse {
@@ -170,7 +233,47 @@ export interface IngestionDetailItem extends IngestionLogItem {
   quality_report?: QualityReportItem;
 }
 
+export interface ProviderCapabilities {
+  provider_name: string;
+  historical: boolean;
+  latest: boolean;
+  intraday: boolean;
+  streaming: boolean;
+  supported_frequencies: string[];
+  delayed_data: boolean;
+  real_time_data: boolean;
+}
+
+export interface LatestMarketDataResponse {
+  instrument_id: string;
+  symbol: string;
+  name: string;
+  asset_type: string;
+  exchange: string;
+  currency: string;
+  price: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  adjusted_close?: number;
+  volume?: number;
+  previous_close?: number;
+  change?: number;
+  change_pct?: number;
+  market_timestamp: string;
+  received_at: string;
+  frequency: string;
+  provider: string;
+  provider_symbol?: string;
+  freshness: 'CURRENT' | 'RECENT' | 'STALE' | 'UNKNOWN' | 'UNAVAILABLE';
+  quality: 'GOOD' | 'GOOD_WITH_WARNINGS' | 'INVALID' | 'NO_DATA';
+  is_cached: boolean;
+  warning?: string;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+
 
 export async function fetchHealth(): Promise<HealthResponse> {
   try {
@@ -340,6 +443,66 @@ export async function fetchCoverage(instrumentId: string, startDate?: string, en
   }
   return await response.json();
 }
+
+export async function fetchProviderCapabilities(provider?: string): Promise<ProviderCapabilities[]> {
+  const query = new URLSearchParams();
+  if (provider) query.append('provider', provider);
+  const response = await fetch(`${API_BASE_URL}/market-data/providers/capabilities?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch provider capabilities: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export async function fetchLatestMarketData(params: {
+  instrument_id?: string;
+  symbol?: string;
+  frequency?: string;
+  force_refresh?: boolean;
+  provider?: string;
+}): Promise<LatestMarketDataResponse> {
+  const query = new URLSearchParams();
+  if (params.instrument_id) query.append('instrument_id', params.instrument_id);
+  if (params.symbol) query.append('symbol', params.symbol);
+  if (params.frequency) query.append('frequency', params.frequency);
+  if (params.force_refresh !== undefined) query.append('force_refresh', String(params.force_refresh));
+  if (params.provider) query.append('provider', params.provider);
+
+  const response = await fetch(`${API_BASE_URL}/market-data/latest?${query.toString()}`);
+  if (!response.ok) {
+    const errorBody: ApiErrorResponse = await response.json().catch(() => ({
+      error: { code: 'HTTP_ERROR', message: `Failed to fetch latest market data: ${response.status}` },
+    }));
+    throw new Error(errorBody.error?.message || `Failed to fetch latest market data: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export async function fetchLatestMarketDataBatch(params: {
+  instrument_ids?: string[];
+  symbols?: string[];
+  frequency?: string;
+  force_refresh?: boolean;
+  provider?: string;
+}): Promise<LatestMarketDataResponse[]> {
+  const query = new URLSearchParams();
+  if (params.instrument_ids && params.instrument_ids.length > 0) {
+    query.append('instrument_ids', params.instrument_ids.join(','));
+  }
+  if (params.symbols && params.symbols.length > 0) {
+    query.append('symbols', params.symbols.join(','));
+  }
+  if (params.frequency) query.append('frequency', params.frequency);
+  if (params.force_refresh !== undefined) query.append('force_refresh', String(params.force_refresh));
+  if (params.provider) query.append('provider', params.provider);
+
+  const response = await fetch(`${API_BASE_URL}/market-data/latest/batch?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch batch latest market data: ${response.status}`);
+  }
+  return await response.json();
+}
+
 
 export async function fetchIngestionLogs(instrumentId: string, limit: number = 20): Promise<IngestionLogItem[]> {
   const query = new URLSearchParams({ limit: String(limit) });

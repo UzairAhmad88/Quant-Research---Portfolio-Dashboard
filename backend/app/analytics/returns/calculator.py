@@ -8,52 +8,82 @@ class ReturnCalculator:
     """
     @staticmethod
     def calculate_simple_returns(prices: List[float]) -> List[Optional[float]]:
-        if len(prices) == 0:
+        n = len(prices)
+        if n == 0:
             return []
-        
-        returns: List[Optional[float]] = [None] # First observation has no prior bar
-        for i in range(1, len(prices)):
+        if n == 1:
+            return [None]
+
+        # Fast vectorized path when all values are valid positive numbers
+        try:
+            arr = np.asarray(prices, dtype=np.float64)
+            if np.all(arr > 0):
+                rets = (arr[1:] / arr[:-1]) - 1.0
+                return [None] + rets.tolist()
+        except (TypeError, ValueError):
+            pass
+
+        # Fallback element-wise loop for series containing None or non-positive values
+        returns: List[Optional[float]] = [None]
+        for i in range(1, n):
             prev_p = prices[i - 1]
             curr_p = prices[i]
             if prev_p is None or curr_p is None or prev_p <= 0:
                 returns.append(None)
             else:
-                ret = (curr_p / prev_p) - 1.0
-                returns.append(float(ret))
+                returns.append(float((curr_p / prev_p) - 1.0))
         return returns
 
     @staticmethod
     def calculate_log_returns(prices: List[float]) -> List[Optional[float]]:
-        if len(prices) == 0:
+        n = len(prices)
+        if n == 0:
             return []
+        if n == 1:
+            return [None]
+
+        try:
+            arr = np.asarray(prices, dtype=np.float64)
+            if np.all(arr > 0):
+                log_rets = np.log(arr[1:] / arr[:-1])
+                return [None] + log_rets.tolist()
+        except (TypeError, ValueError):
+            pass
 
         returns: List[Optional[float]] = [None]
-        for i in range(1, len(prices)):
+        for i in range(1, n):
             prev_p = prices[i - 1]
             curr_p = prices[i]
             if prev_p is None or curr_p is None or prev_p <= 0 or curr_p <= 0:
                 returns.append(None)
             else:
-                log_ret = math.log(curr_p / prev_p)
-                returns.append(float(log_ret))
+                returns.append(float(math.log(curr_p / prev_p)))
         return returns
 
     @staticmethod
     def calculate_cumulative_returns(prices: List[float]) -> List[float]:
-        if len(prices) == 0:
+        n = len(prices)
+        if n == 0:
             return []
 
         base_p = prices[0]
         if base_p is None or base_p <= 0:
-            return [0.0] * len(prices)
+            return [0.0] * n
+
+        try:
+            arr = np.asarray(prices, dtype=np.float64)
+            if np.all(arr > 0):
+                cum_rets = (arr / float(base_p)) - 1.0
+                return cum_rets.tolist()
+        except (TypeError, ValueError):
+            pass
 
         cum_returns: List[float] = []
         for p in prices:
             if p is None or p <= 0:
                 cum_returns.append(0.0)
             else:
-                cum_ret = (p / base_p) - 1.0
-                cum_returns.append(float(cum_ret))
+                cum_returns.append(float((p / base_p) - 1.0))
         return cum_returns
 
     @staticmethod

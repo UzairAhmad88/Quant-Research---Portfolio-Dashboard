@@ -1,42 +1,58 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: quant-dashboard-frontend
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:8000/api/v1
-    depends_on:
-      - backend
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: quant-dashboard-backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/quant_dashboard
-      - ENVIRONMENT=production
-      - CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173"]
-    depends_on:
-      - db
-
-  db:
+  postgres:
     image: postgres:16-alpine
-    container_name: quant-dashboard-db
-    restart: unless-stopped
+    container_name: quant_postgres
     environment:
-      POSTGRES_DB: quant_dashboard
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-quant_dashboard}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-quant_dashboard}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quant_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: quant_backend
+    environment:
+      APP_ENV: development
+      DEBUG: "true"
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-quant_dashboard}
+      SECRET_KEY: ${SECRET_KEY:-dev-insecure-secret-key-change-in-production}
+      CORS_ORIGINS: '["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost"]'
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - quant_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    container_name: quant_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - quant_network
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  quant_network:
+    driver: bridge

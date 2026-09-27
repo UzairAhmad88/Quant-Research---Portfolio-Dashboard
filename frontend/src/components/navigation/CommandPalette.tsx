@@ -16,6 +16,8 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
+import { useResearchContext } from '../../hooks/useResearchContext';
+
 interface CommandItem {
   id: string;
   name: string;
@@ -24,25 +26,28 @@ interface CommandItem {
   icon: React.ElementType;
 }
 
-const commands: CommandItem[] = [
-  { id: 'cmd-overview', name: 'Overview & Platform Status', section: 'RESEARCH', path: '/', icon: LayoutDashboard },
-  { id: 'cmd-market-data', name: 'Market Data Ingestion', section: 'RESEARCH', path: '/market-data', icon: Database },
-  { id: 'cmd-returns', name: 'Return Calculator & Performance', section: 'RESEARCH', path: '/returns', icon: TrendingUp },
-  { id: 'cmd-portfolio', name: 'Portfolio Allocation & Risk', section: 'RESEARCH', path: '/portfolio', icon: PieChart },
-  { id: 'cmd-correlation', name: 'Correlation Matrix & Covariance', section: 'ANALYSIS', path: '/correlation', icon: GitMerge },
-  { id: 'cmd-volatility', name: 'Volatility Engine & VaR', section: 'ANALYSIS', path: '/volatility', icon: Activity },
-  { id: 'cmd-strategies', name: 'Quantitative Trading Strategies', section: 'STRATEGIES', path: '/strategies', icon: Sliders },
-  { id: 'cmd-backtesting', name: 'Backtesting Simulator Engine', section: 'STRATEGIES', path: '/backtesting', icon: PlayCircle },
-  { id: 'cmd-settings', name: 'System Settings & Provider Config', section: 'SYSTEM', path: '/settings', icon: Settings },
-];
-
 export const CommandPalette: React.FC = () => {
   const navigate = useNavigate();
+  const { context, buildUrl } = useResearchContext();
   const { isCommandPaletteOpen, setCommandPaletteOpen } = useAppStore();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const filteredCommands = commands.filter((cmd) =>
+  const activeSymbol = context.symbol;
+
+  const baseCommands: CommandItem[] = [
+    { id: 'cmd-overview', name: 'Overview & Platform Status', section: 'RESEARCH', path: '/', icon: LayoutDashboard },
+    { id: 'cmd-market-data', name: activeSymbol ? `Market Data Ingestion (${activeSymbol})` : 'Market Data Ingestion', section: 'RESEARCH', path: '/market-data', icon: Database },
+    { id: 'cmd-returns', name: activeSymbol ? `Calculate Returns for ${activeSymbol}` : 'Return Calculator & Performance', section: 'RESEARCH', path: '/returns', icon: TrendingUp },
+    { id: 'cmd-portfolio', name: 'Portfolio Allocation & Risk', section: 'RESEARCH', path: '/portfolio', icon: PieChart },
+    { id: 'cmd-correlation', name: activeSymbol ? `Correlation Matrix (incl. ${activeSymbol})` : 'Correlation Matrix & Covariance', section: 'ANALYSIS', path: '/correlation', icon: GitMerge },
+    { id: 'cmd-volatility', name: activeSymbol ? `Analyze Volatility for ${activeSymbol}` : 'Volatility Engine & Risk', section: 'ANALYSIS', path: '/volatility', icon: Activity },
+    { id: 'cmd-strategies', name: activeSymbol ? `Calibrate Strategy for ${activeSymbol}` : 'Quantitative Trading Strategies', section: 'STRATEGIES', path: '/strategies', icon: Sliders },
+    { id: 'cmd-backtesting', name: activeSymbol ? `Run Backtest Simulation (${activeSymbol})` : 'Backtesting Simulator Engine', section: 'STRATEGIES', path: '/backtesting', icon: PlayCircle },
+    { id: 'cmd-settings', name: 'System Settings & Provider Config', section: 'SYSTEM', path: '/settings', icon: Settings },
+  ];
+
+  const filteredCommands = baseCommands.filter((cmd) =>
     cmd.name.toLowerCase().includes(query.toLowerCase()) ||
     cmd.section.toLowerCase().includes(query.toLowerCase())
   );
@@ -65,7 +70,8 @@ export const CommandPalette: React.FC = () => {
   if (!isCommandPaletteOpen) return null;
 
   const handleSelect = (path: string) => {
-    navigate(path);
+    const url = buildUrl(path);
+    navigate(url);
     setCommandPaletteOpen(false);
     setQuery('');
   };

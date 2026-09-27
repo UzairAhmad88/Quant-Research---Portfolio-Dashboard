@@ -24,9 +24,9 @@ class CorrelationAlignment:
         series_dict = {}
         for key, obs_list in return_dict.items():
             if obs_list:
-                df_item = pd.DataFrame(obs_list, columns=["timestamp", key])
-                df_item = df_item.drop_duplicates(subset=["timestamp"]).set_index("timestamp")
-                series_dict[key] = df_item[key]
+                # Fast construction directly from (ts, val) tuples
+                ts_list, val_list = zip(*obs_list)
+                series_dict[key] = pd.Series(val_list, index=ts_list, dtype=float)
             else:
                 series_dict[key] = pd.Series(dtype=float)
 

@@ -46,6 +46,11 @@ class VolatilityService:
         annualized: bool = True,
         frequency: DataFrequency = DataFrequency.DAILY
     ) -> SingleVolatilityResponse:
+        if rolling_window < 2 or rolling_window > 500:
+            raise ValidationError(
+                f"Rolling window must be between 2 and 500 periods (received {rolling_window})."
+            )
+
         instrument = self.inst_repo.get_by_id(instrument_id)
         if not instrument:
             raise NotFoundError(f"Instrument with ID '{instrument_id}' was not found.")

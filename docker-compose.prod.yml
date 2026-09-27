@@ -1,0 +1,96 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: quant_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-quant_dashboard}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-quant_dashboard}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quant_backend_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: quant_backend_prod
+    restart: always
+    environment:
+      APP_ENV: production
+      DEBUG: "false"
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-quant_dashboard}
+      SECRET_KEY: ${SECRET_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS:-'["https://quant.internal.net"]'}
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_PER_MINUTE_STANDARD: "120"
+      RATE_LIMIT_PER_MINUTE_EXPENSIVE: "60"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - quant_backend_net
+      - quant_frontend_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    container_name: quant_frontend_prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    depends_on:
+      - backend
+    networks:
+      - quant_frontend_net
+
+  proxy:
+    image: nginx:1.25-alpine
+    container_name: quant_proxy_prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - quant_frontend_net
+
+volumes:
+  postgres_prod_data:
+    driver: local
+
+networks:
+  quant_backend_net:
+    internal: true
+  quant_frontend_net:
+    driver: bridge

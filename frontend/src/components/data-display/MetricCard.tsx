@@ -3,6 +3,7 @@ import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Skeleton } from '../feedback/Skeleton';
 import { TrendingUp, TrendingDown, Minus, HelpCircle } from 'lucide-react';
+import { MetricInfoTooltip } from '../common/MetricInfoTooltip';
 
 interface MetricCardProps {
   label: string;
@@ -11,6 +12,8 @@ interface MetricCardProps {
   changePercent?: string | number;
   trend?: 'positive' | 'negative' | 'neutral';
   subtitle?: string;
+  metricKey?: string;
+  tooltipText?: string;
   isLoading?: boolean;
   isUnavailable?: boolean;
   isDemo?: boolean;
@@ -24,6 +27,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   changePercent,
   trend = 'neutral',
   subtitle,
+  metricKey,
+  tooltipText,
   isLoading = false,
   isUnavailable = false,
   isDemo = false,
@@ -71,8 +76,13 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     <Card className="flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between gap-2 mb-1.5">
-          <span className="text-xs font-medium text-[#94A3B8] tracking-tight truncate">{label}</span>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs font-medium text-[#94A3B8] tracking-tight truncate">{label}</span>
+            {(metricKey || tooltipText) && (
+              <MetricInfoTooltip metricKey={metricKey} description={tooltipText} />
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             {isDemo && (
               <Badge variant="outline" className="text-[9px] py-0 px-1 border-[#263244] text-[#64748B]">
                 Demo

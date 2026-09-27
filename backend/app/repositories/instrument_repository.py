@@ -28,19 +28,26 @@ class InstrumentRepository:
     def get_by_id(self, instrument_id: str) -> Optional[Instrument]:
         return self.db.query(Instrument).filter(Instrument.id == instrument_id).first()
 
+    def get_by_ids(self, instrument_ids: List[str]) -> List[Instrument]:
+        if not instrument_ids:
+            return []
+        return self.db.query(Instrument).filter(Instrument.id.in_(instrument_ids)).all()
+
     def get_by_symbol(
         self,
         symbol: str,
-        exchange: str = "UNKNOWN",
+        exchange: Optional[str] = None,
         asset_type: Optional[AssetType] = None
     ) -> Optional[Instrument]:
         query = self.db.query(Instrument).filter(
             Instrument.symbol == symbol.upper(),
-            Instrument.exchange == exchange,
         )
+        if exchange and exchange != "UNKNOWN":
+            query = query.filter(Instrument.exchange == exchange)
         if asset_type:
             query = query.filter(Instrument.asset_type == asset_type)
         return query.first()
+
 
     def list_instruments(
         self,
@@ -76,3 +83,18 @@ class InstrumentRepository:
         instrument.active = False
         self.db.commit()
         return True
+
+    def search(self, query: str, limit: int = 10) -> List[Instrument]:
+        clean = query.strip().upper()
+        if not clean:
+            return []
+        return (
+            self.db.query(Instrument)
+            .filter(
+                (Instrument.symbol.ilike(f"%{clean}%")) | (Instrument.name.ilike(f"%{clean}%"))
+            )
+            .filter(Instrument.active.is_(True))
+            .order_by(Instrument.symbol.asc())
+            .limit(limit)
+            .all()
+        )

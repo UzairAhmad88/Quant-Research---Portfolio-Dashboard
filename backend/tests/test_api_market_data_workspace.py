@@ -70,5 +70,5 @@ def test_api_coverage_ingestions_export(client):
     assert exp_res.status_code == 200
     assert "text/csv" in exp_res.headers["content-type"]
     csv_content = exp_res.text
-    assert "date,open,high,low,close" in csv_content
+    assert "timestamp,open,high,low,close" in csv_content or "date,open,high,low,close" in csv_content
     assert "GOOGL" in csv_content

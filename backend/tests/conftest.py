@@ -8,6 +8,7 @@ from app.models.instrument import Instrument
 from app.models.market_data import OHLCV
 from app.models.portfolio import Portfolio, PortfolioHolding
 from app.models.strategy import StrategyConfiguration, SignalEvent
+from app.models.backtest import Backtest, BacktestTradeEvent, BacktestPortfolioState
 from app.main import app
 from app.db.session import get_db
 
@@ -26,6 +27,7 @@ def sqlite_db():
         cursor.execute("ATTACH DATABASE ':memory:' AS core;")
         cursor.execute("ATTACH DATABASE ':memory:' AS market_data;")
         cursor.execute("ATTACH DATABASE ':memory:' AS strategy;")
+        cursor.execute("ATTACH DATABASE ':memory:' AS backtesting;")
         cursor.close()
 
     # Restore schema names if changed
@@ -35,6 +37,9 @@ def sqlite_db():
     PortfolioHolding.__table__.schema = "core"
     StrategyConfiguration.__table__.schema = "strategy"
     SignalEvent.__table__.schema = "strategy"
+    Backtest.__table__.schema = "backtesting"
+    BacktestTradeEvent.__table__.schema = "backtesting"
+    BacktestPortfolioState.__table__.schema = "backtesting"
 
     Base.metadata.create_all(engine)
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

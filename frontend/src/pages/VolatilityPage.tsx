@@ -18,7 +18,15 @@ import { ReturnDistributionChart } from '../components/volatility/ReturnDistribu
 import { VolatilityComparisonTable } from '../components/volatility/VolatilityComparisonTable';
 import { VolatilityComparisonChart } from '../components/volatility/VolatilityComparisonChart';
 
+import { useResearchContext } from '../hooks/useResearchContext';
+import { ResearchContextBar } from '../components/navigation/ResearchContextBar';
+import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
+import { ExportMenu } from '../components/common/ExportMenu';
+import { getVolatilityExportUrl } from '../services/exportService';
+
 export const VolatilityPage: React.FC = () => {
+  const { context } = useResearchContext();
+
   // Mode: 'single' or 'comparison'
   const [analysisMode, setAnalysisMode] = useState<'single' | 'comparison'>('single');
 
@@ -30,9 +38,9 @@ export const VolatilityPage: React.FC = () => {
   const [selectedInstruments, setSelectedInstruments] = useState<InstrumentItem[]>([]);
 
   // Controls states
-  const [dateRange, setDateRange] = useState<string>('1Y');
+  const [dateRange, setDateRange] = useState<string>(context.rangePreset || '1Y');
   const [returnType, setReturnType] = useState<'simple' | 'log'>('simple');
-  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>('adjusted');
+  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>(context.priceSource || 'adjusted');
   const [rollingWindow, setRollingWindow] = useState<number>(20);
   const [isAnnualized, setIsAnnualized] = useState<boolean>(true);
 
@@ -44,18 +52,25 @@ export const VolatilityPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Load available instruments
+  // Load available instruments & sync context
   useEffect(() => {
     fetchInstruments({ limit: 50, active: true })
       .then((res) => {
         setAvailableInstruments(res.items);
         if (res.items.length > 0) {
-          setSingleInstrument(res.items[0]);
+          const matched = res.items.find(
+            (i) =>
+              (context.symbol && i.symbol.toUpperCase() === context.symbol.toUpperCase()) ||
+              (context.instrumentId && i.id === context.instrumentId)
+          );
+          setSingleInstrument(matched || res.items[0]);
           setSelectedInstruments(res.items.slice(0, Math.min(3, res.items.length)));
         }
       })
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => {
+        setErrorMsg(err.message || 'Failed to load instruments.');
+      });
+  }, [context.symbol, context.instrumentId]);
 
   const getStartDate = (rangeStr: string) => {
     const now = new Date();
@@ -133,6 +148,9 @@ export const VolatilityPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0B1220] text-slate-100 p-6 space-y-6">
+      <Breadcrumbs items={[{ label: 'Volatility' }, { label: singleInstrument?.symbol || 'Instrument' }]} />
+      <ResearchContextBar availableInstruments={availableInstruments} />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#263244] pb-4">
         <div>
@@ -145,28 +163,86 @@ export const VolatilityPage: React.FC = () => {
           </p>
         </div>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center gap-2 bg-[#151F2E] border border-[#263244] p-1 rounded-lg">
-          <button
-            onClick={() => setAnalysisMode('single')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
-              analysisMode === 'single'
-                ? 'bg-blue-600 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Single Instrument Analysis
-          </button>
-          <button
-            onClick={() => setAnalysisMode('comparison')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
-              analysisMode === 'comparison'
-                ? 'bg-blue-600 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Multi-Instrument Comparison
-          </button>
+        {/* View Mode Toggle and Export */}
+        <div className="flex items-center gap-3">
+          <ExportMenu
+            disabled={!singleInstrument || !singleData}
+            options={[
+              {
+                id: 'vol-rolling-csv',
+                label: 'Rolling Volatility CSV',
+                format: 'csv',
+                url: getVolatilityExportUrl({
+                  instrumentId: singleInstrument?.id || '',
+                  format: 'csv',
+                  dataType: 'rolling',
+                  rollingWindow,
+                  annualized: isAnnualized,
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Date and rolling volatility time series',
+              },
+              {
+                id: 'vol-summary-csv',
+                label: 'Volatility Summary CSV',
+                format: 'csv',
+                url: getVolatilityExportUrl({
+                  instrumentId: singleInstrument?.id || '',
+                  format: 'csv',
+                  dataType: 'summary',
+                  rollingWindow,
+                  annualized: isAnnualized,
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Key volatility and risk metrics table',
+              },
+              {
+                id: 'vol-json',
+                label: 'Volatility Analytics JSON',
+                format: 'json',
+                url: getVolatilityExportUrl({
+                  instrumentId: singleInstrument?.id || '',
+                  format: 'json',
+                  rollingWindow,
+                  annualized: isAnnualized,
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Complete volatility payload with distribution',
+              },
+            ]}
+          />
+
+          <div className="flex items-center gap-2 bg-[#151F2E] border border-[#263244] p-1 rounded-lg">
+            <button
+              onClick={() => setAnalysisMode('single')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                analysisMode === 'single'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Single Instrument Analysis
+            </button>
+            <button
+              onClick={() => setAnalysisMode('comparison')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                analysisMode === 'comparison'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Multi-Instrument Comparison
+            </button>
+          </div>
         </div>
       </div>
 

@@ -12,22 +12,29 @@ import {
 } from '../lib/apiClient';
 import { FileSpreadsheet, AlertTriangle } from 'lucide-react';
 
+import { useResearchContext } from '../hooks/useResearchContext';
+import { ResearchContextBar } from '../components/navigation/ResearchContextBar';
+import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
+import { ExportMenu } from '../components/common/ExportMenu';
+import { getReturnsExportUrl, triggerDownload } from '../services/exportService';
+
 export const ReturnsPage: React.FC = () => {
+  const { context } = useResearchContext();
+
   // Instrument Master State
   const [instruments, setInstruments] = useState<InstrumentItem[]>([]);
   const [selectedInstrument, setSelectedInstrument] = useState<InstrumentItem | null>(null);
-
 
   // Date Range Presets State
   const todayStr = new Date().toISOString().split('T')[0];
   const fiveYearsAgoStr = new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const [startDate, setStartDate] = useState(fiveYearsAgoStr);
-  const [endDate, setEndDate] = useState(todayStr);
-  const [activePreset, setActivePreset] = useState<string>('5Y');
+  const [startDate, setStartDate] = useState(context.startDate || fiveYearsAgoStr);
+  const [endDate, setEndDate] = useState(context.endDate || todayStr);
+  const [activePreset, setActivePreset] = useState<string>(context.rangePreset || '5Y');
 
   // Return Parameters State
-  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>('adjusted');
+  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>(context.priceSource || 'adjusted');
   const [returnType, setReturnType] = useState<'simple' | 'log'>('simple');
   const [chartMode, setChartMode] = useState<'cumulative' | 'periodic'>('cumulative');
 
@@ -40,17 +47,22 @@ export const ReturnsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const pageSize = 50;
 
-  // 1. Load available instruments
+  // 1. Load available instruments & parse URL research context
   useEffect(() => {
     fetchInstruments({ limit: 100 })
       .then((res) => {
         setInstruments(res.items);
         if (res.items.length > 0) {
-          setSelectedInstrument(res.items[0]);
+          const matched = res.items.find(
+            (i) =>
+              (context.symbol && i.symbol.toUpperCase() === context.symbol.toUpperCase()) ||
+              (context.instrumentId && i.id === context.instrumentId)
+          );
+          setSelectedInstrument(matched || res.items[0]);
         }
       })
       .catch(() => setInstruments([]));
-  }, []);
+  }, [context.symbol, context.instrumentId]);
 
   // 2. Fetch Return Analysis when parameters change
   const loadReturnAnalysis = async () => {
@@ -113,30 +125,6 @@ export const ReturnsPage: React.FC = () => {
     setEndDate(now.toISOString().split('T')[0]);
   };
 
-  // CSV Export for Return Series
-  const handleExportCsv = () => {
-    if (!returnAnalysis || returnAnalysis.series.length === 0) return;
-
-    const headers = ['Date', 'Price', 'Simple Return', 'Log Return', 'Cumulative Return'];
-    const rows = returnAnalysis.series.map((item) => [
-      item.timestamp.split('T')[0],
-      item.price.toFixed(4),
-      item.simple_return !== undefined && item.simple_return !== null ? (item.simple_return * 100).toFixed(4) + '%' : '',
-      item.log_return !== undefined && item.log_return !== null ? (item.log_return * 100).toFixed(4) + '%' : '',
-      (item.cumulative_return * 100).toFixed(4) + '%',
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `returns_${selectedInstrument?.symbol}_${startDate}_${endDate}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const summary = returnAnalysis?.summary;
 
   const series = returnAnalysis?.series || [];
@@ -164,9 +152,46 @@ export const ReturnsPage: React.FC = () => {
               Quality: {returnAnalysis.quality_status}
             </Badge>
           )}
+          <ExportMenu
+            disabled={!selectedInstrument || !returnAnalysis || series.length === 0}
+            options={[
+              {
+                id: 'returns-csv',
+                label: 'Returns Series CSV',
+                format: 'csv',
+                url: getReturnsExportUrl({
+                  instrumentId: selectedInstrument?.id || '',
+                  format: 'csv',
+                  startDate,
+                  endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Date, price, and mathematical return series',
+              },
+              {
+                id: 'returns-json',
+                label: 'Returns Analysis JSON',
+                format: 'json',
+                url: getReturnsExportUrl({
+                  instrumentId: selectedInstrument?.id || '',
+                  format: 'json',
+                  startDate,
+                  endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Full metrics and series payload with metadata',
+              },
+            ]}
+          />
         </div>
       }
     >
+      <div className="col-span-12 space-y-3">
+        <Breadcrumbs items={[{ label: 'Returns' }, { label: selectedInstrument?.symbol || 'Instrument' }]} />
+        <ResearchContextBar availableInstruments={instruments} />
+      </div>
       {/* Research Controls Toolbar */}
       <div className="col-span-12">
         <Card className="p-4 bg-[#151F2E] border-[#263244] text-slate-200">
@@ -305,12 +330,14 @@ export const ReturnsPage: React.FC = () => {
           label="Period Return"
           value={formatPct(summary?.period_return)}
           subtitle={`Total performance (${startDate} → ${endDate})`}
+          tooltipText="Total cumulative simple/logarithmic percentage price return over the entire chosen date window."
         />
       </div>
 
       <div className="col-span-12 sm:col-span-6 lg:col-span-3">
         <MetricCard
           label="Annualized CAGR"
+          metricKey="annualized_return"
           value={formatPct(summary?.annualized_return)}
           subtitle={`Compounded annual return (${summary?.annualization_factor || 252} days factor)`}
         />
@@ -321,6 +348,7 @@ export const ReturnsPage: React.FC = () => {
           label="Positive / Negative Periods"
           value={summary ? `${summary.positive_periods} / ${summary.negative_periods}` : '—'}
           subtitle="Count of winning vs losing days"
+          tooltipText="Ratio and count of trading sessions resulting in positive versus negative periodic returns."
         />
       </div>
 
@@ -329,6 +357,7 @@ export const ReturnsPage: React.FC = () => {
           label="Best / Worst Period"
           value={summary ? `${formatPct(summary.best_period)} / ${formatPct(summary.worst_period)}` : '—'}
           subtitle="Extreme single-day performance observations"
+          tooltipText="The highest single-day gain versus the lowest single-day maximum loss observed in the sample."
         />
       </div>
 
@@ -350,8 +379,21 @@ export const ReturnsPage: React.FC = () => {
           title="Daily Return Series Table"
           action={
             <button
-              onClick={handleExportCsv}
-              disabled={series.length === 0}
+              onClick={() => {
+                if (selectedInstrument) {
+                  triggerDownload(
+                    getReturnsExportUrl({
+                      instrumentId: selectedInstrument.id,
+                      format: 'csv',
+                      returnType,
+                      priceSource,
+                      startDate,
+                      endDate,
+                    })
+                  );
+                }
+              }}
+              disabled={series.length === 0 || !selectedInstrument}
               className="flex items-center gap-1.5 px-3 py-1 bg-[#1E293B] hover:bg-[#263244] text-slate-100 rounded text-xs font-medium transition-colors disabled:opacity-40 border border-[#263244]"
             >
               <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-400" />

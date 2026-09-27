@@ -7,6 +7,7 @@ interface StrategyHeaderProps {
   name?: string | null;
   assetType: string;
   currentSignal: string;
+  actions?: React.ReactNode;
 }
 
 export const StrategyHeader: React.FC<StrategyHeaderProps> = ({
@@ -14,6 +15,7 @@ export const StrategyHeader: React.FC<StrategyHeaderProps> = ({
   name,
   assetType,
   currentSignal,
+  actions,
 }) => {
   const getSignalBadgeClass = (sig: string) => {
     switch (sig.toUpperCase()) {
@@ -65,6 +67,8 @@ export const StrategyHeader: React.FC<StrategyHeaderProps> = ({
             </div>
           </div>
         </div>
+
+        {actions}
 
         {/* Action button to view underlying market data */}
         <Link

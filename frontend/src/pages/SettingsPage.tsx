@@ -4,7 +4,8 @@ import { Tabs } from '../components/ui/Tabs';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Input } from '../components/ui/Input';
-import { Server, Database, Key, ShieldCheck, Sliders } from 'lucide-react';
+import { Server, Database, ShieldCheck, Sliders } from 'lucide-react';
+
 
 const settingsTabs = [
   { id: 'application', label: 'Application' },
@@ -71,35 +72,77 @@ export const SettingsPage: React.FC = () => {
 
       {/* Tab 2: Data Providers */}
       {activeTab === 'providers' && (
-        <div className="col-span-12">
-          <Card title="Market Data Provider Abstraction" subtitle="Abstract interface contracts defined in app/providers/base.py.">
+        <div className="col-span-12 space-y-6">
+          <Card title="Active Market Data Provider" subtitle="Registered providers and capability contracts from ProviderRegistry.">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Provider Adapter Strategy</label>
-                  <Input value="MarketDataProvider (Abstract Base)" disabled icon={<Sliders className="w-3.5 h-3.5" />} />
+                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Primary Provider</label>
+                  <Input value="Yahoo Finance Adapter (yahoo_finance)" disabled icon={<Sliders className="w-3.5 h-3.5" />} />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Market Data API Key</label>
-                  <Input type="password" placeholder="••••••••••••••••" disabled icon={<Key className="w-3.5 h-3.5" />} />
+                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Supported Capabilities</label>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    <Badge variant="success">Historical: Supported</Badge>
+                    <Badge variant="success">Latest Available: Supported</Badge>
+                    <Badge variant="outline">Intraday: Disabled</Badge>
+                    <Badge variant="outline">Streaming: Disabled</Badge>
+                    <Badge variant="warning">Mode: Delayed EOD</Badge>
+                  </div>
                 </div>
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Base API URL</label>
-                  <Input value="https://api.marketdata.provider.com/v1" disabled />
+                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Provider Architecture</label>
+                  <div className="p-2.5 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8] space-y-1">
+                    <div className="text-[#F8FAFC] font-semibold">Database-First Cache Strategy</div>
+                    <div>Queries local PostgreSQL observations before issuing external network requests.</div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Connection State</label>
-                  <div className="p-2 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8]">
-                    Abstract Provider Scaffolding (Ready for Step 03 Connection)
+                  <div className="p-2 rounded bg-[#111827] border border-[#22C55E]/40 text-xs text-[#4ADE80] flex items-center justify-between">
+                    <span>Operational (yfinance Provider Adapter)</span>
+                    <Badge variant="success">ONLINE</Badge>
                   </div>
                 </div>
               </div>
             </div>
           </Card>
+
+          <Card title="Market Data Acquisition & Freshness Settings" subtitle="System-wide defaults for frequency, calendar scheduling, and polling.">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="block text-xs font-mono-num text-[#94A3B8]">Default Frequency</label>
+                <select disabled className="w-full px-3 py-2 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] opacity-80">
+                  <option value="DAILY">DAILY (1-Day Bars)</option>
+                  <option value="HOURLY" disabled>HOURLY (Disabled)</option>
+                  <option value="MINUTE" disabled>MINUTE (Disabled)</option>
+                </select>
+                <p className="text-[10px] text-[#64748B]">Intraday frequencies reserved for future high-granularity feeds.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-mono-num text-[#94A3B8]">Freshness Policy</label>
+                <select disabled className="w-full px-3 py-2 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] opacity-80">
+                  <option value="CALENDAR_AWARE">Calendar-Aware (Equity & Crypto Calendars)</option>
+                </select>
+                <p className="text-[10px] text-[#64748B]">Prevents false stale warnings during market weekends and holidays.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-mono-num text-[#94A3B8]">Auto-Refresh Polling</label>
+                <div className="p-2 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8] flex items-center justify-between">
+                  <span>Disabled (Manual Refresh)</span>
+                  <Badge variant="outline">INACTIVE</Badge>
+                </div>
+                <p className="text-[10px] text-[#64748B]">Aggressive background polling is disabled to conserve resources and avoid rate limits.</p>
+              </div>
+            </div>
+          </Card>
         </div>
       )}
+
 
       {/* Tab 3: Appearance */}
       {activeTab === 'appearance' && (

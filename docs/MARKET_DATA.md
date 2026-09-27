@@ -67,4 +67,30 @@ The unified backend validation pipeline (`app/validators/`) enforces strict data
   - `GET /api/v1/market-data/{instrument_id}/ingestions/{ingestion_id}`: Detailed audit log with full issue log.
 - **Frontend Quality Workspace**: `DataQualityPanel.tsx` badge counters and `QualityIssuesDrawer.tsx` slide-over drawer with severity filters.
 
+## 9. Latest Market Data & Freshness Layer (Step 23)
+The latest market-data layer enables retrieval and exposure of the most recent available market observation without breaking or replacing the historical-first architecture:
+
+- **Provider Capability Model (`app/providers/base.py`)**:
+  - `ProviderCapabilities`: Explicit flags declaring `historical`, `latest`, `intraday` (disabled), `streaming` (disabled), `supported_frequencies`, `delayed_data` (`True`), and `real_time_data` (`False`).
+  - Distinguishes between latest available delayed EOD data and exchange-level real-time streams.
+- **Calendar-Aware Freshness Policy (`app/analytics/market_data/freshness_policy.py`)**:
+  - `CURRENT`: Observation matches the most recent expected market trading day (e.g. today's close or Friday close during weekends).
+  - `RECENT`: Observation is from 1 session prior (e.g. yesterday before market close today).
+  - `STALE`: Observation is $\ge 2$ trading sessions older than expected trading day.
+  - `UNKNOWN`: Timestamp anomaly or future date.
+  - `UNAVAILABLE`: No market observations exist in the database or provider.
+- **Database-First Caching & Idempotency**:
+  - Inspects existing PostgreSQL observations in `market_data.ohlcv`. If data is `CURRENT` and `force_refresh=False`, serves directly from cache (`is_cached=True`).
+  - If missing or stale or `force_refresh=True`, acquires latest bar from provider adapter, validates via `ValidationPipeline`, and inserts idempotently without duplicate rows.
+  - Provider failure gracefully falls back to most recent validated observation with an explicit diagnostic warning banner.
+- **Price Change Calculation**:
+  - Computes `change` ($P_t - P_{t-1}$) and `change_pct` using `ReturnCalculator.calculate_period_return` without formula duplication.
+- **REST API Endpoints**:
+  - `GET /api/v1/market-data/providers/capabilities`: Lists registered provider capabilities.
+  - `GET /api/v1/market-data/latest?instrument_id=...&force_refresh=...`: Retrieves latest validated observation.
+  - `GET /api/v1/market-data/latest/batch?instrument_ids=...`: Batch retrieval for multiple instruments.
+- **Frontend Workspace**:
+  - `LatestMarketDataPanel.tsx`: Displays prominent last price, price change, freshness badge, market timestamp vs retrieval timestamp, day OHLCV stats, provider provenance, and "Refresh Latest" button.
+
+
 

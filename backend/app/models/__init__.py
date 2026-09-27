@@ -6,12 +6,18 @@ from app.models.enums import (
     SignalState,
     SignalSource,
     StrategyType,
+    ExecutionTiming,
+    PositionSizingType,
+    BacktestDirection,
+    BacktestStatus,
+    ExecutionReason,
 )
 from app.models.instrument import Instrument
 from app.models.market_data import OHLCV
 from app.models.ingestion import IngestionLog
 from app.models.portfolio import Portfolio, PortfolioHolding
 from app.models.strategy import StrategyConfiguration, SignalEvent
+from app.models.backtest import Backtest, BacktestTradeEvent, BacktestPortfolioState
 
 __all__ = [
     "AssetType",
@@ -21,6 +27,11 @@ __all__ = [
     "SignalState",
     "SignalSource",
     "StrategyType",
+    "ExecutionTiming",
+    "PositionSizingType",
+    "BacktestDirection",
+    "BacktestStatus",
+    "ExecutionReason",
     "Instrument",
     "OHLCV",
     "IngestionLog",
@@ -28,5 +39,9 @@ __all__ = [
     "PortfolioHolding",
     "StrategyConfiguration",
     "SignalEvent",
+    "Backtest",
+    "BacktestTradeEvent",
+    "BacktestPortfolioState",
 ]
+
 

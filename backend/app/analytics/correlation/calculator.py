@@ -51,28 +51,22 @@ class CorrelationCalculator:
         if n == 0:
             return [], []
 
-        matrix: List[List[Optional[float]]] = [[None for _ in range(n)] for _ in range(n)]
+        # Vectorized correlation computation via pandas / numpy C routines
+        corr_df = aligned_df.corr(method="pearson", min_periods=2)
+        matrix: List[List[Optional[float]]] = []
 
-        for i in range(n):
-            for j in range(n):
+        for i, sym_i in enumerate(symbols):
+            row: List[Optional[float]] = []
+            for j, sym_j in enumerate(symbols):
                 if i == j:
-                    # Diagonal self-correlation
-                    col_data = aligned_df[symbols[i]].dropna()
-                    if len(col_data) >= 2 and np.std(col_data) > 0:
-                        matrix[i][j] = 1.0
+                    row.append(1.0)
+                else:
+                    val = corr_df.iloc[i, j]
+                    if pd.isna(val):
+                        row.append(None)
                     else:
-                        matrix[i][j] = 1.0  # Self-correlation definition
-                elif j > i:
-                    # Pairwise calculation
-                    s_a = aligned_df[symbols[i]]
-                    s_b = aligned_df[symbols[j]]
-                    valid_mask = s_a.notna() & s_b.notna()
-                    v_a = s_a[valid_mask].tolist()
-                    v_b = s_b[valid_mask].tolist()
-
-                    corr = CorrelationCalculator.calculate_pearson_correlation(v_a, v_b)
-                    matrix[i][j] = corr
-                    matrix[j][i] = corr  # Symmetry
+                        row.append(float(np.clip(val, -1.0, 1.0)))
+            matrix.append(row)
 
         return symbols, matrix
 

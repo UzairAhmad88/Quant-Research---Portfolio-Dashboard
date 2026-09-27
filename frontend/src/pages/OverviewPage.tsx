@@ -1,184 +1,77 @@
-import React, { useState } from 'react';
-import { PageContainer } from '../components/layout/PageContainer';
-import { MetricCard } from '../components/data-display/MetricCard';
-import { ChartContainer } from '../components/data-display/ChartContainer';
-import { DataTable, Column } from '../components/data-display/DataTable';
-import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
-import { Button } from '../components/ui/Button';
-import { NavLink } from 'react-router-dom';
-import { ShieldCheck, CheckCircle2, ExternalLink } from 'lucide-react';
-
-interface InstrumentDemo {
-  symbol: string;
-  name: string;
-  assetClass: 'EQUITY' | 'ETF' | 'INDEX' | 'CRYPTO';
-  exchange: string;
-  status: string;
-}
-
-const demoInstruments: InstrumentDemo[] = [
-  { symbol: 'AAPL', name: 'Apple Inc.', assetClass: 'EQUITY', exchange: 'NASDAQ', status: 'Active Master' },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', assetClass: 'EQUITY', exchange: 'NASDAQ', status: 'Active Master' },
-  { symbol: 'SPY', name: 'SPDR S&P 500 ETF Trust', assetClass: 'ETF', exchange: 'NYSE Arca', status: 'Active Master' },
-  { symbol: 'QQQ', name: 'Invesco QQQ Trust', assetClass: 'ETF', exchange: 'NASDAQ', status: 'Active Master' },
-  { symbol: 'BTC/USD', name: 'Bitcoin / US Dollar', assetClass: 'CRYPTO', exchange: 'Global Feed', status: 'Active Master' },
-];
+import React from 'react';
+import { DashboardHeaderInstitutional } from '../components/dashboard/DashboardHeaderInstitutional';
+import { DashboardKPIBar } from '../components/dashboard/DashboardKPIBar';
+import { DashboardMainChart } from '../components/dashboard/DashboardMainChart';
+import { MarketDataStatusWidget } from '../components/dashboard/MarketDataStatusWidget';
+import { RecentResearchWidget } from '../components/dashboard/RecentResearchWidget';
+import { PortfolioAllocationWidget } from '../components/dashboard/PortfolioAllocationWidget';
+import { PerformanceBenchmarkWidget } from '../components/dashboard/PerformanceBenchmarkWidget';
+import { TopInstrumentsTable } from '../components/dashboard/TopInstrumentsTable';
+import { RecentBacktestsTable } from '../components/dashboard/RecentBacktestsTable';
+import { useDashboardOverview } from '../hooks/useDashboard';
+import { AlertCircle } from 'lucide-react';
 
 export const OverviewPage: React.FC = () => {
-  const [tablePage, setTablePage] = useState(1);
-
-  const columns: Column<InstrumentDemo>[] = [
-    {
-      key: 'symbol',
-      header: 'Ticker',
-      isMonospace: true,
-      render: (row) => <span className="font-semibold text-[#3B82F6]">{row.symbol}</span>,
-    },
-    { key: 'name', header: 'Instrument Name' },
-    {
-      key: 'assetClass',
-      header: 'Asset Class',
-      isMonospace: true,
-      render: (row) => (
-        <Badge variant="info" className="text-[10px] py-0 px-1 border-[#3B82F6]/30">
-          {row.assetClass}
-        </Badge>
-      ),
-    },
-    { key: 'exchange', header: 'Exchange', isMonospace: true },
-    {
-      key: 'status',
-      header: 'Master Status',
-      render: (row) => <Badge variant="success">{row.status}</Badge>,
-    },
-  ];
+  const { isError, error, refetch, isFetching } = useDashboardOverview();
 
   return (
-    <PageContainer
-      eyebrow="Institutional Quantitative Workstation"
-      title="Platform Overview"
-      description="Monitor system health, design tokens, multi-asset instrument registry, and quantitative module development status."
-      action={
-        <Badge variant="success" className="text-xs px-2.5 py-1">
-          Step 02 Shell Complete
-        </Badge>
-      }
-    >
-      {/* Top System Health Metric Cards (12-column grid spans) */}
-      <div className="col-span-12 sm:col-span-6 lg:col-span-3">
-        <MetricCard
-          label="Frontend Foundation"
-          value="React 19 + TS"
-          subtitle="Vite 6 + Tailwind CSS tokens"
-          isDemo
-        />
-      </div>
+    <div className="space-y-4 max-w-[1600px] mx-auto pb-6">
+      {/* 1. Header with Title, Live UTC clock, and 1D-MAX Range Selectors */}
+      <DashboardHeaderInstitutional onRefresh={() => refetch()} isFetching={isFetching} />
 
-      <div className="col-span-12 sm:col-span-6 lg:col-span-3">
-        <MetricCard
-          label="Backend Analytics API"
-          value="FastAPI / Python"
-          subtitle="Versioned API /api/v1 router"
-          isDemo
-        />
-      </div>
-
-      <div className="col-span-12 sm:col-span-6 lg:col-span-3">
-        <MetricCard
-          label="Database Session"
-          value="PostgreSQL"
-          subtitle="SQLAlchemy + Alembic migrations"
-          isDemo
-        />
-      </div>
-
-      <div className="col-span-12 sm:col-span-6 lg:col-span-3">
-        <MetricCard
-          label="Provider Abstraction"
-          value="Decoupled Base"
-          subtitle="Abstract MarketDataProvider contract"
-          isDemo
-        />
-      </div>
-
-      {/* Main Chart Container Placeholder (12 columns) */}
-      <div className="col-span-12 lg:col-span-8">
-        <ChartContainer
-          title="Multi-Asset Performance Benchmark Canvas"
-          subtitle="Generic chart wrapper prepared for Step 03+ historical return overlays."
-        />
-      </div>
-
-      {/* Quick Access Roadmap Panel (4 columns) */}
-      <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
-        <Card title="Module Status & Roadmap" subtitle="Step-by-step engineering progression.">
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between p-2 rounded bg-[#111827] border border-[#263244] text-xs">
-              <span className="font-medium text-[#E5E7EB]">Step 01 — Project Foundation</span>
-              <Badge variant="success">Done</Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded bg-[#111827] border border-[#3B82F6]/50 text-xs">
-              <span className="font-medium text-[#3B82F6]">Step 02 — Design System & Shell</span>
-              <Badge variant="info">Active</Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8]">
-              <span>Step 03 — Database & Instrument Master</span>
-              <Badge variant="outline">Planned</Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8]">
-              <span>Step 04 — Market Data Downloader</span>
-              <Badge variant="outline">Planned</Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8]">
-              <span>Step 05 — Return Analytics</span>
-              <Badge variant="outline">Planned</Badge>
+      {/* API Error Notification (if any) */}
+      {isError && (
+        <div className="p-3 bg-red-950/40 border border-red-800/60 rounded-lg text-red-300 text-xs flex items-center gap-3">
+          <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+          <div>
+            <div className="font-semibold">Live Backend Notice</div>
+            <div className="text-[11px] text-red-300/80 mt-0.5">
+              {(error as Error)?.message || 'Using cached and baseline quant research snapshots.'}
             </div>
           </div>
-        </Card>
+        </div>
+      )}
 
-        <Card title="System Architectural Principles">
-          <div className="space-y-2 text-xs text-[#94A3B8]">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
-              <span>Generic Instrument (Stock, ETF, Index, Crypto)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
-              <span>No fabricated financial data or fake metrics</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#3B82F6]" />
-              <span>Decoupled provider abstraction layer</span>
-            </div>
-          </div>
-        </Card>
+      {/* 2. 6-Column KPI Metric Cards Bar with Glowing Area Sparklines */}
+      <DashboardKPIBar />
+
+      {/* 3. Main Chart (8 cols) & Right Status Panels (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* Left: AAPL Candlestick Price Chart with SMA 50/200 and Volume */}
+        <div className="lg:col-span-8">
+          <DashboardMainChart />
+        </div>
+
+        {/* Right: Market Data Status & Recent Research Cards */}
+        <div className="lg:col-span-4 flex flex-col gap-4 justify-between">
+          <MarketDataStatusWidget />
+          <RecentResearchWidget />
+        </div>
       </div>
 
-      {/* Master Instrument Registry Table (12 columns) */}
-      <div className="col-span-12">
-        <Card
-          title="Instrument Master Architecture Preview"
-          subtitle="Multi-asset ticker lookup structure supporting Equities, ETFs, Indices, and Crypto."
-          action={
-            <NavLink to="/market-data">
-              <Button variant="outline" size="sm" icon={<ExternalLink className="w-3.5 h-3.5" />}>
-                Go to Market Data
-              </Button>
-            </NavLink>
-          }
-        >
-          <DataTable
-            columns={columns}
-            data={demoInstruments}
-            keyExtractor={(row) => row.symbol}
-            pageSize={5}
-            currentPage={tablePage}
-            totalItems={demoInstruments.length}
-            onPageChange={setTablePage}
-          />
-        </Card>
+      {/* 4. Portfolio Allocation (6 cols) & Performance vs Benchmark (6 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-6">
+          <PortfolioAllocationWidget />
+        </div>
+
+        <div className="lg:col-span-6">
+          <PerformanceBenchmarkWidget />
+        </div>
       </div>
-    </PageContainer>
+
+      {/* 5. Top Instruments Table (6 cols) & Recent Backtests Table (6 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-6">
+          <TopInstrumentsTable />
+        </div>
+
+        <div className="lg:col-span-6">
+          <RecentBacktestsTable />
+        </div>
+      </div>
+    </div>
   );
 };
+
+export default OverviewPage;

@@ -22,6 +22,16 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Data
+# Data & DB
 *.sqlite
 *.db
+
+# Coverage & Testing
+.coverage
+coverage/
+htmlcov/
+*.tsbuildinfo
+
+# Scratch & Logs
+*.log
+scratch/

@@ -601,6 +601,326 @@ Retrieves standardized detail for a specific signal event by UUID.
 - **Example Response (`200 OK`)**: Standardized `SignalEventResponse` object.
 - **Error Response**: `404 Not Found` if the signal ID does not exist.
 
+---
+
+### Backtesting API (Step 16)
+
+#### `POST /api/v1/backtests`
+Starts a historical simulation run for a single instrument and strategy configuration. Enforces look-ahead-free `NEXT_OPEN` execution timing and cost-aware position sizing.
+
+- **Request Body**:
+```json
+{
+  "instrument_id": "3a12b456-789c-4def-90ab-123456789abc",
+  "strategy_configuration_id": "89a3f2b1-1122-3344-5566-778899aabbcc",
+  "start_date": "2025-01-01T00:00:00Z",
+  "end_date": "2026-01-01T00:00:00Z",
+  "initial_capital": 100000.0,
+  "execution_timing": "NEXT_OPEN",
+  "position_sizing": "FULL_CAPITAL",
+  "commission": 0.001,
+  "slippage": 0.0005,
+  "direction": "LONG_ONLY"
+}
+```
+
+- **Response (`201 Created`)**:
+```json
+{
+  "id": "5b73a32f-12b9-42d6-a04e-772a3e0e09d7",
+  "strategy_configuration_id": "89a3f2b1-1122-3344-5566-778899aabbcc",
+  "instrument_id": "3a12b456-789c-4def-90ab-123456789abc",
+  "symbol": "NVDA",
+  "start_date": "2025-01-01T00:00:00Z",
+  "end_date": "2026-01-01T00:00:00Z",
+  "initial_capital": 100000.0,
+  "execution_timing": "NEXT_OPEN",
+  "position_sizing": "FULL_CAPITAL",
+  "commission": 0.001,
+  "slippage": 0.0005,
+  "direction": "LONG_ONLY",
+  "status": "COMPLETED",
+  "final_cash": 102450.12,
+  "final_position": 0.0,
+  "final_portfolio_value": 102450.12,
+  "trade_count": 6,
+  "portfolio_state_count": 252,
+  "error_message": null,
+  "created_at": "2026-09-24T22:30:00Z"
+}
+```
+
+#### `GET /api/v1/backtests`
+Queries list of executed historical backtest runs.
+
+- **Query Parameters**:
+  - `instrument_id` (optional `string`): Filter by target instrument UUID.
+  - `limit` (optional `int`, default `50`): Maximum records to return.
+  - `offset` (optional `int`, default `0`): Pagination offset.
+
+- **Response (`200 OK`)**: Paginated list of backtest summary objects.
+
+#### `GET /api/v1/backtests/{backtest_id}`
+Fetches details of a specific backtest run by ID.
+
+#### `GET /api/v1/backtests/{backtest_id}/trades`
+Queries simulated trade execution events recorded during the backtest run (`side`, `execution_price`, `quantity`, `notional_value`, `commission`, `slippage`, `cash_after`).
+
+#### `GET /api/v1/backtests/{backtest_id}/completed-trades`
+Queries round-trip completed trade accounting records produced by matching entry and exit executions (`entry_timestamp`, `exit_timestamp`, `entry_price`, `exit_price`, `quantity`, `total_cost`, `gross_pnl`, `net_pnl`, `trade_return`, `duration_days`, `exit_reason`).
+
+#### `GET /api/v1/backtests/{backtest_id}/states`
+Queries portfolio state history records generated during the backtest run (`cash`, `position_quantity`, `market_price`, `position_value`, `portfolio_value`, `unrealized_pnl`).
+
+#### `GET /api/v1/backtests/{backtest_id}/performance`
+Queries server-side quantitative evaluation metrics for a completed backtest (`returns`, `risk`, `drawdown`, `trading`, `costs_and_exposure`). Optional query parameter `risk_free_rate` (default: `0.0`).
+
+#### `GET /api/v1/backtests/{backtest_id}/equity`
+Queries equity curve and drawdown time series (`timestamp`, `portfolio_value`, `cumulative_return`, `running_peak`, `drawdown_amount`, `drawdown_percentage`, `cash`, `position_value`, `position_quantity`).
+
+#### `GET /api/v1/backtests/{backtest_id}/drawdown`
+Queries dedicated drawdown percentage and drawdown amount time-series observations derived from authoritative portfolio states.
+
+- **Response (`200 OK`)**:
+```json
+{
+  "backtest_id": "5b73a32f-12b9-42d6-a04e-772a3e0e09d7",
+  "symbol": "NVDA",
+  "initial_capital": 100000.0,
+  "drawdown_series": [
+    {
+      "timestamp": "2025-01-02T00:00:00Z",
+      "portfolio_value": 100000.0,
+      "running_peak": 100000.0,
+      "drawdown_amount": 0.0,
+      "drawdown_percentage": 0.0
+    },
+    {
+      "timestamp": "2025-02-15T00:00:00Z",
+      "portfolio_value": 91600.0,
+      "running_peak": 100000.0,
+      "drawdown_amount": -8400.0,
+      "drawdown_percentage": -0.084
+    }
+  ]
+}
+```
+
+#### `GET /api/v1/backtests/{backtest_id}/drawdown-periods`
+Queries discrete peak-to-trough drawdown periods detected across the backtest simulation horizon.
+
+- **Response (`200 OK`)**:
+```json
+{
+  "backtest_id": "5b73a32f-12b9-42d6-a04e-772a3e0e09d7",
+  "symbol": "NVDA",
+  "total_periods": 2,
+  "periods": [
+    {
+      "peak_timestamp": "2026-01-12T00:00:00Z",
+      "trough_timestamp": "2026-02-03T00:00:00Z",
+      "recovery_timestamp": "2026-02-21T00:00:00Z",
+      "peak_equity": 110000.0,
+      "trough_equity": 100760.0,
+      "drawdown_amount": -9240.0,
+      "drawdown_percentage": -0.084,
+      "duration_days": 40,
+      "recovery_duration_days": 18,
+      "status": "RECOVERED"
+    },
+    {
+      "peak_timestamp": "2026-04-10T00:00:00Z",
+      "trough_timestamp": "2026-05-05T00:00:00Z",
+      "recovery_timestamp": null,
+      "peak_equity": 115000.0,
+      "trough_equity": 107985.0,
+      "drawdown_amount": -7015.0,
+      "drawdown_percentage": -0.061,
+      "duration_days": 25,
+      "recovery_duration_days": null,
+      "status": "ACTIVE"
+    }
+  ]
+}
+#### `GET /api/v1/backtests/{backtest_id}/report`
+Queries structured 14-section quantitative backtest research report object (`report_version`, `generated_at`, `configuration_hash`, `executive_summary`, `configuration`, `strategy`, `signals_summary`, `market_data`, `execution_assumptions`, `cost_assumptions`, `performance`, `equity_summary`, `drawdown_summary`, `accounting`, `data_quality`, `methodology`, `limitations`, `reproducibility`).
+
+#### `GET /api/v1/backtests/{backtest_id}/report/export`
+Exports the backtest research report artifact.
+
+- **Query Parameters**:
+  - `format`: `json` | `csv` | `pdf` (Default: `json`)
+- **Responses**:
+  - `format=pdf`: Returns `application/pdf` binary stream (`Content-Disposition: attachment; filename="backtest_report_AAPL_5b73a32f.pdf"`).
+  - `format=csv`: Returns `text/csv` formatted table file (`Content-Disposition: attachment; filename="backtest_report_AAPL_5b73a32f.csv"`).
+---
+
+## 12. Dashboard Overview API (`/api/v1/dashboard`)
+
+### `GET /api/v1/dashboard/overview`
+Retrieves aggregated overview metrics for the Unified Quant Research Dashboard including system data status, tracked instruments snapshot, active portfolio valuation, strategy signals, recent backtest runs, and system activity logs.
+
+- **Response `200 OK`**:
+```json
+{
+  "summary": {
+    "tracked_instruments_count": 5,
+    "portfolios_count": 2,
+    "strategy_configurations_count": 4,
+    "completed_backtests_count": 3
+  },
+  "system_status": {
+    "data_status": "Good",
+    "backend_status": "ONLINE",
+    "database_connected": true,
+    "last_updated": "2026-09-25T02:20:00Z"
+  },
+  "market_data_snapshot": [
+    {
+      "id": "7f8c49e2-3b1a-4f5a-9c8d-123456789abc",
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "asset_type": "EQUITY",
+      "exchange": "NASDAQ",
+      "provider": "YAHOO",
+      "frequency": "DAILY",
+      "latest_observation_date": "2026-09-24T00:00:00Z",
+      "observation_count": 1442,
+      "data_quality": "Good",
+      "freshness_label": "Latest Observation: 2026-09-24"
+    }
+  ],
+  "portfolio_snapshot": {
+    "active_portfolios_count": 2,
+    "total_portfolio_value": 250000.0,
+    "total_portfolio_return_pct": 12.5,
+    "total_cash": 180000.0,
+    "total_positions_count": 6,
+    "portfolios": []
+  },
+  "strategy_snapshot": {
+    "strategy_configurations_count": 4,
+    "recent_signals": []
+  },
+  "recent_backtests": [
+    {
+      "id": "5b73a32f-12b9-42d6-a04e-772a3e0e09d7",
+      "instrument_symbol": "AAPL",
+      "strategy_name": "MOVING_AVERAGE (SMA)",
+      "period": "2023-01-01 → 2024-01-01",
+      "status": "COMPLETED",
+      "total_return_pct": 15.4,
+      "max_drawdown_pct": null,
+      "trade_count": 8,
+      "completed_at": "2026-09-24T22:30:00Z"
+    }
+  ],
+  "recent_activity": [
+    {
+      "id": "act-ingest-123",
+      "timestamp": "2026-09-24T21:00:00Z",
+      "activity_type": "MARKET_DATA_INGESTION",
+      "entity_symbol_or_name": "AAPL",
+      "status": "COMPLETED"
+    }
+  ]
+}
+```
+---
+
+## 13. Unified Export & Research Data Delivery API (`/api/v1/*/export`)
+
+A comprehensive institutional export system allowing researchers to extract deterministic, reproducible research results in CSV, JSON, and PDF formats.
+
+### Core Export Principles
+- **No Recalculation**: The export layer is strictly a delivery adapter. It consumes existing domain and analytics results without duplicating financial formulas.
+- **Strict UTC Standard**: All machine-readable timestamps are ISO 8601 UTC (`2026-09-25T15:30:00Z`).
+- **Precision Preservation**: Raw numeric precision is preserved. CSV numbers never include currency symbols (e.g. `125000.50`, not `$125,000.50`).
+- **Semantic Nulls**: Missing values are serialized as `null` in JSON and empty strings in CSV (never coerced to `0` or `0.00%`).
+- **Sanitized Filenames**: Filenames are deterministic, human-readable, and sanitized against path traversal or unsafe characters.
+- **HTTP Streaming Headers**: Responses include accurate `Content-Type` and `Content-Disposition: attachment; filename="..."` headers.
+
+### Available Endpoints
+
+#### 1. Market Data Export
+`GET /api/v1/market-data/export`
+- **Query Parameters**:
+  - `instrument_id` (required `UUID`): Instrument identifier
+  - `format` (optional `csv` | `json`, default `csv`)
+  - `data_type` (optional `market_data` | `quality`, default `market_data`)
+  - `start_date` / `end_date` (optional `ISO-8601`)
+  - `frequency` (optional `daily`)
+- **Fields (CSV)**: `timestamp`, `open`, `high`, `low`, `close`, `adjusted_close`, `volume`, `dividend_amount`, `split_coefficient`
+
+#### 2. Returns Export
+`GET /api/v1/returns/export`
+- **Query Parameters**:
+  - `instrument_id` (required `UUID`)
+  - `format` (optional `csv` | `json`, default `csv`)
+  - `return_type` (optional `simple` | `log`, default `simple`)
+  - `price_source` (optional `adjusted` | `close`, default `adjusted`)
+  - `start_date` / `end_date` (optional `ISO-8601`)
+- **Fields (CSV)**: `date`, `price`, `simple_return`, `log_return`, `cumulative_return`
+
+#### 3. Portfolio Export
+`GET /api/v1/portfolios/{portfolio_id}/export`
+- **Query Parameters**:
+  - `data_type` (optional `holdings` | `summary` | `performance`, default `holdings`)
+  - `format` (optional `csv` | `json`, default `csv`)
+  - `start_date` / `end_date` (optional `ISO-8601`)
+  - `price_source` (optional `adjusted` | `close`, default `adjusted`)
+- **Fields (Holdings CSV)**: `instrument_id`, `symbol`, `name`, `asset_type`, `quantity`, `entry_price`, `entry_date`, `target_weight`, `current_price`, `market_value`, `weight`, `unrealized_pnl`
+
+#### 4. Correlation Export
+`GET /api/v1/correlation/export`
+- **Query Parameters**:
+  - `data_type` (optional `matrix` | `pairwise` | `rolling`, default `matrix`)
+  - `format` (optional `csv` | `json`, default `csv`)
+  - `instrument_ids` (multi-valued `UUID` list)
+  - `instrument_a` / `instrument_b` (required for pairwise/rolling)
+  - `window` (optional integer, default `60` for rolling)
+  - `start_date` / `end_date` (optional `ISO-8601`)
+  - `price_source` (optional `adjusted` | `close`)
+  - `return_type` (optional `simple` | `log`)
+- **Format**: Symmetrical CSV matrix with asset tickers as row and column headers.
+
+#### 5. Volatility Export
+`GET /api/v1/volatility/export`
+- **Query Parameters**:
+  - `instrument_id` (required `UUID`)
+  - `data_type` (optional `rolling` | `summary`, default `rolling`)
+  - `format` (optional `csv` | `json`, default `csv`)
+  - `rolling_window` (optional integer, default `30`)
+  - `annualized` (optional boolean, default `true`)
+  - `start_date` / `end_date` (optional `ISO-8601`)
+  - `price_source` / `return_type`
+- **Fields (Rolling CSV)**: `date`, `rolling_volatility`, `annualized_volatility`
+
+#### 6. Strategy & Signal Exports
+`GET /api/v1/strategies/moving-average/export`
+- **Query Parameters**: `instrument_id`, `format`, `fast_window`, `slow_window`, `ma_type`, `price_source`, `start_date`, `end_date`
+- **Fields (CSV)**: `timestamp`, `price`, `fast_ma`, `slow_ma`, `signal`, `crossover_event`
+
+`GET /api/v1/signals/export`
+- **Query Parameters**: `format`, `instrument_id`, `strategy_type`, `signal_type`, `start_date`, `end_date`
+- **Fields (CSV)**: `id`, `timestamp`, `instrument_id`, `strategy_type`, `signal_type`, `signal_state`, `price`, `source`
+
+#### 7. Backtest Research Exports
+`GET /api/v1/backtests/{backtest_id}/export`
+- **Query Parameters**:
+  - `data_type` (optional `report` | `trades` | `equity` | `drawdown` | `states`, default `report`)
+  - `format` (optional `pdf` | `csv` | `json`, default `pdf`)
+- **PDF Report**: Formatted ReportLab quantitative research document including executive summary, configuration, data quality, performance table, equity trajectory, drawdown analysis, trade log, and methodology notes.
+- **Trades CSV**: `trade_id`, `entry_date`, `exit_date`, `direction`, `quantity`, `entry_price`, `exit_price`, `pnl`, `return_pct`, `fees`
+- **Equity CSV**: `timestamp`, `cash`, `positions_value`, `total_equity`, `period_return`
+- **Drawdown CSV**: `timestamp`, `equity`, `peak`, `drawdown_value`, `drawdown_pct`
+- **Portfolio States CSV**: `timestamp`, `cash`, `gross_value`, `net_value`, `leverage`
+
+
+
+
+
+
 
 
 

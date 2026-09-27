@@ -36,4 +36,32 @@ class SignalSource(str, Enum):
 class StrategyType(str, Enum):
     MOVING_AVERAGE = "MOVING_AVERAGE"
 
+class ExecutionTiming(str, Enum):
+    NEXT_OPEN = "NEXT_OPEN"
+
+class PositionSizingType(str, Enum):
+    FULL_CAPITAL = "FULL_CAPITAL"
+
+class BacktestDirection(str, Enum):
+    LONG_ONLY = "LONG_ONLY"
+
+class BacktestStatus(str, Enum):
+    PENDING = "PENDING"
+    RUNNING = "RUNNING"
+    COMPLETED = "COMPLETED"
+    COMPLETED_WITH_WARNINGS = "COMPLETED_WITH_WARNINGS"
+    FAILED = "FAILED"
+
+class ExecutionReason(str, Enum):
+    SIGNAL = "SIGNAL"
+    FORCED_END = "FORCED_END"
+
+class DataFreshness(str, Enum):
+    CURRENT = "CURRENT"
+    RECENT = "RECENT"
+    STALE = "STALE"
+    UNKNOWN = "UNKNOWN"
+    UNAVAILABLE = "UNAVAILABLE"
+
+
 

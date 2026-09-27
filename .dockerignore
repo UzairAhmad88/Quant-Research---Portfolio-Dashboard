@@ -1,0 +1,19 @@
+# Docker ignore for Quant Research Dashboard
+**/.git
+**/.gitignore
+**/.env
+**/.env.*
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+**/.coverage
+**/htmlcov
+**/.hypothesis
+**/node_modules
+**/dist
+**/.vscode
+**/.idea
+**/scratch
+*.log

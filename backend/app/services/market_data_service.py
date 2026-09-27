@@ -1,9 +1,9 @@
 from datetime import datetime, timezone, timedelta
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 import time
 import logging
 from sqlalchemy.orm import Session
-from app.models.enums import DataFrequency, IngestionStatus, AssetType
+from app.models.enums import DataFrequency, IngestionStatus, AssetType, DataFreshness
 from app.models.instrument import Instrument
 from app.schemas.market_data import (
     MarketDataFetchRequest,
@@ -11,7 +11,9 @@ from app.schemas.market_data import (
     OHLCVCreate,
     OHLCVResponse,
     InstrumentSearchResult,
-    CoverageResponse
+    CoverageResponse,
+    LatestMarketDataResponse,
+    ProviderCapabilitiesResponse,
 )
 from app.models.ingestion import IngestionLog
 from app.repositories.instrument_repository import InstrumentRepository
@@ -19,7 +21,10 @@ from app.repositories.market_data_repository import MarketDataRepository
 from app.repositories.ingestion_repository import IngestionRepository
 from app.providers.registry import ProviderRegistry
 from app.validators import ValidationPipeline, Severity, QualityStatus
+from app.analytics.market_data.freshness_policy import FreshnessPolicy
+from app.analytics.returns.calculator import ReturnCalculator
 from app.core.exceptions import NotFoundError, ValidationError, DatabaseError
+
 
 logger = logging.getLogger("quant_api.services.market_data")
 
@@ -218,7 +223,7 @@ class MarketDataService:
                 except ValueError:
                     asset_type_enum = AssetType.EQUITY
 
-                from app.schemas.instruments import InstrumentCreate
+                from app.schemas.instrument import InstrumentCreate
                 create_dto = InstrumentCreate(
                     symbol=info["symbol"],
                     name=info["name"],
@@ -383,4 +388,434 @@ class MarketDataService:
             status=status,
             warnings=warnings
         )
+
+    def get_provider_capabilities(self, provider_name: Optional[str] = None) -> List[ProviderCapabilitiesResponse]:
+        """
+        Return the supported capabilities for all or a specific market data provider.
+        """
+        providers = [provider_name] if provider_name else ["yahoo_finance"]
+        results = []
+        for p_name in providers:
+            try:
+                p = ProviderRegistry.get_provider(p_name)
+                caps = p.capabilities
+                results.append(ProviderCapabilitiesResponse(
+                    provider_name=caps.provider_name,
+                    historical=caps.historical,
+                    latest=caps.latest,
+                    intraday=caps.intraday,
+                    streaming=caps.streaming,
+                    supported_frequencies=caps.supported_frequencies,
+                    delayed_data=caps.delayed_data,
+                    real_time_data=caps.real_time_data,
+                ))
+            except Exception as e:
+                logger.warning(f"Could not load capabilities for provider '{p_name}': {e}")
+        return results
+
+    async def get_latest_market_data(
+        self,
+        instrument_id: Optional[str] = None,
+        symbol: Optional[str] = None,
+        frequency: DataFrequency = DataFrequency.DAILY,
+        force_refresh: bool = False,
+        provider_name: str = "yahoo_finance"
+    ) -> LatestMarketDataResponse:
+        """
+        Database-First retrieval of the latest market observation for an instrument.
+        If fresh data exists in PostgreSQL, returns it immediately.
+        If missing, stale, or force_refresh=True, fetches from provider, validates, persists idempotently, and logs ingestion.
+        """
+        # 1. Resolve Instrument
+        instrument: Optional[Instrument] = None
+        if instrument_id:
+            instrument = self.inst_repo.get_by_id(instrument_id)
+            if not instrument:
+                raise NotFoundError(f"Instrument with ID '{instrument_id}' was not found.")
+        elif symbol:
+            clean_sym = symbol.strip().upper()
+            instrument = self.inst_repo.get_by_symbol(clean_sym)
+            if not instrument:
+                # Attempt to register instrument via provider info
+                provider = ProviderRegistry.get_provider(provider_name)
+                info = await provider.get_instrument_info(clean_sym)
+                if not info:
+                    raise NotFoundError(f"Instrument symbol '{clean_sym}' could not be resolved.")
+                try:
+                    asset_type_enum = AssetType(info["asset_type"])
+                except ValueError:
+                    asset_type_enum = AssetType.EQUITY
+
+                from app.schemas.instrument import InstrumentCreate
+                create_dto = InstrumentCreate(
+                    symbol=info["symbol"],
+                    name=info["name"],
+                    asset_type=asset_type_enum,
+                    exchange=info.get("exchange", "UNKNOWN"),
+                    currency=info.get("currency", "USD"),
+                    provider_symbol=info.get("provider_symbol", info["symbol"])
+                )
+                instrument = self.inst_repo.create(create_dto)
+        else:
+            raise ValidationError("Either instrument_id or symbol must be provided.")
+
+        if not instrument:
+            raise NotFoundError("Instrument could not be resolved.")
+
+        # 2. Check existing database observations
+        recent_bars = self.market_repo.get_recent_bars(instrument.id, limit=2, frequency=frequency)
+        latest_bar = recent_bars[0] if recent_bars else None
+        prev_bar = recent_bars[1] if len(recent_bars) > 1 else None
+
+        # 3. Evaluate freshness
+        freshness = FreshnessPolicy.evaluate_freshness(
+            latest_bar.timestamp if latest_bar else None,
+            asset_type=instrument.asset_type,
+            frequency=frequency
+        )
+
+        needs_fetch = force_refresh or (latest_bar is None) or (freshness not in (DataFreshness.CURRENT, DataFreshness.RECENT))
+        warning_msg: Optional[str] = None
+
+        if needs_fetch:
+            provider = ProviderRegistry.get_provider(provider_name)
+            provider_sym = instrument.provider_symbol or instrument.symbol
+            raw_bar = None
+            try:
+                raw_bar = await provider.get_latest_ohlcv(provider_sym, frequency=frequency.value)
+            except Exception as prov_err:
+                logger.warning(f"Provider failed to fetch latest data for {instrument.symbol}: {prov_err}")
+                warning_msg = f"Provider temporarily unavailable ({str(prov_err)}). Showing the most recent validated observation."
+
+            if raw_bar:
+                pipeline = ValidationPipeline()
+                unique_bars, quality_report = pipeline.validate_dataset(
+                    bars=[raw_bar],
+                    asset_type=instrument.asset_type,
+                    existing_timestamps=set(),
+                    instrument_id=instrument.id,
+                    symbol=instrument.symbol,
+                    provider=provider_name
+                )
+
+                if unique_bars:
+                    bar_dict = unique_bars[0]
+                    bar_create = OHLCVCreate(
+                        instrument_id=instrument.id,
+                        timestamp=bar_dict["timestamp"],
+                        frequency=frequency,
+                        open=bar_dict["open"],
+                        high=bar_dict["high"],
+                        low=bar_dict["low"],
+                        close=bar_dict["close"],
+                        adjusted_close=bar_dict.get("adjusted_close"),
+                        volume=bar_dict.get("volume", 0.0),
+                        provider=provider_name,
+                        provider_symbol=provider_sym
+                    )
+                    persisted_bar, was_inserted = self.market_repo.insert_bar_idempotent(bar_create)
+
+                    # Re-query recent bars to ensure ordering and calculate change
+                    recent_bars = self.market_repo.get_recent_bars(instrument.id, limit=2, frequency=frequency)
+                    latest_bar = recent_bars[0]
+                    prev_bar = recent_bars[1] if len(recent_bars) > 1 else None
+
+                    freshness = FreshnessPolicy.evaluate_freshness(
+                        latest_bar.timestamp,
+                        asset_type=instrument.asset_type,
+                        frequency=frequency
+                    )
+
+                    price = float(latest_bar.close)
+                    prev_close = float(prev_bar.close) if prev_bar else None
+                    change = (price - prev_close) if prev_close is not None else None
+                    change_pct = ReturnCalculator.calculate_period_return(prev_close, price) if prev_close is not None else None
+
+                    return LatestMarketDataResponse(
+                        instrument_id=instrument.id,
+                        symbol=instrument.symbol,
+                        name=instrument.name,
+                        asset_type=instrument.asset_type.value,
+                        exchange=instrument.exchange,
+                        currency=instrument.currency,
+                        price=price,
+                        open=float(latest_bar.open),
+                        high=float(latest_bar.high),
+                        low=float(latest_bar.low),
+                        close=float(latest_bar.close),
+                        adjusted_close=float(latest_bar.adjusted_close) if latest_bar.adjusted_close is not None else None,
+                        volume=float(latest_bar.volume),
+                        previous_close=prev_close,
+                        change=change,
+                        change_pct=change_pct,
+                        market_timestamp=latest_bar.timestamp,
+                        received_at=latest_bar.retrieved_at,
+                        frequency=frequency,
+                        provider=latest_bar.provider,
+                        provider_symbol=latest_bar.provider_symbol,
+                        freshness=freshness.value,
+                        quality=quality_report.status.value,
+                        is_cached=False,
+                        warning=None
+                    )
+                else:
+                    warning_msg = "Latest observation from provider failed data quality validation. Showing most recent valid stored observation."
+
+        # If we reach here: either we used cache directly, or provider failed / validation failed and we fallback to cache
+        if latest_bar:
+            price = float(latest_bar.close)
+            prev_close = float(prev_bar.close) if prev_bar else None
+            change = (price - prev_close) if prev_close is not None else None
+            change_pct = ReturnCalculator.calculate_period_return(prev_close, price) if prev_close is not None else None
+
+            return LatestMarketDataResponse(
+                instrument_id=instrument.id,
+                symbol=instrument.symbol,
+                name=instrument.name,
+                asset_type=instrument.asset_type.value,
+                exchange=instrument.exchange,
+                currency=instrument.currency,
+                price=price,
+                open=float(latest_bar.open),
+                high=float(latest_bar.high),
+                low=float(latest_bar.low),
+                close=float(latest_bar.close),
+                adjusted_close=float(latest_bar.adjusted_close) if latest_bar.adjusted_close is not None else None,
+                volume=float(latest_bar.volume),
+                previous_close=prev_close,
+                change=change,
+                change_pct=change_pct,
+                market_timestamp=latest_bar.timestamp,
+                received_at=latest_bar.retrieved_at,
+                frequency=frequency,
+                provider=latest_bar.provider,
+                provider_symbol=latest_bar.provider_symbol,
+                freshness=freshness.value,
+                quality="GOOD",
+                is_cached=True,
+                warning=warning_msg
+            )
+
+        raise NotFoundError(
+            f"No market data available for instrument '{instrument.symbol}'. "
+            f"Provider request could not retrieve observations."
+        )
+
+    async def get_latest_market_data_batch(
+        self,
+        instrument_ids: Optional[List[str]] = None,
+        symbols: Optional[List[str]] = None,
+        frequency: DataFrequency = DataFrequency.DAILY,
+        force_refresh: bool = False,
+        provider_name: str = "yahoo_finance"
+    ) -> List[LatestMarketDataResponse]:
+        """
+        Batch retrieval of latest market data for multiple instruments.
+        Utilizes database-first caching and batch provider download where necessary.
+        """
+        target_instruments: List[Instrument] = []
+        if instrument_ids:
+            for iid in instrument_ids:
+                inst = self.inst_repo.get_by_id(iid)
+                if inst:
+                    target_instruments.append(inst)
+        elif symbols:
+            for sym in symbols:
+                inst = self.inst_repo.get_by_symbol(sym.strip().upper())
+                if inst:
+                    target_instruments.append(inst)
+
+        if not target_instruments:
+            return []
+
+        results: List[LatestMarketDataResponse] = []
+        symbols_to_fetch: List[Instrument] = []
+
+        # Inspect cache first
+        for inst in target_instruments:
+            recent_bars = self.market_repo.get_recent_bars(inst.id, limit=2, frequency=frequency)
+            latest_bar = recent_bars[0] if recent_bars else None
+            freshness = FreshnessPolicy.evaluate_freshness(
+                latest_bar.timestamp if latest_bar else None,
+                asset_type=inst.asset_type,
+                frequency=frequency
+            )
+            needs_fetch = force_refresh or (latest_bar is None) or (freshness not in (DataFreshness.CURRENT, DataFreshness.RECENT))
+            if needs_fetch:
+                symbols_to_fetch.append(inst)
+            elif latest_bar:
+                price = float(latest_bar.close)
+                prev_bar = recent_bars[1] if len(recent_bars) > 1 else None
+                prev_close = float(prev_bar.close) if prev_bar else None
+                change = (price - prev_close) if prev_close is not None else None
+                change_pct = ReturnCalculator.calculate_period_return(prev_close, price) if prev_close is not None else None
+                results.append(LatestMarketDataResponse(
+                    instrument_id=inst.id,
+                    symbol=inst.symbol,
+                    name=inst.name,
+                    asset_type=inst.asset_type.value,
+                    exchange=inst.exchange,
+                    currency=inst.currency,
+                    price=price,
+                    open=float(latest_bar.open),
+                    high=float(latest_bar.high),
+                    low=float(latest_bar.low),
+                    close=float(latest_bar.close),
+                    adjusted_close=float(latest_bar.adjusted_close) if latest_bar.adjusted_close is not None else None,
+                    volume=float(latest_bar.volume),
+                    previous_close=prev_close,
+                    change=change,
+                    change_pct=change_pct,
+                    market_timestamp=latest_bar.timestamp,
+                    received_at=latest_bar.retrieved_at,
+                    frequency=frequency,
+                    provider=latest_bar.provider,
+                    provider_symbol=latest_bar.provider_symbol,
+                    freshness=freshness.value,
+                    quality="GOOD",
+                    is_cached=True,
+                    warning=None
+                ))
+
+        # Batch fetch for remaining symbols
+        if symbols_to_fetch:
+            provider = ProviderRegistry.get_provider(provider_name)
+            sym_list = [i.provider_symbol or i.symbol for i in symbols_to_fetch]
+            batch_data = {}
+            try:
+                batch_data = await provider.get_latest_ohlcv_batch(sym_list, frequency=frequency.value)
+            except Exception as batch_err:
+                logger.warning(f"Batch provider fetch error: {batch_err}")
+
+            pipeline = ValidationPipeline()
+            for inst in symbols_to_fetch:
+                p_sym = inst.provider_symbol or inst.symbol
+                raw_bar = batch_data.get(p_sym)
+                if raw_bar:
+                    unique_bars, quality_report = pipeline.validate_dataset(
+                        bars=[raw_bar],
+                        asset_type=inst.asset_type,
+                        existing_timestamps=set(),
+                        instrument_id=inst.id,
+                        symbol=inst.symbol,
+                        provider=provider_name
+                    )
+                    if unique_bars:
+                        bar_dict = unique_bars[0]
+                        bar_create = OHLCVCreate(
+                            instrument_id=inst.id,
+                            timestamp=bar_dict["timestamp"],
+                            frequency=frequency,
+                            open=bar_dict["open"],
+                            high=bar_dict["high"],
+                            low=bar_dict["low"],
+                            close=bar_dict["close"],
+                            adjusted_close=bar_dict.get("adjusted_close"),
+                            volume=bar_dict.get("volume", 0.0),
+                            provider=provider_name,
+                            provider_symbol=p_sym
+                        )
+                        self.market_repo.insert_bar_idempotent(bar_create)
+
+                # Re-query
+                recent_bars = self.market_repo.get_recent_bars(inst.id, limit=2, frequency=frequency)
+                latest_bar = recent_bars[0] if recent_bars else None
+                if latest_bar:
+                    price = float(latest_bar.close)
+                    prev_bar = recent_bars[1] if len(recent_bars) > 1 else None
+                    prev_close = float(prev_bar.close) if prev_bar else None
+                    change = (price - prev_close) if prev_close is not None else None
+                    change_pct = ReturnCalculator.calculate_period_return(prev_close, price) if prev_close is not None else None
+                    freshness = FreshnessPolicy.evaluate_freshness(
+                        latest_bar.timestamp,
+                        asset_type=inst.asset_type,
+                        frequency=frequency
+                    )
+                    results.append(LatestMarketDataResponse(
+                        instrument_id=inst.id,
+                        symbol=inst.symbol,
+                        name=inst.name,
+                        asset_type=inst.asset_type.value,
+                        exchange=inst.exchange,
+                        currency=inst.currency,
+                        price=price,
+                        open=float(latest_bar.open),
+                        high=float(latest_bar.high),
+                        low=float(latest_bar.low),
+                        close=float(latest_bar.close),
+                        adjusted_close=float(latest_bar.adjusted_close) if latest_bar.adjusted_close is not None else None,
+                        volume=float(latest_bar.volume),
+                        previous_close=prev_close,
+                        change=change,
+                        change_pct=change_pct,
+                        market_timestamp=latest_bar.timestamp,
+                        received_at=latest_bar.retrieved_at,
+                        frequency=frequency,
+                        provider=latest_bar.provider,
+                        provider_symbol=latest_bar.provider_symbol,
+                        freshness=freshness.value,
+                        quality="GOOD",
+                        is_cached=raw_bar is None,
+                        warning="Provider temporarily unavailable" if raw_bar is None else None
+                    ))
+
+        return results
+
+    async def search_instruments(
+        self,
+        query: str,
+        provider_name: str = "yahoo_finance",
+        limit: int = 10
+    ) -> List[InstrumentSearchResult]:
+        """
+        Search for market instruments using local database lookup and provider querying.
+        """
+        clean_query = query.strip().upper()
+        if not clean_query:
+            return []
+
+        # 1. Search local DB first
+        local_matches = self.inst_repo.search(clean_query, limit=limit)
+        results: List[InstrumentSearchResult] = []
+        found_symbols = set()
+
+        for inst in local_matches:
+            found_symbols.add(inst.symbol.upper())
+            results.append(
+                InstrumentSearchResult(
+                    symbol=inst.symbol,
+                    name=inst.name,
+                    asset_type=inst.asset_type.value if hasattr(inst.asset_type, "value") else str(inst.asset_type),
+                    exchange=inst.exchange,
+                    currency=inst.currency,
+                    provider_symbol=inst.provider_symbol or inst.symbol,
+                    existing_id=inst.id,
+                )
+            )
+
+        # 2. Query external provider for additional symbols
+        try:
+            provider = ProviderRegistry.get_provider(provider_name)
+            provider_results = await provider.search_instruments(clean_query, limit=limit)
+            for res in provider_results:
+                sym = res["symbol"].upper()
+                if sym not in found_symbols:
+                    found_symbols.add(sym)
+                    existing = self.inst_repo.get_by_symbol(sym)
+                    results.append(
+                        InstrumentSearchResult(
+                            symbol=sym,
+                            name=res.get("name", sym),
+                            asset_type=res.get("asset_type", "EQUITY"),
+                            exchange=res.get("exchange", "UNKNOWN"),
+                            currency=res.get("currency", "USD"),
+                            provider_symbol=res.get("provider_symbol", sym),
+                            existing_id=existing.id if existing else None,
+                        )
+                    )
+        except Exception as e:
+            logger.warning(f"Provider search error for query '{query}': {e}")
+
+        return results[:limit]
+
 

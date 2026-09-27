@@ -14,16 +14,24 @@ import { CrossoverTable } from '../components/strategies/CrossoverTable';
 import { MethodologyPanel } from '../components/strategies/MethodologyPanel';
 import { StrategyDataQuality } from '../components/strategies/StrategyDataQuality';
 
+import { useResearchContext } from '../hooks/useResearchContext';
+import { ResearchContextBar } from '../components/navigation/ResearchContextBar';
+import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
+import { ExportMenu, ExportOption } from '../components/common/ExportMenu';
+import { getStrategyExportUrl, getSignalsExportUrl } from '../services/exportService';
+
 export const StrategiesPage: React.FC = () => {
+  const { context } = useResearchContext();
+
   // Available instruments
   const [availableInstruments, setAvailableInstruments] = useState<InstrumentItem[]>([]);
   const [selectedInstrument, setSelectedInstrument] = useState<InstrumentItem | null>(null);
 
   // Default configuration
   const [config, setConfig] = useState<StrategyConfig>({
-    instrumentId: '',
-    dateRange: '1Y',
-    priceSource: 'adjusted',
+    instrumentId: context.instrumentId || '',
+    dateRange: context.rangePreset || '1Y',
+    priceSource: context.priceSource || 'adjusted',
     maType: 'sma',
     fastWindow: 20,
     slowWindow: 50,
@@ -41,21 +49,26 @@ export const StrategiesPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Fetch available instruments on mount
+  // Fetch available instruments & sync context
   useEffect(() => {
     fetchInstruments({ limit: 50, active: true })
       .then((res) => {
         setAvailableInstruments(res.items);
         if (res.items.length > 0) {
-          setSelectedInstrument(res.items[0]);
-          setConfig((prev) => ({
-            ...prev,
-            instrumentId: res.items[0].id,
-          }));
+          const matched = res.items.find(
+            (i) =>
+              (context.symbol && i.symbol.toUpperCase() === context.symbol.toUpperCase()) ||
+              (context.instrumentId && i.id === context.instrumentId)
+          );
+          const active = matched || res.items[0];
+          setSelectedInstrument(active);
+          setConfig((prev) => ({ ...prev, instrumentId: active.id }));
         }
       })
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => {
+        setErrorMsg(err.message || 'Failed to load instruments.');
+      });
+  }, [context.symbol, context.instrumentId]);
 
   const getStartDate = (rangeStr: string) => {
     const now = new Date();
@@ -126,8 +139,62 @@ export const StrategiesPage: React.FC = () => {
     loadStrategy(defaultConfig);
   };
 
+  const exportOptions: ExportOption[] = selectedInstrument
+    ? [
+        {
+          label: 'MA Crossover Series (CSV)',
+          format: 'CSV',
+          description: 'Historical price, fast/slow MAs, and crossover signals',
+          url: getStrategyExportUrl({
+            instrumentId: selectedInstrument.id,
+            fastWindow: config.fastWindow,
+            slowWindow: config.slowWindow,
+            maType: config.maType,
+            priceSource: config.priceSource,
+            startDate: getStartDate(config.dateRange),
+            format: 'csv',
+          }),
+        },
+        {
+          label: 'MA Crossover Series (JSON)',
+          format: 'JSON',
+          description: 'Full structured strategy summary, series, and crossovers',
+          url: getStrategyExportUrl({
+            instrumentId: selectedInstrument.id,
+            fastWindow: config.fastWindow,
+            slowWindow: config.slowWindow,
+            maType: config.maType,
+            priceSource: config.priceSource,
+            startDate: getStartDate(config.dateRange),
+            format: 'json',
+          }),
+        },
+        {
+          label: 'Historical Signals (CSV)',
+          format: 'CSV',
+          description: 'Persisted signals and trade triggers for this instrument',
+          url: getSignalsExportUrl({
+            instrumentId: selectedInstrument.id,
+            format: 'csv',
+          }),
+        },
+        {
+          label: 'Historical Signals (JSON)',
+          format: 'JSON',
+          description: 'Machine-readable signal records and parameters',
+          url: getSignalsExportUrl({
+            instrumentId: selectedInstrument.id,
+            format: 'json',
+          }),
+        },
+      ]
+    : [];
+
   return (
     <div className="min-h-screen bg-[#0B1220] text-slate-100 p-6 space-y-6">
+      <Breadcrumbs items={[{ label: 'Strategies' }, { label: selectedInstrument?.symbol || 'Instrument' }]} />
+      <ResearchContextBar availableInstruments={availableInstruments} />
+
       {/* Strategy Header */}
       {selectedInstrument ? (
         <StrategyHeader
@@ -135,6 +202,7 @@ export const StrategiesPage: React.FC = () => {
           name={selectedInstrument.name}
           assetType={selectedInstrument.asset_type}
           currentSignal={strategyData?.summary.current_signal || 'HOLD'}
+          actions={<ExportMenu options={exportOptions} disabled={!selectedInstrument || !strategyData} />}
         />
       ) : (
         <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5">

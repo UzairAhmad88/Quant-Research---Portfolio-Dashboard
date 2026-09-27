@@ -94,6 +94,75 @@ export const StrategyConfigPanel: React.FC<StrategyConfigPanelProps> = ({
       </div>
 
       <form onSubmit={handleApply} className="space-y-4">
+        {/* Preset Strategy Templates (HCI: Recognition over Recall) */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span className="text-[11px] text-slate-400 font-medium">Quick Presets:</span>
+          <button
+            type="button"
+            onClick={() => {
+              setFastWindow(50);
+              setSlowWindow(200);
+              setMaType('sma');
+              setValidationError(null);
+            }}
+            className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-colors ${
+              fastWindow === 50 && slowWindow === 200 && maType === 'sma'
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold'
+                : 'bg-[#0B1220] border-[#263244] text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Golden Cross (50 / 200 SMA)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFastWindow(20);
+              setSlowWindow(50);
+              setMaType('ema');
+              setValidationError(null);
+            }}
+            className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-colors ${
+              fastWindow === 20 && slowWindow === 50 && maType === 'ema'
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold'
+                : 'bg-[#0B1220] border-[#263244] text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Momentum Trend (20 / 50 EMA)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFastWindow(5);
+              setSlowWindow(20);
+              setMaType('sma');
+              setValidationError(null);
+            }}
+            className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-colors ${
+              fastWindow === 5 && slowWindow === 20 && maType === 'sma'
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold'
+                : 'bg-[#0B1220] border-[#263244] text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Swing Scalper (5 / 20 SMA)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFastWindow(9);
+              setSlowWindow(21);
+              setMaType('ema');
+              setValidationError(null);
+            }}
+            className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-colors ${
+              fastWindow === 9 && slowWindow === 21 && maType === 'ema'
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold'
+                : 'bg-[#0B1220] border-[#263244] text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Trend Pullback (9 / 21 EMA)
+          </button>
+        </div>
+
         {/* Main Calculation Controls */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 text-xs">
           {/* Instrument Select */}
@@ -158,26 +227,50 @@ export const StrategyConfigPanel: React.FC<StrategyConfigPanelProps> = ({
 
           {/* Fast Window */}
           <div>
-            <label className="text-slate-400 block mb-1">Fast Window (obs)</label>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-slate-400">Fast Window</label>
+              <span className="text-[10px] text-blue-400 font-mono">{fastWindow}d</span>
+            </div>
             <input
               type="number"
               min={1}
               max={500}
               value={fastWindow}
-              onChange={(e) => setFastWindow(Number(e.target.value))}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setFastWindow(val);
+                if (val >= slowWindow) {
+                  setValidationError(`Fast window (${val}) must be strictly less than slow window (${slowWindow}).`);
+                } else {
+                  setValidationError(null);
+                }
+              }}
               className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
             />
           </div>
 
           {/* Slow Window */}
           <div>
-            <label className="text-slate-400 block mb-1">Slow Window (obs)</label>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-slate-400">Slow Window</label>
+              <span className={`text-[10px] font-mono ${slowWindow > fastWindow ? 'text-emerald-400' : 'text-rose-400'}`}>
+                Δ{slowWindow - fastWindow}d
+              </span>
+            </div>
             <input
               type="number"
               min={2}
               max={1000}
               value={slowWindow}
-              onChange={(e) => setSlowWindow(Number(e.target.value))}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setSlowWindow(val);
+                if (fastWindow >= val) {
+                  setValidationError(`Fast window (${fastWindow}) must be strictly less than slow window (${val}).`);
+                } else {
+                  setValidationError(null);
+                }
+              }}
               className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1.5 font-mono focus:outline-none focus:border-blue-500"
             />
           </div>

@@ -6,7 +6,7 @@ describe('Quant Research Dashboard App Shell & Design System', () => {
   it('renders application shell, top bar, and overview page', () => {
     render(<App />);
     expect(screen.getAllByText(/Quant Research/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Overview/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Dashboard/i).length).toBeGreaterThan(0);
   });
 
   it('renders navigation section headers', () => {

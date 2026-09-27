@@ -106,9 +106,12 @@ class SignalService:
         for c in crossovers:
             sig_type = str(c.get("signal", "BUY")).upper().strip()
             sig_state = "BULLISH" if sig_type == "BUY" else "BEARISH"
+            ts_val = c["timestamp"]
+            if isinstance(ts_val, str):
+                ts_val = datetime.fromisoformat(ts_val.replace("Z", "+00:00"))
             
             signals_payload.append({
-                "timestamp": c["timestamp"],
+                "timestamp": ts_val,
                 "signal_type": sig_type,
                 "signal_state": sig_state,
                 "price": float(c["price"]),

@@ -9,6 +9,11 @@ import { AddInstrumentModal } from '../components/modals/AddInstrumentModal';
 import { IngestionDetailModal } from '../components/modals/IngestionDetailModal';
 import { DataQualityPanel } from '../components/market-data/DataQualityPanel';
 import { QualityIssuesDrawer } from '../components/market-data/QualityIssuesDrawer';
+import { LatestMarketDataPanel } from '../components/market-data/LatestMarketDataPanel';
+import { useLatestMarketData, useRefreshLatestMarketData } from '../hooks/useLatestMarketData';
+import { ExportMenu } from '../components/common/ExportMenu';
+import { getMarketDataExportUrl } from '../services/exportService';
+
 import {
   fetchInstruments,
   updateInstrument,
@@ -43,7 +48,13 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
+import { useResearchContext } from '../hooks/useResearchContext';
+import { ResearchContextBar } from '../components/navigation/ResearchContextBar';
+import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
+
 export const MarketDataPage: React.FC = () => {
+  const { context } = useResearchContext();
+
   // Instrument Master State
   const [instruments, setInstruments] = useState<InstrumentItem[]>([]);
   const [selectedInstrument, setSelectedInstrument] = useState<InstrumentItem | null>(null);
@@ -55,9 +66,9 @@ export const MarketDataPage: React.FC = () => {
   const todayStr = new Date().toISOString().split('T')[0];
   const fiveYearsAgoStr = new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const [startDate, setStartDate] = useState(fiveYearsAgoStr);
-  const [endDate, setEndDate] = useState(todayStr);
-  const [activePreset, setActivePreset] = useState<string>('5Y');
+  const [startDate, setStartDate] = useState(context.startDate || fiveYearsAgoStr);
+  const [endDate, setEndDate] = useState(context.endDate || todayStr);
+  const [activePreset, setActivePreset] = useState<string>(context.rangePreset || '5Y');
   const [frequency] = useState('DAILY');
   const [provider] = useState('yahoo_finance');
   const [forceRefresh, setForceRefresh] = useState(false);
@@ -89,14 +100,40 @@ export const MarketDataPage: React.FC = () => {
   // Deactivation Confirmation Modal State
   const [isDeactivating, setIsDeactivating] = useState(false);
 
-  // 1. Load instruments list
+  // Latest Market Data State & Mutation
+  const {
+    data: latestData,
+    isLoading: isLoadingLatest,
+    error: latestError,
+    refetch: refetchLatest,
+  } = useLatestMarketData(selectedInstrument?.id, selectedInstrument?.symbol);
+
+  const refreshLatestMutation = useRefreshLatestMarketData();
+
+  const handleRefreshLatest = () => {
+    if (!selectedInstrument) return;
+    refreshLatestMutation.mutate({
+      instrumentId: selectedInstrument.id,
+      symbol: selectedInstrument.symbol,
+      frequency: 'DAILY',
+      provider: 'yahoo_finance',
+    });
+  };
+
+  // 1. Load instruments list & sync URL context
+
   const loadInstrumentsList = async () => {
     setIsLoadingInstruments(true);
     try {
       const res = await fetchInstruments({ limit: 100 });
       setInstruments(res.items);
-      if (res.items.length > 0 && !selectedInstrument) {
-        setSelectedInstrument(res.items[0]);
+      if (res.items.length > 0) {
+        const matched = res.items.find(
+          (i) =>
+            (context.symbol && i.symbol.toUpperCase() === context.symbol.toUpperCase()) ||
+            (context.instrumentId && i.id === context.instrumentId)
+        );
+        setSelectedInstrument(matched || res.items[0]);
       }
     } catch {
       setInstruments([]);
@@ -107,7 +144,7 @@ export const MarketDataPage: React.FC = () => {
 
   useEffect(() => {
     loadInstrumentsList();
-  }, []);
+  }, [context.symbol, context.instrumentId]);
 
   // 2. Load Coverage, Ingestion Logs, Quality Report, and OHLCV Data when selected instrument or range changes
   const loadWorkspaceData = async () => {
@@ -233,12 +270,14 @@ export const MarketDataPage: React.FC = () => {
       setFetchSummary(res.summary);
       setPage(1);
       await loadWorkspaceData();
+      refetchLatest();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Acquisition request failed.';
       setFetchError(message);
     } finally {
       setIsFetching(false);
     }
+
   };
 
   // CSV Export Handler
@@ -294,15 +333,53 @@ export const MarketDataPage: React.FC = () => {
       title="Market Data & Interactive Visualization"
       description="Interactive OHLCV research charting engine, timestamp validation, database coverage analysis, and historical data export."
       action={
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded text-xs font-medium transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Add Instrument
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportMenu
+            disabled={!selectedInstrument || totalBars === 0}
+            options={[
+              {
+                id: 'market-data-csv',
+                label: 'Market Data CSV',
+                format: 'csv',
+                url: getMarketDataExportUrl({
+                  instrumentId: selectedInstrument?.id || '',
+                  format: 'csv',
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  frequency: 'DAILY',
+                }),
+                description: 'Historical OHLCV observations',
+              },
+              {
+                id: 'market-data-json',
+                label: 'Market Data JSON',
+                format: 'json',
+                url: getMarketDataExportUrl({
+                  instrumentId: selectedInstrument?.id || '',
+                  format: 'json',
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  frequency: 'DAILY',
+                }),
+                description: 'Machine-readable payload with metadata',
+              },
+            ]}
+          />
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded text-xs font-medium transition-colors cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            Add Instrument
+          </button>
+        </div>
       }
     >
+      <div className="col-span-12 space-y-3">
+        <Breadcrumbs items={[{ label: 'Market Data' }, { label: selectedInstrument?.symbol || 'Instrument' }]} />
+        <ResearchContextBar availableInstruments={instruments} />
+      </div>
+
       {/* Workspace Main Grid */}
       <div className="col-span-12 grid grid-cols-12 gap-5">
         {/* Left Sidebar: Instrument Master List (3 cols) */}
@@ -404,8 +481,18 @@ export const MarketDataPage: React.FC = () => {
                 </div>
               </Card>
 
+              {/* Latest Market Data Panel */}
+              <LatestMarketDataPanel
+                data={latestData}
+                isLoading={isLoadingLatest}
+                isRefreshing={refreshLatestMutation.isPending}
+                error={latestError}
+                onRefresh={handleRefreshLatest}
+              />
+
               {/* Data Range Presets & Acquisition Controls Bar */}
               <Card title="Acquisition Controls & Range Presets">
+
                 <div className="space-y-3">
                   {/* Preset Toolbar */}
                   <div className="flex items-center gap-2 overflow-x-auto pb-1">

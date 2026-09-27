@@ -98,11 +98,12 @@ class PortfolioService:
             raise ValidationError("Entry price must be greater than zero.")
 
         # 4. Check capital constraint: cash >= 0
-        current_invested = sum(h.quantity * h.entry_price for h in portfolio.holdings if h.is_active)
-        new_holding_value = data.quantity * data.entry_price
-        if current_invested + new_holding_value > portfolio.initial_capital:
+        current_invested = sum(float(h.quantity) * float(h.entry_price) for h in portfolio.holdings if h.is_active)
+        new_holding_value = float(data.quantity) * float(data.entry_price)
+        initial_cap = float(portfolio.initial_capital) if portfolio.initial_capital is not None else 1000000.0
+        if current_invested + new_holding_value > initial_cap:
             raise ValidationError(
-                f"Adding this holding requires ${new_holding_value:.2f}, but remaining cash is only ${(portfolio.initial_capital - current_invested):.2f}."
+                f"Adding this holding requires ${new_holding_value:.2f}, but remaining cash is only ${(initial_cap - current_invested):.2f}."
             )
 
         # 5. Check target weights sum <= 100%

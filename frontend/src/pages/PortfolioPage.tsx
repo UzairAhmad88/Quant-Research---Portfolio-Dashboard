@@ -21,11 +21,20 @@ import { PortfolioPerformanceChart } from '../components/portfolio/PortfolioPerf
 import { CreatePortfolioModal } from '../components/portfolio/CreatePortfolioModal';
 import { AddHoldingModal } from '../components/portfolio/AddHoldingModal';
 
+import { useResearchContext } from '../hooks/useResearchContext';
+import { ResearchContextBar } from '../components/navigation/ResearchContextBar';
+import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
+import { ExportMenu } from '../components/common/ExportMenu';
+import { MetricInfoTooltip } from '../components/common/MetricInfoTooltip';
+import { getPortfolioExportUrl } from '../services/exportService';
+
 export const PortfolioPage: React.FC = () => {
+  const { context } = useResearchContext();
+
   const [portfolios, setPortfolios] = useState<PortfolioItem[]>([]);
-  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(context.portfolioId || null);
   const [analytics, setAnalytics] = useState<PortfolioAnalyticsResponse | null>(null);
-  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>('adjusted');
+  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>(context.priceSource || 'adjusted');
   const [isLoadingPortfolios, setIsLoadingPortfolios] = useState(true);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -34,15 +43,16 @@ export const PortfolioPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddHoldingModalOpen, setIsAddHoldingModalOpen] = useState(false);
 
-  // Load portfolios on mount
+  // Load portfolios on mount & sync context
   const loadPortfolios = async () => {
     try {
       setIsLoadingPortfolios(true);
       setErrorMsg(null);
       const list = await fetchPortfolios(true);
       setPortfolios(list);
-      if (list.length > 0 && !selectedPortfolioId) {
-        setSelectedPortfolioId(list[0].id);
+      if (list.length > 0) {
+        const matched = context.portfolioId ? list.find((p) => p.id === context.portfolioId) : undefined;
+        setSelectedPortfolioId(matched ? matched.id : list[0].id);
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to load portfolios.');
@@ -53,7 +63,7 @@ export const PortfolioPage: React.FC = () => {
 
   useEffect(() => {
     loadPortfolios();
-  }, []);
+  }, [context.portfolioId]);
 
   // Load analytics when selected portfolio changes
   const loadAnalytics = async () => {
@@ -112,6 +122,9 @@ export const PortfolioPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ label: 'Portfolio' }, { label: analytics?.name || 'Analytics' }]} />
+      <ResearchContextBar showInstrumentSelect={false} showRangeSelect={false} />
+
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm">
         <div className="flex items-center space-x-3">
@@ -152,6 +165,61 @@ export const PortfolioPage: React.FC = () => {
             <Plus className="h-4 w-4" />
             <span>Create Portfolio</span>
           </button>
+
+          {selectedPortfolio && (
+            <ExportMenu
+              disabled={!analytics}
+              options={[
+                {
+                  id: 'portfolio-holdings-csv',
+                  label: 'Holdings Breakdown CSV',
+                  format: 'csv',
+                  url: getPortfolioExportUrl({
+                    portfolioId: selectedPortfolio.id,
+                    dataType: 'holdings',
+                    format: 'csv',
+                    priceSource,
+                  }),
+                  description: 'Positions, weights, current values, and P&L',
+                },
+                {
+                  id: 'portfolio-summary-csv',
+                  label: 'Portfolio Summary CSV',
+                  format: 'csv',
+                  url: getPortfolioExportUrl({
+                    portfolioId: selectedPortfolio.id,
+                    dataType: 'summary',
+                    format: 'csv',
+                    priceSource,
+                  }),
+                  description: 'Total value, returns, and risk metrics',
+                },
+                {
+                  id: 'portfolio-performance-csv',
+                  label: 'Performance Curve CSV',
+                  format: 'csv',
+                  url: getPortfolioExportUrl({
+                    portfolioId: selectedPortfolio.id,
+                    dataType: 'performance',
+                    format: 'csv',
+                    priceSource,
+                  }),
+                  description: 'Historical equity time series observations',
+                },
+                {
+                  id: 'portfolio-json',
+                  label: 'Full Portfolio JSON',
+                  format: 'json',
+                  url: getPortfolioExportUrl({
+                    portfolioId: selectedPortfolio.id,
+                    format: 'json',
+                    priceSource,
+                  }),
+                  description: 'Complete analytics payload with allocations',
+                },
+              ]}
+            />
+          )}
 
           {selectedPortfolio && (
             <button
@@ -220,35 +288,70 @@ export const PortfolioPage: React.FC = () => {
           {/* Summary Metric Cards Bar */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Initial Capital</span>
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+                <span>Initial Capital</span>
+                <MetricInfoTooltip
+                  title="Portfolio Initial Capital"
+                  description="Initial cash allocated at portfolio genesis for holding acquisition and reserve maintenance."
+                  formula="Capital_0 = Cash_0 + Sum(Qty_i × Price_i,0)"
+                />
+              </div>
               <div className="mt-1 font-mono text-base font-bold text-slate-100">
                 ${analytics.summary.initial_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Invested Market Value</span>
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+                <span>Invested Value</span>
+                <MetricInfoTooltip
+                  title="Invested Market Value"
+                  description="Current aggregated market valuation of all active portfolio asset positions."
+                  formula="V_invested = Sum_{i} (Quantity_i × LatestPrice_i)"
+                />
+              </div>
               <div className="mt-1 font-mono text-base font-bold text-blue-400">
                 ${analytics.summary.current_invested_value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Uninvested Cash</span>
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+                <span>Uninvested Cash</span>
+                <MetricInfoTooltip
+                  title="Uninvested Cash Balance"
+                  description="Liquid unallocated capital held in portfolio base currency."
+                  formula="Cash_t = Capital_0 - InitialCost + RealizedPnL - Fees"
+                />
+              </div>
               <div className="mt-1 font-mono text-base font-bold text-slate-300">
                 ${analytics.summary.cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Current Total Value</span>
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+                <span>Total Value</span>
+                <MetricInfoTooltip
+                  title="Current Total Portfolio Value (NAV)"
+                  description="Gross portfolio equity invariant (Cash + Invested Market Value)."
+                  formula="NAV_t = Cash_t + V_invested,t"
+                />
+              </div>
               <div className="mt-1 font-mono text-base font-bold text-slate-100">
                 ${analytics.summary.current_portfolio_value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Total P&L ($)</span>
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+                <span>Total P&L ($)</span>
+                <MetricInfoTooltip
+                  title="Total Dollar Profit & Loss"
+                  description="Net monetary gain or loss realized and unrealized relative to initial capital."
+                  formula="Total P&L = NAV_t - InitialCapital"
+                />
+              </div>
               <div
                 className={`mt-1 font-mono text-base font-bold ${
                   analytics.summary.total_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
@@ -260,7 +363,14 @@ export const PortfolioPage: React.FC = () => {
             </div>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Total Return</span>
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+                <span>Total Return</span>
+                <MetricInfoTooltip
+                  title="Total Percentage Return"
+                  description="Cumulative fractional rate of return across the entire portfolio holding period."
+                  formula="R_total = (NAV_t - InitialCapital) / InitialCapital"
+                />
+              </div>
               <div
                 className={`mt-1 font-mono text-base font-bold ${
                   analytics.summary.total_return >= 0 ? 'text-emerald-400' : 'text-red-400'

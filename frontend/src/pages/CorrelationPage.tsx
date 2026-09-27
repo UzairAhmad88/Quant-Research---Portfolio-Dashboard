@@ -4,7 +4,6 @@ import {
   X,
   RefreshCw,
   AlertTriangle,
-  Download,
   Layers,
 } from 'lucide-react';
 import {
@@ -21,15 +20,23 @@ import { CorrelationHeatmap } from '../components/correlation/CorrelationHeatmap
 import { PairwiseScatterPlot } from '../components/correlation/PairwiseScatterPlot';
 import { RollingCorrelationChart } from '../components/correlation/RollingCorrelationChart';
 
+import { useResearchContext } from '../hooks/useResearchContext';
+import { ResearchContextBar } from '../components/navigation/ResearchContextBar';
+import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
+import { ExportMenu } from '../components/common/ExportMenu';
+import { getCorrelationExportUrl } from '../services/exportService';
+
 export const CorrelationPage: React.FC = () => {
+  const { context } = useResearchContext();
+
   // Instrument selection state
   const [availableInstruments, setAvailableInstruments] = useState<InstrumentItem[]>([]);
   const [selectedInstruments, setSelectedInstruments] = useState<InstrumentItem[]>([]);
 
   // Controls state
-  const [dateRange, setDateRange] = useState<string>('1Y');
+  const [dateRange, setDateRange] = useState<string>(context.rangePreset || '1Y');
   const [returnType, setReturnType] = useState<'simple' | 'log'>('simple');
-  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>('adjusted');
+  const [priceSource, setPriceSource] = useState<'adjusted' | 'close'>(context.priceSource || 'adjusted');
   const [alignmentMode, setAlignmentMode] = useState<'pairwise_complete' | 'common_intersection'>('pairwise_complete');
   const [rollingWindow, setRollingWindow] = useState<number>(60);
 
@@ -43,18 +50,26 @@ export const CorrelationPage: React.FC = () => {
   const [isLoadingMatrix, setIsLoadingMatrix] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Fetch available instruments on mount
+  // Fetch available instruments & sync multi-instrument URL context
   useEffect(() => {
     fetchInstruments({ limit: 50, active: true })
       .then((res) => {
         setAvailableInstruments(res.items);
-        // Default select first 4 instruments if available
-        if (res.items.length >= 2 && selectedInstruments.length === 0) {
-          setSelectedInstruments(res.items.slice(0, Math.min(4, res.items.length)));
+        if (res.items.length > 0) {
+          if (context.symbols && context.symbols.length > 0) {
+            const matched = res.items.filter((i) =>
+              context.symbols?.some((s) => s.toUpperCase() === i.symbol.toUpperCase())
+            );
+            setSelectedInstruments(matched.length >= 2 ? matched : res.items.slice(0, Math.min(4, res.items.length)));
+          } else {
+            setSelectedInstruments(res.items.slice(0, Math.min(4, res.items.length)));
+          }
         }
       })
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => {
+        setErrorMsg(err.message || 'Failed to load instruments.');
+      });
+  }, [context.symbols]);
 
   // Compute startDate based on range selection
   const getStartDate = (rangeStr: string) => {
@@ -159,26 +174,6 @@ export const CorrelationPage: React.FC = () => {
     }
   };
 
-  // CSV Export of matrix
-  const handleExportCsv = () => {
-    if (!matrixData) return;
-
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    csvContent += 'Symbol,' + matrixData.instruments.join(',') + '\n';
-
-    matrixData.matrix.forEach((row, idx) => {
-      csvContent += matrixData.instruments[idx] + ',' + row.map((v) => (v !== null ? v.toFixed(4) : '')).join(',') + '\n';
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `correlation_matrix_${dateRange}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   // Compute summary stats
   const validPairwise = matrixData ? matrixData.pairwise.filter((p) => p.correlation !== null) : [];
   const avgCorr =
@@ -198,6 +193,9 @@ export const CorrelationPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ label: 'Correlation' }, { label: `${selectedInstruments.length} Assets` }]} />
+      <ResearchContextBar availableInstruments={availableInstruments} showInstrumentSelect={false} />
+
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm">
         <div className="flex items-center space-x-3">
@@ -213,14 +211,78 @@ export const CorrelationPage: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <button
-            onClick={handleExportCsv}
-            disabled={!matrixData}
-            className="flex items-center space-x-1.5 rounded border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
-          >
-            <Download className="h-4 w-4 text-slate-400" />
-            <span>Export Matrix CSV</span>
-          </button>
+          <ExportMenu
+            disabled={!matrixData || selectedInstruments.length < 2}
+            options={[
+              {
+                id: 'corr-matrix-csv',
+                label: 'Correlation Matrix CSV',
+                format: 'csv',
+                url: getCorrelationExportUrl({
+                  format: 'csv',
+                  dataType: 'matrix',
+                  instrumentIds: selectedInstruments.map((i) => i.id),
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Cross-instrument correlation coefficient grid',
+              },
+              {
+                id: 'corr-matrix-json',
+                label: 'Correlation Matrix JSON',
+                format: 'json',
+                url: getCorrelationExportUrl({
+                  format: 'json',
+                  dataType: 'matrix',
+                  instrumentIds: selectedInstruments.map((i) => i.id),
+                  startDate: context.startDate,
+                  endDate: context.endDate,
+                  priceSource,
+                  returnType,
+                }),
+                description: 'Full matrix payload with pairwise statistics',
+              },
+              ...(selectedPair
+                ? [
+                    {
+                      id: 'corr-pair-csv',
+                      label: `Pairwise (${selectedPair.symA}/${selectedPair.symB}) CSV`,
+                      format: 'csv' as const,
+                      url: getCorrelationExportUrl({
+                        format: 'csv',
+                        dataType: 'pairwise',
+                        instrumentA: selectedPair.idA,
+                        instrumentB: selectedPair.idB,
+                        startDate: context.startDate,
+                        endDate: context.endDate,
+                        priceSource,
+                        returnType,
+                      }),
+                      description: 'Pairwise observations and correlation',
+                    },
+                    {
+                      id: 'corr-rolling-csv',
+                      label: `Rolling ${rollingWindow}d (${selectedPair.symA}/${selectedPair.symB}) CSV`,
+                      format: 'csv' as const,
+                      url: getCorrelationExportUrl({
+                        format: 'csv',
+                        dataType: 'rolling',
+                        instrumentA: selectedPair.idA,
+                        instrumentB: selectedPair.idB,
+                        window: rollingWindow,
+                        startDate: context.startDate,
+                        endDate: context.endDate,
+                        priceSource,
+                        returnType,
+                      }),
+                      description: 'Rolling window correlation series',
+                    },
+                  ]
+                : []),
+            ]}
+          />
           <button
             onClick={loadMatrix}
             className="rounded border border-slate-800 bg-slate-950 p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200"

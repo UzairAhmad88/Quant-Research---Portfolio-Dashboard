@@ -1,12 +1,33 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field
+
+class ProviderCapabilities(BaseModel):
+
+    """
+    Metadata describing the supported market-data retrieval capabilities of a provider.
+    """
+    provider_name: str
+    historical: bool = True
+    latest: bool = True
+    intraday: bool = False
+    streaming: bool = False
+    supported_frequencies: List[str] = Field(default_factory=lambda: ["DAILY"])
+    delayed_data: bool = True
+    real_time_data: bool = False
 
 class MarketDataProvider(ABC):
     """
     Abstract Base Class for Market Data Providers.
     Decouples financial research engine from specific third-party market data APIs.
     """
+
+    @property
+    @abstractmethod
+    def capabilities(self) -> ProviderCapabilities:
+        """Supported capabilities of this market-data provider."""
+        pass
 
     @property
     @abstractmethod
@@ -40,6 +61,30 @@ class MarketDataProvider(ABC):
         """
         Fetch historical OHLCV bar series for a given symbol and date range.
         Returns list of normalized dicts with keys: timestamp (UTC datetime), open, high, low, close, adjusted_close, volume.
+        """
+        pass
+
+    @abstractmethod
+    async def get_latest_ohlcv(
+        self,
+        symbol: str,
+        frequency: str = "DAILY"
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve the latest available market observation for a single symbol.
+        Returns normalized dict with keys: timestamp (UTC datetime), open, high, low, close, adjusted_close, volume, provider_symbol.
+        """
+        pass
+
+    @abstractmethod
+    async def get_latest_ohlcv_batch(
+        self,
+        symbols: List[str],
+        frequency: str = "DAILY"
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Retrieve the latest available market observation in batch for multiple symbols.
+        Returns mapping from symbol to normalized bar dict.
         """
         pass
 

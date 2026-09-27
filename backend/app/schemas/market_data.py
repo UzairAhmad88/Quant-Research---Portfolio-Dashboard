@@ -43,21 +43,28 @@ class OHLCVFilter(BaseModel):
     limit: int = Field(default=50, ge=1, le=5000)
     offset: int = Field(default=0, ge=0)
 
+ALLOWED_PROVIDERS = {"yahoo_finance", "yahoo", "YAHOO", "ABSTRACT"}
+
 class MarketDataFetchRequest(BaseModel):
-    instrument_id: Optional[str] = Field(default=None, description="Existing Instrument UUID")
-    symbol: Optional[str] = Field(default=None, description="Ticker symbol (e.g. AAPL, BTC-USD)")
+    instrument_id: Optional[str] = Field(default=None, max_length=64, description="Existing Instrument UUID")
+    symbol: Optional[str] = Field(default=None, max_length=32, description="Ticker symbol (e.g. AAPL, BTC-USD)")
     start_date: Optional[datetime] = Field(default=None, description="Start of historical window")
     end_date: Optional[datetime] = Field(default=None, description="End of historical window")
     frequency: DataFrequency = Field(default=DataFrequency.DAILY)
-    provider: str = Field(default="yahoo_finance", description="Market data provider name")
+    provider: str = Field(default="yahoo_finance", max_length=32, description="Market data provider name")
     force_refresh: bool = Field(default=False, description="Re-fetch requested window regardless of existing DB cache")
 
     @model_validator(mode="after")
     def validate_request(self) -> "MarketDataFetchRequest":
         if not self.instrument_id and not self.symbol:
             raise ValueError("Either instrument_id or symbol must be provided")
-        if self.start_date and self.end_date and self.start_date > self.end_date:
-            raise ValueError("start_date cannot be after end_date")
+        if self.provider.strip().lower() not in [p.lower() for p in ALLOWED_PROVIDERS]:
+            raise ValueError(f"Provider '{self.provider}' is not in the trusted allowlist ({', '.join(sorted(ALLOWED_PROVIDERS))})")
+        if self.start_date and self.end_date:
+            if self.start_date > self.end_date:
+                raise ValueError("start_date cannot be after end_date")
+            if (self.end_date - self.start_date).days > 365 * 35:
+                raise ValueError("Requested historical date range exceeds maximum allowed limit of 35 years.")
         return self
 
 class IngestionSummary(BaseModel):
@@ -122,3 +129,45 @@ class IngestionLogResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class ProviderCapabilitiesResponse(BaseModel):
+    provider_name: str
+    historical: bool = True
+    latest: bool = True
+    intraday: bool = False
+    streaming: bool = False
+    supported_frequencies: List[str] = Field(default_factory=lambda: ["DAILY"])
+    delayed_data: bool = True
+    real_time_data: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+class LatestMarketDataResponse(BaseModel):
+    instrument_id: str
+    symbol: str
+    name: str
+    asset_type: str
+    exchange: str
+    currency: str
+    price: float
+    open: Optional[float] = None
+    high: Optional[float] = None
+    low: Optional[float] = None
+    close: Optional[float] = None
+    adjusted_close: Optional[float] = None
+    volume: Optional[float] = None
+    previous_close: Optional[float] = None
+    change: Optional[float] = None
+    change_pct: Optional[float] = None
+    market_timestamp: datetime
+    received_at: datetime
+    frequency: DataFrequency = DataFrequency.DAILY
+    provider: str
+    provider_symbol: Optional[str] = None
+    freshness: str = "CURRENT"  # CURRENT, RECENT, STALE, UNKNOWN, UNAVAILABLE
+    quality: str = "GOOD"       # GOOD, GOOD_WITH_WARNINGS, INVALID, NO_DATA
+    is_cached: bool = False
+    warning: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+

@@ -11,7 +11,9 @@ import {
   GitMerge,
   Activity,
   Sliders,
-  PlayCircle,
+  SlidersHorizontal,
+  FileText,
+  Download,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -22,11 +24,11 @@ interface NavItem {
   name: string;
   path: string;
   icon: React.ElementType;
-  section: 'RESEARCH' | 'ANALYSIS' | 'STRATEGIES' | 'SYSTEM';
+  section?: 'RESEARCH' | 'ANALYSIS' | 'STRATEGIES' | 'REPORTS' | 'SYSTEM';
 }
 
 const navItems: NavItem[] = [
-  { name: 'Overview', path: '/', icon: LayoutDashboard, section: 'RESEARCH' },
+  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   { name: 'Market Data', path: '/market-data', icon: Database, section: 'RESEARCH' },
   { name: 'Returns', path: '/returns', icon: TrendingUp, section: 'RESEARCH' },
   { name: 'Portfolio', path: '/portfolio', icon: PieChart, section: 'RESEARCH' },
@@ -35,7 +37,10 @@ const navItems: NavItem[] = [
   { name: 'Volatility', path: '/volatility', icon: Activity, section: 'ANALYSIS' },
 
   { name: 'Strategies', path: '/strategies', icon: Sliders, section: 'STRATEGIES' },
-  { name: 'Backtesting', path: '/backtesting', icon: PlayCircle, section: 'STRATEGIES' },
+  { name: 'Backtesting', path: '/backtesting', icon: SlidersHorizontal, section: 'STRATEGIES' },
+
+  { name: 'Reports', path: '/reports', icon: FileText, section: 'REPORTS' },
+  { name: 'Exports', path: '/exports', icon: Download, section: 'REPORTS' },
 
   { name: 'Settings', path: '/settings', icon: Settings, section: 'SYSTEM' },
 ];
@@ -49,9 +54,9 @@ export const Sidebar: React.FC = () => {
   } = useAppStore();
 
   const sidebarContent = (
-    <div className="flex flex-col justify-between h-full">
-      {/* Sidebar Top Branding */}
-      <div className="flex items-center justify-between h-14 px-4 border-b border-[#263244]">
+    <div className="flex flex-col justify-between h-full bg-[#070D18] select-none">
+      {/* Top Branding */}
+      <div className="flex items-center justify-between h-14 px-4 border-b border-[#152136]">
         <MonogramLogo collapsed={isSidebarCollapsed} />
         {isMobileDrawerOpen && (
           <button
@@ -63,27 +68,29 @@ export const Sidebar: React.FC = () => {
         )}
       </div>
 
-      {/* Navigation Items grouped into RESEARCH, ANALYSIS, STRATEGIES, SYSTEM */}
+      {/* Navigation List */}
       <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
         {navItems.map((item, idx) => {
           const Icon = item.icon;
           const showSectionHeader =
             !isSidebarCollapsed &&
+            item.section &&
             (idx === 0 || navItems[idx - 1]?.section !== item.section);
 
           const navLinkContent = (
             <NavLink
               to={item.path}
+              end={item.path === '/'}
               onClick={() => setMobileDrawerOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded text-xs transition-colors group ${
+                `flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[#151F2E] text-[#E5E7EB] font-semibold border-l-2 border-[#3B82F6]'
-                    : 'text-[#94A3B8] hover:bg-[#151F2E]/60 hover:text-[#E5E7EB]'
+                    ? 'bg-[#1D4ED8] text-white shadow-md'
+                    : 'text-[#94A3B8] hover:bg-[#111C30] hover:text-[#E2E8F0]'
                 } ${isSidebarCollapsed ? 'justify-center px-0' : ''}`
               }
             >
-              <Icon className="w-4 h-4 text-[#94A3B8] group-hover:text-[#3B82F6] transition-colors flex-shrink-0" />
+              <Icon className="w-4 h-4 flex-shrink-0" />
               {!isSidebarCollapsed && <span className="truncate">{item.name}</span>}
             </NavLink>
           );
@@ -91,7 +98,7 @@ export const Sidebar: React.FC = () => {
           return (
             <React.Fragment key={item.path}>
               {showSectionHeader && (
-                <div className="px-3 pt-3 pb-1 text-[10px] font-mono-num font-semibold text-[#64748B] tracking-wider uppercase">
+                <div className="px-3 pt-3.5 pb-1 text-[10px] font-semibold text-[#64748B] tracking-wider uppercase font-sans">
                   {item.section}
                 </div>
               )}
@@ -107,11 +114,11 @@ export const Sidebar: React.FC = () => {
         })}
       </div>
 
-      {/* Collapse Footer Toggle */}
-      <div className="p-2 border-t border-[#263244] hidden md:flex items-center justify-between">
+      {/* Collapse Toggle Footer */}
+      <div className="p-2 border-t border-[#152136] hidden md:flex items-center justify-between">
         <button
           onClick={toggleSidebar}
-          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded text-xs text-[#94A3B8] hover:bg-[#151F2E] hover:text-[#E5E7EB] transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded text-xs text-[#64748B] hover:bg-[#111C30] hover:text-[#94A3B8] transition-colors"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isSidebarCollapsed ? (
@@ -119,7 +126,7 @@ export const Sidebar: React.FC = () => {
           ) : (
             <>
               <ChevronLeft className="w-4 h-4" />
-              <span className="text-xs font-mono-num">Collapse Sidebar</span>
+              <span className="text-xs font-sans">Collapse Sidebar</span>
             </>
           )}
         </button>
@@ -129,23 +136,21 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Desktop Persistent Sidebar */}
       <aside
-        className={`hidden md:flex fixed top-0 left-0 bottom-0 z-[100] bg-[#111827] border-r border-[#263244] transition-all duration-200 ease-in-out flex-col ${
-          isSidebarCollapsed ? 'w-16' : 'w-60'
+        className={`hidden md:flex fixed top-0 left-0 bottom-0 z-[100] bg-[#070D18] border-r border-[#152136] transition-all duration-200 ease-in-out flex-col ${
+          isSidebarCollapsed ? 'w-16' : 'w-56'
         }`}
       >
         {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer Navigation */}
       {isMobileDrawerOpen && (
         <div className="md:hidden fixed inset-0 z-[200] flex">
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-xs"
             onClick={() => setMobileDrawerOpen(false)}
           />
-          <aside className="relative w-64 bg-[#111827] border-r border-[#263244] h-full shadow-2xl z-10">
+          <aside className="relative w-56 bg-[#070D18] border-r border-[#152136] h-full shadow-2xl z-10">
             {sidebarContent}
           </aside>
         </div>
