@@ -1,13 +1,10 @@
 {
-  "name": "quant-research-dashboard-monorepo",
+  "name": "quant-research-dashboard",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "npm --prefix frontend run build",
+    "build": "cd frontend && npm install && npm run build && cd .. && node -e \"const fs=require('fs'); fs.cpSync('frontend/dist', 'dist', {recursive: true});\"",
     "dev": "npm --prefix frontend run dev",
     "test": "npm --prefix frontend test"
-  },
-  "workspaces": [
-    "frontend"
-  ]
+  }
 }
