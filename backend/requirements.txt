@@ -9,5 +9,7 @@ pydantic
 pydantic-settings
 httpx
 python-dotenv
+yfinance
+alembic
 pytest
 pytest-asyncio
