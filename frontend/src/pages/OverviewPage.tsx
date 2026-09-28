@@ -11,13 +11,13 @@ import { RecentBacktestsTable } from '../components/dashboard/RecentBacktestsTab
 import { useDashboardOverview } from '../hooks/useDashboard';
 
 export const OverviewPage: React.FC = () => {
-  const { isError, error, refetch, isFetching } = useDashboardOverview();
+  const { refetch, isFetching } = useDashboardOverview();
   const [activeSymbol, setActiveSymbol] = useState<string>('AAPL');
-  const [activeRange, setActiveRange] = useState<string>('1Y');
 
   const handleSelectSymbol = (symbol: string) => {
     setActiveSymbol(symbol);
   };
+
 
   return (
     <div className="space-y-4 max-w-[1600px] mx-auto pb-6">
@@ -25,8 +25,8 @@ export const OverviewPage: React.FC = () => {
       <DashboardHeaderInstitutional
         onRefresh={() => refetch()}
         isFetching={isFetching}
-        onRangeChange={(range) => setActiveRange(range)}
       />
+
 
       {/* 2. 6-Column Interactive KPI Bar with Real-time readouts & Click-through Navigation */}
       <DashboardKPIBar onSelectInstrument={handleSelectSymbol} />

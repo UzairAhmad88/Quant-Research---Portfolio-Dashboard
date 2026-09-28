@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Settings, ChevronDown, TrendingUp, TrendingDown, Maximize2, Activity, Play, Eye } from 'lucide-react';
+import { ChevronDown, Play, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 
 export interface CandleData {
   date: string;
@@ -686,9 +687,10 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           {/* X-Axis Date Labels */}
           {candles
             .filter((_, idx) => idx % Math.ceil(candles.length / 8) === 0 || idx === candles.length - 1)
-            .map((c, idx, arr) => {
+            .map((c) => {
               const originalIdx = candles.findIndex((item) => item.date === c.date);
               const x = 35 + (originalIdx / (candles.length - 1 || 1)) * 650;
+
               return (
                 <text
                   key={c.date}

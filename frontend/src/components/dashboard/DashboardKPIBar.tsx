@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+
 
 interface MetricSparklineProps {
   data: number[];

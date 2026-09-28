@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowRight, RefreshCw, CheckCircle2, ShieldCheck, Database, Zap } from 'lucide-react';
+import { ArrowRight, RefreshCw, ShieldCheck, Database, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
 
 export interface MarketDataStatusWidgetProps {
   activeSymbol?: string;

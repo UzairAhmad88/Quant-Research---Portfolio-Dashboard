@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Play, ArrowRight, CheckCircle2 } from 'lucide-react';
+
 
 export const RecentBacktestsTable: React.FC = () => {
   const navigate = useNavigate();

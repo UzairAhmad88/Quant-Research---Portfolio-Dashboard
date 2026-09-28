@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ArrowUpDown, ChevronUp, ChevronDown, Play, LineChart } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, Play, LineChart } from 'lucide-react';
+
 
 export interface TopInstrumentsTableProps {
   onSelectInstrument?: (symbol: string) => void;

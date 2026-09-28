@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, ArrowRight, ChevronDown } from 'lucide-react';
+import { TrendingUp, ArrowRight } from 'lucide-react';
+
 
 export const PerformanceBenchmarkWidget: React.FC = () => {
   const navigate = useNavigate();

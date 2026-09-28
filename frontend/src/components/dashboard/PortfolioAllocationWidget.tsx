@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PieChart, ArrowRight, ExternalLink } from 'lucide-react';
+import { PieChart, ArrowRight } from 'lucide-react';
 
 export interface PortfolioAllocationWidgetProps {
   onSelectInstrument?: (symbol: string) => void;
@@ -12,9 +12,8 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
   const navigate = useNavigate();
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  const totalPortfolioValue = 1175407.99;
-
   const holdings = [
+
     { symbol: 'AAPL', name: 'Apple Inc.', value: 333815.87, pct: 28.4, color: '#3B82F6' },
     { symbol: 'MSFT', name: 'Microsoft Corp.', value: 259765.17, pct: 22.1, color: '#06B6D4' },
     { symbol: 'NVDA', name: 'NVIDIA Corp.', value: 184539.05, pct: 15.7, color: '#10B981' },
