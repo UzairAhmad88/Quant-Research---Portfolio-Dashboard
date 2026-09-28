@@ -1,7 +1,8 @@
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from app.models.enums import DataFrequency
+from app.models.enums import DataFrequency, AssetType
 from app.repositories.instrument_repository import InstrumentRepository
 from app.repositories.market_data_repository import MarketDataRepository
 from app.services.data_quality_service import DataQualityService
@@ -9,6 +10,9 @@ from app.analytics.returns import ReturnCalculator, AnnualizationConvention, Ret
 from app.schemas.returns import ReturnAnalysisResponse, ReturnSummary, ReturnObservation
 from app.validators import QualityStatus
 from app.core.exceptions import NotFoundError, ValidationError
+
+logger = logging.getLogger("quant_api.services.return_service")
+
 
 class ReturnService:
     def __init__(self, db: Session):
@@ -26,9 +30,35 @@ class ReturnService:
         return_type: str = "simple",
         frequency: DataFrequency = DataFrequency.DAILY
     ) -> ReturnAnalysisResponse:
+        # 1. Resolve Instrument by ID or Symbol
         instrument = self.inst_repo.get_by_id(instrument_id)
         if not instrument:
-            raise NotFoundError(f"Instrument with ID '{instrument_id}' was not found.")
+            clean_sym = (
+                instrument_id.replace("inst-", "")
+                .replace("custom-", "")
+                .strip()
+                .upper()
+            )
+            instrument = self.inst_repo.get_by_symbol(clean_sym)
+            if not instrument:
+                from app.schemas.instrument import InstrumentCreate
+                new_inst = InstrumentCreate(
+                    symbol=clean_sym,
+                    name=f"{clean_sym} Asset",
+                    asset_type=AssetType.EQUITY,
+                    exchange="NASDAQ",
+                    currency="USD",
+                    country="USA",
+                    provider_symbol=clean_sym,
+                    metadata_json={"auto_created": True}
+                )
+                try:
+                    instrument = self.inst_repo.create(new_inst)
+                except Exception:
+                    instrument = self.inst_repo.get_by_symbol(clean_sym)
+
+        if not instrument:
+            raise NotFoundError(f"Instrument with ID or symbol '{instrument_id}' was not found.")
 
         clean_price_source = price_source.lower().strip()
         if clean_price_source not in ("adjusted", "close"):
@@ -38,9 +68,57 @@ class ReturnService:
         if clean_return_type not in ("simple", "log"):
             raise ValidationError("Return type must be either 'simple' or 'log'.")
 
-        # 1. Check Data Quality
+        # 2. Fetch Bars from Database
+        bars = self.market_repo.get_bars(
+            instrument_id=instrument.id,
+            start_date=start_date,
+            end_date=end_date,
+            frequency=frequency,
+            limit=10000
+        )
+
+        # 3. If no bars in DB, attempt on-demand real historical ingestion from Yahoo Finance
+        if not bars:
+            try:
+                import yfinance as yf
+                from app.schemas.market_data import OHLCVCreate
+                from decimal import Decimal
+
+                ticker = yf.Ticker(instrument.symbol)
+                hist = ticker.history(period="5y", interval="1d", auto_adjust=False)
+                if not hist.empty:
+                    for idx, row in hist.iterrows():
+                        bar_dt = idx.to_pydatetime() if hasattr(idx, "to_pydatetime") else idx
+                        if bar_dt.tzinfo is None:
+                            bar_dt = bar_dt.replace(tzinfo=timezone.utc)
+                        bar_data = OHLCVCreate(
+                            instrument_id=instrument.id,
+                            timestamp=bar_dt,
+                            open=Decimal(str(round(row["Open"], 4))),
+                            high=Decimal(str(round(row["High"], 4))),
+                            low=Decimal(str(round(row["Low"], 4))),
+                            close=Decimal(str(round(row["Close"], 4))),
+                            adjusted_close=Decimal(str(round(row.get("Adj Close", row["Close"]), 4))) if "Adj Close" in row else Decimal(str(round(row["Close"], 4))),
+                            volume=int(row["Volume"]),
+                            frequency=frequency,
+                            provider="yahoo_finance",
+                            quality_status=QualityStatus.GOOD
+                        )
+                        self.market_repo.insert_bar(bar_data)
+                    self.db.commit()
+                    bars = self.market_repo.get_bars(
+                        instrument_id=instrument.id,
+                        start_date=start_date,
+                        end_date=end_date,
+                        frequency=frequency,
+                        limit=10000
+                    )
+            except Exception as e:
+                logger.warning(f"On-demand historical ingestion failed for {instrument.symbol}: {e}")
+
+        # 4. Check Data Quality
         quality_report = self.quality_service.get_instrument_quality_report(
-            instrument_id=instrument_id,
+            instrument_id=instrument.id,
             start_date=start_date,
             end_date=end_date,
             frequency=frequency
@@ -51,15 +129,6 @@ class ReturnService:
             raise ValidationError("Market data failed validation and cannot be used for return analysis.")
         elif quality_report.status == QualityStatus.GOOD_WITH_WARNINGS:
             quality_warning = "Dataset contains non-fatal quality warnings."
-
-        # 2. Fetch Bars
-        bars = self.market_repo.get_bars(
-            instrument_id=instrument_id,
-            start_date=start_date,
-            end_date=end_date,
-            frequency=frequency,
-            limit=10000
-        )
 
         if not bars:
             factor = AnnualizationConvention.get_annualization_factor(instrument.asset_type)
