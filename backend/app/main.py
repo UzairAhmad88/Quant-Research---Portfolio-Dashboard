@@ -23,6 +23,11 @@ async def lifespan(app: FastAPI):
     # Enforce security validation & log start
     settings.validate_production_security()
     logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION} [{settings.ENVIRONMENT}]")
+    try:
+        from app.db.seed import seed_reference_data
+        seed_reference_data()
+    except Exception as e:
+        logger.warning(f"Startup instrument seeding warning: {e}")
     yield
     # Graceful shutdown hook
     logger.info(f"Shutting down {settings.PROJECT_NAME} gracefully...")

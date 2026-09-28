@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, IChartApi, LineSeries, HistogramSeries } from 'lightweight-charts';
+import { Database, Download } from 'lucide-react';
 import { ReturnObservationItem } from '../../lib/apiClient';
 
 
@@ -10,6 +11,8 @@ interface ReturnChartProps {
   returnType: 'simple' | 'log';
   height?: number;
   isLoading?: boolean;
+  onIngestData?: () => void;
+  isIngesting?: boolean;
 }
 
 export const ReturnChart: React.FC<ReturnChartProps> = ({
@@ -19,6 +22,8 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
   returnType,
   height = 360,
   isLoading = false,
+  onIngestData,
+  isIngesting = false,
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -186,8 +191,28 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
           Calculating return metrics...
         </div>
       ) : series.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[360px] text-xs text-slate-400">
-          No validated market data available for the selected return window.
+        <div className="flex flex-col items-center justify-center h-[360px] p-6 text-center space-y-3 bg-[#0B1220]">
+          <div className="w-10 h-10 rounded-full bg-[#152136] border border-[#263244] flex items-center justify-center text-[#3B82F6]">
+            <Database className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-slate-200">
+              No Validated Market Data Available for {symbol || 'Target'}
+            </div>
+            <p className="text-xs text-slate-400 mt-1 max-w-md">
+              Historical price observations for this instrument have not been ingested for the selected window ({returnType} return).
+            </p>
+          </div>
+          {onIngestData && (
+            <button
+              onClick={onIngestData}
+              disabled={isIngesting}
+              className="mt-2 flex items-center gap-2 px-4 py-2 bg-[#1D4ED8] hover:bg-[#2563EB] disabled:bg-[#1E3A8A]/50 text-xs font-semibold text-white rounded-lg shadow-sm transition-all cursor-pointer"
+            >
+              <Download className={`w-3.5 h-3.5 ${isIngesting ? 'animate-spin' : ''}`} />
+              <span>{isIngesting ? 'Downloading Real Market Data...' : `Download ${symbol || 'Instrument'} Market Data`}</span>
+            </button>
+          )}
         </div>
       ) : (
         <div ref={chartContainerRef} className="w-full h-full" style={{ height: `${height}px` }} />

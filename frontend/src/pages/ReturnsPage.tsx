@@ -7,6 +7,7 @@ import { ReturnChart } from '../components/returns/ReturnChart';
 import {
   fetchInstruments,
   fetchReturns,
+  fetchMarketData,
   InstrumentItem,
   ReturnAnalysisResponse,
 } from '../lib/apiClient';
@@ -18,12 +19,23 @@ import { Breadcrumbs } from '../components/navigation/Breadcrumbs';
 import { ExportMenu } from '../components/common/ExportMenu';
 import { getReturnsExportUrl, triggerDownload } from '../services/exportService';
 
+const DEFAULT_PRESET_INSTRUMENTS: InstrumentItem[] = [
+  { id: 'inst-tsla', symbol: 'TSLA', name: 'Tesla, Inc.', asset_type: 'EQUITY', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-aapl', symbol: 'AAPL', name: 'Apple Inc.', asset_type: 'EQUITY', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-msft', symbol: 'MSFT', name: 'Microsoft Corporation', asset_type: 'EQUITY', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-nvda', symbol: 'NVDA', name: 'NVIDIA Corporation', asset_type: 'EQUITY', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-spy', symbol: 'SPY', name: 'SPDR S&P 500 ETF Trust', asset_type: 'ETF', exchange: 'NYSE Arca', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-qqq', symbol: 'QQQ', name: 'Invesco QQQ Trust', asset_type: 'ETF', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-googl', symbol: 'GOOGL', name: 'Alphabet Inc.', asset_type: 'EQUITY', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'inst-amzn', symbol: 'AMZN', name: 'Amazon.com, Inc.', asset_type: 'EQUITY', exchange: 'NASDAQ', currency: 'USD', active: true, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+];
+
 export const ReturnsPage: React.FC = () => {
   const { context } = useResearchContext();
 
   // Instrument Master State
-  const [instruments, setInstruments] = useState<InstrumentItem[]>([]);
-  const [selectedInstrument, setSelectedInstrument] = useState<InstrumentItem | null>(null);
+  const [instruments, setInstruments] = useState<InstrumentItem[]>(DEFAULT_PRESET_INSTRUMENTS);
+  const [selectedInstrument, setSelectedInstrument] = useState<InstrumentItem | null>(DEFAULT_PRESET_INSTRUMENTS[0]);
 
   // Date Range Presets State
   const todayStr = new Date().toISOString().split('T')[0];
@@ -41,6 +53,7 @@ export const ReturnsPage: React.FC = () => {
   // Return Analysis Data State
   const [returnAnalysis, setReturnAnalysis] = useState<ReturnAnalysisResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isIngesting, setIsIngesting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Table Pagination State
@@ -51,34 +64,140 @@ export const ReturnsPage: React.FC = () => {
   useEffect(() => {
     fetchInstruments({ limit: 100 })
       .then((res) => {
-        setInstruments(res.items);
-        if (res.items.length > 0) {
-          const matched = res.items.find(
-            (i) =>
-              (context.symbol && i.symbol.toUpperCase() === context.symbol.toUpperCase()) ||
-              (context.instrumentId && i.id === context.instrumentId)
-          );
-          setSelectedInstrument(matched || res.items[0]);
-        }
+        const list = res.items.length > 0 ? res.items : DEFAULT_PRESET_INSTRUMENTS;
+        setInstruments(list);
+        const searchSym = (context.symbol || 'TSLA').toUpperCase();
+        const matched = list.find(
+          (i) =>
+            i.symbol.toUpperCase() === searchSym ||
+            (context.instrumentId && i.id === context.instrumentId)
+        );
+        setSelectedInstrument(
+          matched || {
+            id: `custom-${searchSym}`,
+            symbol: searchSym,
+            name: `${searchSym} Asset`,
+            asset_type: 'EQUITY',
+            exchange: 'NASDAQ',
+            currency: 'USD',
+            active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+        );
       })
-      .catch(() => setInstruments([]));
+      .catch(() => {
+        setInstruments(DEFAULT_PRESET_INSTRUMENTS);
+        const searchSym = (context.symbol || 'TSLA').toUpperCase();
+        const matched = DEFAULT_PRESET_INSTRUMENTS.find((i) => i.symbol === searchSym);
+        setSelectedInstrument(matched || DEFAULT_PRESET_INSTRUMENTS[0]);
+      });
   }, [context.symbol, context.instrumentId]);
 
+  // Ingest market data manually or on demand
+  const handleIngestData = async (targetSym?: string) => {
+    const sym = targetSym || selectedInstrument?.symbol || context.symbol || 'TSLA';
+    setIsIngesting(true);
+    setErrorMsg(null);
+    try {
+      await fetchMarketData({
+        symbol: sym,
+        provider: 'yahoo_finance',
+        frequency: 'DAILY',
+        start_date: startDate,
+        end_date: endDate,
+      });
+      const res = await fetchInstruments({ limit: 100 });
+      if (res.items.length > 0) {
+        setInstruments(res.items);
+        const matched = res.items.find((i) => i.symbol.toUpperCase() === sym.toUpperCase());
+        if (matched) {
+          setSelectedInstrument(matched);
+        }
+      }
+      await loadReturnAnalysis(sym);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Market data ingestion failed.');
+    } finally {
+      setIsIngesting(false);
+    }
+  };
+
   // 2. Fetch Return Analysis when parameters change
-  const loadReturnAnalysis = async () => {
-    if (!selectedInstrument) return;
+  const loadReturnAnalysis = async (explicitSym?: string) => {
+    const targetSymbol = explicitSym || selectedInstrument?.symbol || 'TSLA';
     setIsLoading(true);
     setErrorMsg(null);
 
     try {
+      // 1. Resolve true DB instrument UUID
+      let instId = selectedInstrument?.id;
+      if (!instId || instId.startsWith('inst-') || instId.startsWith('custom-')) {
+        const instRes = await fetchInstruments({ limit: 100 }).catch(() => ({ items: [] }));
+        const found = instRes.items.find((i) => i.symbol.toUpperCase() === targetSymbol.toUpperCase());
+        if (found) {
+          instId = found.id;
+          setSelectedInstrument(found);
+        }
+      }
+
+      // 2. If instrument is not yet in database, ingest it from Yahoo Finance
+      if (!instId || instId.startsWith('inst-') || instId.startsWith('custom-')) {
+        await fetchMarketData({
+          symbol: targetSymbol,
+          provider: 'yahoo_finance',
+          frequency: 'DAILY',
+          start_date: startDate,
+          end_date: endDate,
+        }).catch(() => null);
+
+        const instRes = await fetchInstruments({ limit: 100 }).catch(() => ({ items: [] }));
+        const found = instRes.items.find((i) => i.symbol.toUpperCase() === targetSymbol.toUpperCase());
+        if (found) {
+          instId = found.id;
+          setSelectedInstrument(found);
+        }
+      }
+
+      if (!instId) {
+        setIsLoading(false);
+        return;
+      }
+
       const res = await fetchReturns({
-        instrument_id: selectedInstrument.id,
+        instrument_id: instId,
         start_date: new Date(startDate).toISOString(),
         end_date: new Date(endDate).toISOString(),
         price_source: priceSource,
         return_type: returnType,
       });
-      setReturnAnalysis(res);
+
+      if (res.series.length === 0) {
+        // Attempt quick on-demand backfill
+        await fetchMarketData({
+          symbol: targetSymbol,
+          provider: 'yahoo_finance',
+          frequency: 'DAILY',
+          start_date: startDate,
+          end_date: endDate,
+        }).catch(() => null);
+
+        const retryRes = await fetchReturns({
+          instrument_id: instId,
+          start_date: new Date(startDate).toISOString(),
+          end_date: new Date(endDate).toISOString(),
+          price_source: priceSource,
+          return_type: returnType,
+        }).catch(() => null);
+
+        if (retryRes && retryRes.series.length > 0) {
+          setReturnAnalysis(retryRes);
+        } else {
+          setReturnAnalysis(res);
+        }
+      } else {
+        setReturnAnalysis(res);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to calculate return analysis.');
       setReturnAnalysis(null);
@@ -88,8 +207,10 @@ export const ReturnsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadReturnAnalysis();
-  }, [selectedInstrument, startDate, endDate, priceSource, returnType]);
+    if (selectedInstrument) {
+      loadReturnAnalysis();
+    }
+  }, [selectedInstrument?.symbol, startDate, endDate, priceSource, returnType]);
 
   // Handle Preset Button Click
   const handlePresetChange = (preset: string) => {
@@ -201,15 +322,26 @@ export const ReturnsPage: React.FC = () => {
               <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Target:</span>
               <div className="relative">
                 <select
-                  value={selectedInstrument?.id || ''}
+                  value={selectedInstrument?.symbol || ''}
                   onChange={(e) => {
-                    const inst = instruments.find((i) => i.id === e.target.value);
-                    if (inst) setSelectedInstrument(inst);
+                    const sym = e.target.value;
+                    const inst = instruments.find((i) => i.symbol === sym) || {
+                      id: `custom-${sym}`,
+                      symbol: sym,
+                      name: `${sym} Asset`,
+                      asset_type: 'EQUITY',
+                      exchange: 'NASDAQ',
+                      currency: 'USD',
+                      active: true,
+                      created_at: new Date().toISOString(),
+                      updated_at: new Date().toISOString(),
+                    };
+                    setSelectedInstrument(inst);
                   }}
-                  className="bg-[#0F172A] border border-[#263244] text-slate-100 rounded px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                  className="bg-[#0F172A] border border-[#263244] text-slate-100 rounded px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer"
                 >
                   {instruments.map((inst) => (
-                    <option key={inst.id} value={inst.id}>
+                    <option key={inst.symbol} value={inst.symbol}>
                       {inst.symbol} — {inst.name} ({inst.asset_type})
                     </option>
                   ))}
@@ -370,6 +502,8 @@ export const ReturnsPage: React.FC = () => {
           returnType={returnType}
           height={380}
           isLoading={isLoading}
+          onIngestData={() => handleIngestData(selectedInstrument?.symbol)}
+          isIngesting={isIngesting}
         />
       </div>
 

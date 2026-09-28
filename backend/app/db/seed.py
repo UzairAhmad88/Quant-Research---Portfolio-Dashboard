@@ -41,6 +41,56 @@ SEED_INSTRUMENTS = [
         metadata_json={"category": "Large Cap Blend", "sponsor": "State Global Advisors"}
     ),
     InstrumentCreate(
+        symbol="TSLA",
+        name="Tesla, Inc.",
+        asset_type=AssetType.EQUITY,
+        exchange="NASDAQ",
+        currency="USD",
+        country="USA",
+        provider_symbol="TSLA",
+        metadata_json={"sector": "Consumer Cyclical", "industry": "Auto Manufacturers"}
+    ),
+    InstrumentCreate(
+        symbol="NVDA",
+        name="NVIDIA Corporation",
+        asset_type=AssetType.EQUITY,
+        exchange="NASDAQ",
+        currency="USD",
+        country="USA",
+        provider_symbol="NVDA",
+        metadata_json={"sector": "Technology", "industry": "Semiconductors"}
+    ),
+    InstrumentCreate(
+        symbol="QQQ",
+        name="Invesco QQQ Trust Series 1",
+        asset_type=AssetType.ETF,
+        exchange="NASDAQ",
+        currency="USD",
+        country="USA",
+        provider_symbol="QQQ",
+        metadata_json={"category": "Large Cap Growth", "sponsor": "Invesco"}
+    ),
+    InstrumentCreate(
+        symbol="GOOGL",
+        name="Alphabet Inc.",
+        asset_type=AssetType.EQUITY,
+        exchange="NASDAQ",
+        currency="USD",
+        country="USA",
+        provider_symbol="GOOGL",
+        metadata_json={"sector": "Communication Services", "industry": "Internet Content"}
+    ),
+    InstrumentCreate(
+        symbol="AMZN",
+        name="Amazon.com, Inc.",
+        asset_type=AssetType.EQUITY,
+        exchange="NASDAQ",
+        currency="USD",
+        country="USA",
+        provider_symbol="AMZN",
+        metadata_json={"sector": "Consumer Cyclical", "industry": "Internet Retail"}
+    ),
+    InstrumentCreate(
         symbol="BTC/USD",
         name="Bitcoin / US Dollar",
         asset_type=AssetType.CRYPTO,
