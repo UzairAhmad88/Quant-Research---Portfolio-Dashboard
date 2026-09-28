@@ -72,8 +72,30 @@ def root_ready(db: Session = Depends(get_db)):
 def root_version():
     return get_version()
 
+from fastapi import WebSocket, WebSocketDisconnect
+from app.core.websocket_manager import ws_manager
+
+@app.websocket("/ws/market-data")
+async def websocket_market_data(websocket: WebSocket):
+    await ws_manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            try:
+                import json
+                msg = json.loads(data)
+                if msg.get("action") == "subscribe" and "symbols" in msg:
+                    ws_manager.subscribe(websocket, msg["symbols"])
+            except Exception:
+                pass
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
+    except Exception:
+        ws_manager.disconnect(websocket)
+
 # Mount Versioned API v1 Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
 
 if __name__ == "__main__":
     import uvicorn

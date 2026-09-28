@@ -27,6 +27,30 @@ const StrategiesPage = React.lazy(() =>
 const BacktestingPage = React.lazy(() =>
   import('./pages/BacktestingPage').then((m) => ({ default: m.BacktestingPage }))
 );
+const LiveMarketPage = React.lazy(() =>
+  import('./pages/LiveMarketPage').then((m) => ({ default: m.LiveMarketPage }))
+);
+const FeaturesPage = React.lazy(() =>
+  import('./pages/FeaturesPage').then((m) => ({ default: m.FeaturesPage }))
+);
+const RiskPage = React.lazy(() =>
+  import('./pages/RiskPage').then((m) => ({ default: m.RiskPage }))
+);
+const RegimePage = React.lazy(() =>
+  import('./pages/RegimePage').then((m) => ({ default: m.RegimePage }))
+);
+const StrategyLabPage = React.lazy(() =>
+  import('./pages/StrategyLabPage').then((m) => ({ default: m.StrategyLabPage }))
+);
+const MonteCarloPage = React.lazy(() =>
+  import('./pages/MonteCarloPage').then((m) => ({ default: m.MonteCarloPage }))
+);
+const ResearchPage = React.lazy(() =>
+  import('./pages/ResearchPage').then((m) => ({ default: m.ResearchPage }))
+);
+const LearningPage = React.lazy(() =>
+  import('./pages/LearningPage').then((m) => ({ default: m.LearningPage }))
+);
 const SettingsPage = React.lazy(() =>
   import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage }))
 );
@@ -48,15 +72,14 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: (failureCount, error: any) => {
-        // Controlled retry policy: Never retry client-side 4xx errors (validation, not found, insufficient data)
         const status = error?.status || error?.response?.status;
         if (status && status >= 400 && status < 500) {
           return false;
         }
         return failureCount < 2;
       },
-      staleTime: 5 * 60 * 1000, // 5 minutes default freshness
-      gcTime: 30 * 60 * 1000,    // 30 minutes garbage collection lifecycle
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
     },
   },
 });
@@ -74,6 +97,14 @@ export const App: React.FC = () => {
                 element={
                   <ModuleErrorBoundary moduleName="Unified Dashboard">
                     <OverviewPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
+                path="live-market"
+                element={
+                  <ModuleErrorBoundary moduleName="Live Market">
+                    <LiveMarketPage />
                   </ModuleErrorBoundary>
                 }
               />
@@ -118,6 +149,22 @@ export const App: React.FC = () => {
                 }
               />
               <Route
+                path="risk"
+                element={
+                  <ModuleErrorBoundary moduleName="Risk Engine">
+                    <RiskPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
+                path="features"
+                element={
+                  <ModuleErrorBoundary moduleName="Feature Explorer">
+                    <FeaturesPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
                 path="strategies"
                 element={
                   <ModuleErrorBoundary moduleName="Strategy Analytics">
@@ -126,10 +173,50 @@ export const App: React.FC = () => {
                 }
               />
               <Route
+                path="strategy-lab"
+                element={
+                  <ModuleErrorBoundary moduleName="Strategy Parameter Lab">
+                    <StrategyLabPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
                 path="backtesting"
                 element={
                   <ModuleErrorBoundary moduleName="Backtesting Engine">
                     <BacktestingPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
+                path="monte-carlo"
+                element={
+                  <ModuleErrorBoundary moduleName="Monte Carlo Lab">
+                    <MonteCarloPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
+                path="regimes"
+                element={
+                  <ModuleErrorBoundary moduleName="Market Regime Lab">
+                    <RegimePage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
+                path="research"
+                element={
+                  <ModuleErrorBoundary moduleName="Research Notebook">
+                    <ResearchPage />
+                  </ModuleErrorBoundary>
+                }
+              />
+              <Route
+                path="learning"
+                element={
+                  <ModuleErrorBoundary moduleName="Quant Glossary">
+                    <LearningPage />
                   </ModuleErrorBoundary>
                 }
               />
@@ -144,6 +231,7 @@ export const App: React.FC = () => {
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
+
           </Suspense>
         </BrowserRouter>
       </QueryClientProvider>

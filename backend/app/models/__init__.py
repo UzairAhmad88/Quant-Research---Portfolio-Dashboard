@@ -19,6 +19,8 @@ from app.models.portfolio import Portfolio, PortfolioHolding
 from app.models.strategy import StrategyConfiguration, SignalEvent
 from app.models.backtest import Backtest, BacktestTradeEvent, BacktestPortfolioState
 
+from app.models.research import Watchlist, WatchlistItem, AlertRule, ResearchExperiment, ResearchNote
+
 __all__ = [
     "AssetType",
     "DataFrequency",
@@ -42,6 +44,12 @@ __all__ = [
     "Backtest",
     "BacktestTradeEvent",
     "BacktestPortfolioState",
+    "Watchlist",
+    "WatchlistItem",
+    "AlertRule",
+    "ResearchExperiment",
+    "ResearchNote",
 ]
+
 
 

@@ -47,20 +47,27 @@ Quant Research Dashboard is engineered as serious quantitative research software
 
 ---
 
-## 3. Application Routes & Roadmap
+## 3. Application Routes & Workstation Architecture
 
-| Path | Module | Step | Status |
+| Path | Module | Capability & Quant Pipeline | Status |
 | :--- | :--- | :--- | :--- |
-| `/` | Overview & Unified Dashboard | Step 01, 21 | Complete |
-| `/market-data` | Market Data Workspace, Visualization & Data Quality | Step 06..08, 23 | Complete |
-| `/returns` | Return Calculator & Performance Analytics | Step 09 | Complete |
-| `/portfolio` | Portfolio Calculator & Portfolio Analytics | Step 10 | Complete |
-| `/correlation` | Correlation Analyzer & Correlation Matrix | Step 11 | Complete |
-| `/volatility` | Volatility Analyzer & Risk Measurement | Step 12 | Complete |
-| `/strategies` | Strategy Visualization & Signal Research Workspace | Step 13..14 | Complete |
-| `/signals` | Signal Management & Strategy Signal Layer | Step 15 | Complete |
-| `/backtesting` | Backtesting Architecture & Historical Simulation Framework | Step 16..20 | Complete |
-| `/settings` | System Settings & Provider Configuration | Step 02 | Complete |
+| `/` | Overview & Unified Dashboard | Live KPIs, allocation donut, market activity, tracked experiments | Complete |
+| `/live-market` | Live Market Monitor | Real-time WebSocket streaming, watchlists, bid/ask spread tracking | Complete |
+| `/market-data` | Market Data Workspace | Historical OHLCV ingestion, data quality validation, candlestick charts | Complete |
+| `/features` | Feature Engineering Lab | 14+ technical/statistical indicators, distribution metrics, forward return correlation | Complete |
+| `/returns` | Return Calculator & Analytics | Simple/log returns, cumulative curves, CAGR, rolling mean/std | Complete |
+| `/portfolio` | Portfolio Calculator | Asset allocation, rebalancing, return contribution, multi-asset analytics | Complete |
+| `/correlation` | Correlation Analyzer | Pearson correlation matrix, threshold filtering, diversification telemetry | Complete |
+| `/volatility` | Volatility Analyzer | Rolling annualized volatility, Parkinson estimator, drawdown analytics | Complete |
+| `/risk` | Institutional Risk Engine | Parametric & Historical VaR (95%/99%), Expected Shortfall (CVaR), Beta, Sortino | Complete |
+| `/regime` | Market Regime Lab | Trend dispersion, moving average filters, regime transition matrix | Complete |
+| `/strategies` | Strategy Visualization | Moving Average Crossover rules, signal generation, ledger tracking | Complete |
+| `/strategy-lab` | Strategy Robustness Lab | Parameter sweep sensitivity matrix, walk-forward out-of-sample drift analysis | Complete |
+| `/backtesting` | Backtest Execution Engine | Historical trade simulation, slippage modeling, commission accounting | Complete |
+| `/monte-carlo` | Monte Carlo Stress Testing | 5,000-run bootstrap path simulation, terminal percentile distribution, drawdown risk | Complete |
+| `/research` | Experiment Tracker & Lineage | Hypothesis tracking, immutable research fingerprints (`EXP-0042`), data provenance | Complete |
+| `/learning` | Quant Learning Mode | Interactive formula inspector, mathematical definitions, practical trading limitations | Complete |
+| `/settings` | System Settings & Providers | Provider credentials, Supabase database status, WebSocket telemetry | Complete |
 
 ---
 

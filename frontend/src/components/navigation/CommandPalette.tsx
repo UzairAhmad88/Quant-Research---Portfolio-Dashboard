@@ -1,170 +1,154 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '../../store/appStore';
-import { Input } from '../ui/Input';
 import {
   Search,
-  LayoutDashboard,
-  Database,
-  TrendingUp,
+  LineChart,
   PieChart,
-  GitMerge,
+  Scale,
+  Network,
   Activity,
+  Zap,
+  Play,
+  FlaskConical,
+  BookOpen,
+  FileText,
   Sliders,
-  PlayCircle,
-  Settings,
-  ArrowRight,
+  ShieldAlert,
+  Sparkles,
+  X,
 } from 'lucide-react';
-
-import { useResearchContext } from '../../hooks/useResearchContext';
 
 interface CommandItem {
   id: string;
-  name: string;
-  section: string;
-  path: string;
-  icon: React.ElementType;
+  title: string;
+  category: string;
+  shortcut?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  route: string;
 }
 
 export const CommandPalette: React.FC = () => {
-  const navigate = useNavigate();
-  const { context, buildUrl } = useResearchContext();
-  const { isCommandPaletteOpen, setCommandPaletteOpen } = useAppStore();
+  const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const navigate = useNavigate();
 
-  const activeSymbol = context.symbol;
-
-  const baseCommands: CommandItem[] = [
-    { id: 'cmd-overview', name: 'Overview & Platform Status', section: 'RESEARCH', path: '/', icon: LayoutDashboard },
-    { id: 'cmd-market-data', name: activeSymbol ? `Market Data Ingestion (${activeSymbol})` : 'Market Data Ingestion', section: 'RESEARCH', path: '/market-data', icon: Database },
-    { id: 'cmd-returns', name: activeSymbol ? `Calculate Returns for ${activeSymbol}` : 'Return Calculator & Performance', section: 'RESEARCH', path: '/returns', icon: TrendingUp },
-    { id: 'cmd-portfolio', name: 'Portfolio Allocation & Risk', section: 'RESEARCH', path: '/portfolio', icon: PieChart },
-    { id: 'cmd-correlation', name: activeSymbol ? `Correlation Matrix (incl. ${activeSymbol})` : 'Correlation Matrix & Covariance', section: 'ANALYSIS', path: '/correlation', icon: GitMerge },
-    { id: 'cmd-volatility', name: activeSymbol ? `Analyze Volatility for ${activeSymbol}` : 'Volatility Engine & Risk', section: 'ANALYSIS', path: '/volatility', icon: Activity },
-    { id: 'cmd-strategies', name: activeSymbol ? `Calibrate Strategy for ${activeSymbol}` : 'Quantitative Trading Strategies', section: 'STRATEGIES', path: '/strategies', icon: Sliders },
-    { id: 'cmd-backtesting', name: activeSymbol ? `Run Backtest Simulation (${activeSymbol})` : 'Backtesting Simulator Engine', section: 'STRATEGIES', path: '/backtesting', icon: PlayCircle },
-    { id: 'cmd-settings', name: 'System Settings & Provider Config', section: 'SYSTEM', path: '/settings', icon: Settings },
+  const commands: CommandItem[] = [
+    { id: 'dash', title: 'Research Dashboard Overview', category: 'Navigation', icon: Sparkles, route: '/' },
+    { id: 'live', title: 'Live Market Monitor & Watchlists', category: 'Market Data', icon: Activity, route: '/live-market' },
+    { id: 'mkt', title: 'Market Data & Historical Ingestion', category: 'Market Data', icon: LineChart, route: '/market-data' },
+    { id: 'ret', title: 'Return Calculator & CAGR Analytics', category: 'Analytics', icon: Scale, route: '/returns' },
+    { id: 'vol', title: 'Volatility Analyzer & Rolling Variance', category: 'Analytics', icon: Activity, route: '/volatility' },
+    { id: 'corr', title: 'Correlation Matrix & Asset Networks', category: 'Analytics', icon: Network, route: '/correlation' },
+    { id: 'feat', title: 'Feature Engineering & Factor Explorer', category: 'Quant Lab', icon: Zap, route: '/features' },
+    { id: 'risk', title: 'Advanced Risk Engine (VaR, ES, Beta)', category: 'Risk', icon: ShieldAlert, route: '/risk' },
+    { id: 'regime', title: 'Market Regime Lab (Bull/Bear/Turbulence)', category: 'Quant Lab', icon: Activity, route: '/regimes' },
+    { id: 'strat', title: 'Strategy Lab & Signal Engine', category: 'Strategies', icon: Sliders, route: '/strategies' },
+    { id: 'sweep', title: 'Parameter Sweep & Walk-Forward Lab', category: 'Strategies', icon: Sliders, route: '/strategy-lab' },
+    { id: 'bt', title: 'Backtesting Engine & Simulation', category: 'Backtesting', icon: Play, route: '/backtesting' },
+    { id: 'mc', title: 'Monte Carlo Stress-Testing Lab', category: 'Backtesting', icon: FlaskConical, route: '/monte-carlo' },
+    { id: 'notes', title: 'Research Notebook & Experiment Tracker', category: 'Research', icon: FileText, route: '/research' },
+    { id: 'glossary', title: 'Quant Glossary & Formula Inspector', category: 'Education', icon: BookOpen, route: '/learning' },
+    { id: 'port', title: 'Portfolio Management & Position Analytics', category: 'Portfolios', icon: PieChart, route: '/portfolios' },
   ];
-
-  const filteredCommands = baseCommands.filter((cmd) =>
-    cmd.name.toLowerCase().includes(query.toLowerCase()) ||
-    cmd.section.toLowerCase().includes(query.toLowerCase())
-  );
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setCommandPaletteOpen(!isCommandPaletteOpen);
+        setIsOpen((prev) => !prev);
+      }
+      if (e.key === 'Escape') {
+        setIsOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isCommandPaletteOpen, setCommandPaletteOpen]);
+  }, []);
 
-  if (!isCommandPaletteOpen) return null;
+  const filteredCommands = commands.filter(
+    (c) =>
+      c.title.toLowerCase().includes(query.toLowerCase()) ||
+      c.category.toLowerCase().includes(query.toLowerCase())
+  );
 
-  const handleSelect = (path: string) => {
-    const url = buildUrl(path);
-    navigate(url);
-    setCommandPaletteOpen(false);
+  const handleSelect = (route: string) => {
+    navigate(route);
+    setIsOpen(false);
     setQuery('');
   };
 
-  const handleKeyNavigation = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % (filteredCommands.length || 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + filteredCommands.length) % (filteredCommands.length || 1));
-    } else if (e.key === 'Enter' && filteredCommands[selectedIndex]) {
-      e.preventDefault();
-      handleSelect(filteredCommands[selectedIndex].path);
-    } else if (e.key === 'Escape') {
-      setCommandPaletteOpen(false);
-    }
-  };
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-start justify-center pt-20 p-4">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-xs"
-        onClick={() => setCommandPaletteOpen(false)}
-      />
-
-      {/* Command Palette Modal */}
-      <div
-        className="relative w-full max-w-xl bg-[#151F2E] border border-[#263244] rounded-md shadow-2xl overflow-hidden text-[#E5E7EB] z-10 flex flex-col"
-        onKeyDown={handleKeyNavigation}
-      >
-        <div className="p-3 border-b border-[#263244] bg-[#111827]">
-          <Input
-            autoFocus
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-[#0A101D] border border-[#1E3A8A] rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        {/* Search Header */}
+        <div className="flex items-center px-4 py-3 border-b border-[#17253D]">
+          <Search className="w-5 h-5 text-[#3B82F6] shrink-0" />
+          <input
             type="text"
-            placeholder="Type a command or search pages (e.g. Portfolio, Risk, Settings)..."
+            placeholder="Type a command, tool, or search workspace (e.g. Backtest, VaR, RSI, Monte Carlo)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            icon={<Search className="w-4 h-4 text-[#3B82F6]" />}
-            className="bg-[#151F2E] text-sm"
+            autoFocus
+            className="w-full bg-transparent pl-3 pr-2 text-sm text-white placeholder-[#64748B] outline-none"
           />
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="px-1.5 py-0.5 text-[10px] font-mono-num bg-[#152136] text-[#94A3B8] rounded border border-[#17253D]">
+              ESC
+            </span>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-[#152136] text-[#94A3B8] hover:text-white rounded"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        <div className="max-h-80 overflow-y-auto p-2 space-y-1">
+        {/* Results List */}
+        <div className="max-h-96 overflow-y-auto p-2 space-y-1">
           {filteredCommands.length === 0 ? (
-            <div className="p-6 text-center text-xs text-[#94A3B8]">
-              No matching pages or commands found.
+            <div className="py-8 text-center text-xs text-[#64748B]">
+              No matching quant modules or tools found.
             </div>
           ) : (
-            filteredCommands.map((cmd, idx) => {
-              const Icon = cmd.icon;
-              const isSelected = idx === selectedIndex;
+            filteredCommands.map((cmd) => {
+              const IconComp = cmd.icon;
               return (
                 <button
                   key={cmd.id}
-                  onClick={() => handleSelect(cmd.path)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded text-xs transition-colors ${
-                    isSelected
-                      ? 'bg-[#3B82F6] text-white'
-                      : 'text-[#94A3B8] hover:bg-[#1C2A3E] hover:text-[#E5E7EB]'
-                  }`}
+                  onClick={() => handleSelect(cmd.route)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#152136] text-left transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-[#3B82F6]'}`} />
-                    <span className="font-medium truncate">{cmd.name}</span>
+                    <div className="p-1.5 rounded bg-[#1E3A8A]/30 text-[#60A5FA] group-hover:text-white group-hover:bg-[#1D4ED8] transition-colors">
+                      <IconComp className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-[#E2E8F0] group-hover:text-white">
+                        {cmd.title}
+                      </div>
+                      <div className="text-[10px] text-[#64748B]">{cmd.category}</div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[10px] font-mono-num px-1.5 py-0.5 rounded border uppercase ${
-                        isSelected
-                          ? 'bg-white/20 text-white border-transparent'
-                          : 'bg-[#111827] text-[#64748B] border-[#263244]'
-                      }`}
-                    >
-                      {cmd.section}
-                    </span>
-                    <ArrowRight className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'opacity-40'}`} />
-                  </div>
+                  <span className="text-[10px] text-[#3B82F6] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                    Open →
+                  </span>
                 </button>
               );
             })
           )}
         </div>
 
-        <div className="px-4 py-2 bg-[#111827] border-t border-[#263244] flex items-center justify-between text-[10px] font-mono-num text-[#64748B]">
-          <span>
-            Use <kbd className="px-1 py-0.5 rounded bg-[#151F2E] border border-[#263244]">↑</kbd>{' '}
-            <kbd className="px-1 py-0.5 rounded bg-[#151F2E] border border-[#263244]">↓</kbd> to navigate
-          </span>
-          <span>
-            Press <kbd className="px-1 py-0.5 rounded bg-[#151F2E] border border-[#263244]">Esc</kbd> to exit
-          </span>
+        {/* Footer */}
+        <div className="px-4 py-2 bg-[#070D18] border-t border-[#17253D] flex items-center justify-between text-[11px] text-[#64748B]">
+          <span>Institutional Quant Workstation</span>
+          <div className="flex items-center gap-2">
+            <span>Navigate: <kbd className="text-[#94A3B8]">↑↓</kbd></span>
+            <span>Select: <kbd className="text-[#94A3B8]">↵</kbd></span>
+            <span>Toggle: <kbd className="text-[#94A3B8]">Ctrl+K</kbd></span>
+          </div>
         </div>
       </div>
     </div>

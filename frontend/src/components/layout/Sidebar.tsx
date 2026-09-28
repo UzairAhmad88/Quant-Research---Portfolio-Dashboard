@@ -13,8 +13,11 @@ import {
   Sliders,
   SlidersHorizontal,
   FileText,
-  Download,
   Settings,
+  Zap,
+  ShieldAlert,
+  FlaskConical,
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   X,
@@ -24,26 +27,33 @@ interface NavItem {
   name: string;
   path: string;
   icon: React.ElementType;
-  section?: 'RESEARCH' | 'ANALYSIS' | 'STRATEGIES' | 'REPORTS' | 'SYSTEM';
+  section?: 'RESEARCH' | 'ANALYSIS' | 'STRATEGIES' | 'LABS' | 'SYSTEM';
 }
 
 const navItems: NavItem[] = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'Live Market', path: '/live-market', icon: Activity, section: 'RESEARCH' },
   { name: 'Market Data', path: '/market-data', icon: Database, section: 'RESEARCH' },
   { name: 'Returns', path: '/returns', icon: TrendingUp, section: 'RESEARCH' },
   { name: 'Portfolio', path: '/portfolio', icon: PieChart, section: 'RESEARCH' },
 
   { name: 'Correlation', path: '/correlation', icon: GitMerge, section: 'ANALYSIS' },
   { name: 'Volatility', path: '/volatility', icon: Activity, section: 'ANALYSIS' },
+  { name: 'Risk Engine', path: '/risk', icon: ShieldAlert, section: 'ANALYSIS' },
+  { name: 'Feature Explorer', path: '/features', icon: Zap, section: 'ANALYSIS' },
 
   { name: 'Strategies', path: '/strategies', icon: Sliders, section: 'STRATEGIES' },
+  { name: 'Parameter Lab', path: '/strategy-lab', icon: SlidersHorizontal, section: 'STRATEGIES' },
   { name: 'Backtesting', path: '/backtesting', icon: SlidersHorizontal, section: 'STRATEGIES' },
+  { name: 'Monte Carlo', path: '/monte-carlo', icon: FlaskConical, section: 'STRATEGIES' },
 
-  { name: 'Reports', path: '/reports', icon: FileText, section: 'REPORTS' },
-  { name: 'Exports', path: '/exports', icon: Download, section: 'REPORTS' },
+  { name: 'Regime Lab', path: '/regimes', icon: Activity, section: 'LABS' },
+  { name: 'Research Notes', path: '/research', icon: FileText, section: 'LABS' },
+  { name: 'Quant Glossary', path: '/learning', icon: BookOpen, section: 'LABS' },
 
   { name: 'Settings', path: '/settings', icon: Settings, section: 'SYSTEM' },
 ];
+
 
 export const Sidebar: React.FC = () => {
   const {
