@@ -13,12 +13,11 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const holdings = [
-
-    { symbol: 'AAPL', name: 'Apple Inc.', value: 333815.87, pct: 28.4, color: '#3B82F6' },
-    { symbol: 'MSFT', name: 'Microsoft Corp.', value: 259765.17, pct: 22.1, color: '#06B6D4' },
-    { symbol: 'NVDA', name: 'NVIDIA Corp.', value: 184539.05, pct: 15.7, color: '#10B981' },
-    { symbol: 'SPY', name: 'SPDR S&P 500 ETF', value: 144575.18, pct: 12.3, color: '#F59E0B' },
-    { symbol: 'QQQ', name: 'Invesco QQQ Trust', value: 138698.14, pct: 11.8, color: '#A855F7' },
+    { symbol: 'AAPL', name: 'Apple Inc.', value: 333815.87, pct: 28.4, color: '#14532D' },
+    { symbol: 'MSFT', name: 'Microsoft Corp.', value: 259765.17, pct: 22.1, color: '#166534' },
+    { symbol: 'NVDA', name: 'NVIDIA Corp.', value: 184539.05, pct: 15.7, color: '#15803D' },
+    { symbol: 'SPY', name: 'SPDR S&P 500 ETF', value: 144575.18, pct: 12.3, color: '#D97706' },
+    { symbol: 'QQQ', name: 'Invesco QQQ Trust', value: 138698.14, pct: 11.8, color: '#2563EB' },
     { symbol: 'CASH', name: 'USD Yield Buffer', value: 114014.58, pct: 9.7, color: '#64748B' },
   ];
 
@@ -38,16 +37,16 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
   };
 
   return (
-    <div className="bg-[#0D1525] border border-[#17253D] rounded-lg p-4 shadow-md flex flex-col justify-between">
+    <div className="bg-white border border-[#E5E7EB] rounded-[10px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
       {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-[#17253D]">
+      <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-2">
-          <PieChart className="w-4 h-4 text-[#3B82F6]" />
-          <h3 className="text-sm font-bold text-white tracking-tight">Portfolio Allocation (Alpha Tech)</h3>
+          <PieChart className="w-4 h-4 text-[#14532D]" />
+          <h3 className="text-sm font-bold text-[#17211B] tracking-tight">Portfolio Allocation (Alpha Tech)</h3>
         </div>
         <button
           onClick={() => navigate('/portfolios')}
-          className="text-xs text-[#3B82F6] hover:text-[#60A5FA] flex items-center gap-1 font-medium group transition-colors"
+          className="text-xs text-[#14532D] hover:text-[#166534] flex items-center gap-1 font-semibold group transition-colors"
         >
           Manage <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
         </button>
@@ -79,7 +78,7 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
                   onMouseLeave={() => setHoveredIdx(null)}
                   onClick={() => handleHoldingClick(item.symbol)}
                   className="transition-all duration-200 cursor-pointer"
-                  opacity={hoveredIdx === null || isHovered ? 1 : 0.45}
+                  opacity={hoveredIdx === null || isHovered ? 1 : 0.55}
                 />
               );
             })}
@@ -87,10 +86,10 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
 
           {/* Donut Center Dynamic Info */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-            <span className="text-base font-bold font-mono-num text-white">
+            <span className="text-base font-bold font-mono-num text-[#17211B]">
               {activeHolding ? `$${activeHolding.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '$1,175,408'}
             </span>
-            <span className="text-[10px] text-[#94A3B8] uppercase tracking-wider font-semibold">
+            <span className="text-[10px] text-[#64748B] uppercase tracking-wider font-semibold">
               {activeHolding ? `${activeHolding.symbol} (${activeHolding.pct}%)` : 'Total Alpha Value'}
             </span>
           </div>
@@ -108,8 +107,8 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
                 onClick={() => handleHoldingClick(item.symbol)}
                 role="button"
                 tabIndex={0}
-                className={`flex items-center justify-between p-1 rounded text-xs transition-all cursor-pointer ${
-                  isHovered ? 'bg-[#152136] scale-[1.02]' : 'hover:bg-[#152136]/50'
+                className={`flex items-center justify-between p-1.5 rounded-md text-xs transition-all cursor-pointer ${
+                  isHovered ? 'bg-[#F0FDF4] scale-[1.02]' : 'hover:bg-[#F8FAF9]'
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
@@ -120,13 +119,13 @@ export const PortfolioAllocationWidget: React.FC<PortfolioAllocationWidgetProps>
                       transform: isHovered ? 'scale(1.3)' : 'scale(1)',
                     }}
                   ></span>
-                  <span className="font-semibold text-[#E2E8F0] group-hover:text-white truncate">
+                  <span className="font-semibold text-[#17211B] group-hover:text-[#14532D] truncate">
                     {item.symbol}
                   </span>
                   <span className="text-[10px] text-[#64748B] hidden md:inline truncate">{item.name}</span>
                 </div>
                 <div className="text-right font-mono-num shrink-0">
-                  <span className="text-[#E2E8F0] font-medium">{item.pct.toFixed(1)}%</span>
+                  <span className="text-[#17211B] font-medium">{item.pct.toFixed(1)}%</span>
                   <span className="text-[10px] text-[#64748B] ml-1.5 hidden lg:inline">
                     ${(item.value / 1000).toFixed(0)}k
                   </span>

@@ -315,11 +315,11 @@ export const ReturnsPage: React.FC = () => {
       </div>
       {/* Research Controls Toolbar */}
       <div className="col-span-12">
-        <Card className="p-4 bg-[#151F2E] border-[#263244] text-slate-200">
+        <Card className="p-4 bg-card border-border text-text-primary shadow-xs">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Instrument Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Target:</span>
+              <span className="text-xs text-text-secondary font-medium uppercase tracking-wider">Target:</span>
               <div className="relative">
                 <select
                   value={selectedInstrument?.symbol || ''}
@@ -338,7 +338,7 @@ export const ReturnsPage: React.FC = () => {
                     };
                     setSelectedInstrument(inst);
                   }}
-                  className="bg-[#0F172A] border border-[#263244] text-slate-100 rounded px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer"
+                  className="bg-surface border border-border text-text-primary rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-brand-primary cursor-pointer"
                 >
                   {instruments.map((inst) => (
                     <option key={inst.symbol} value={inst.symbol}>
@@ -350,15 +350,15 @@ export const ReturnsPage: React.FC = () => {
             </div>
 
             {/* Date Presets */}
-            <div className="flex items-center gap-1 bg-[#0F172A] p-1 rounded border border-[#263244]">
+            <div className="flex items-center gap-1 bg-surface p-1 rounded-lg border border-border">
               {['1M', '3M', '6M', '1Y', '3Y', '5Y', 'MAX'].map((preset) => (
                 <button
                   key={preset}
                   onClick={() => handlePresetChange(preset)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors ${
+                  className={`px-2.5 py-1 text-xs font-mono rounded-md transition-colors ${
                     activePreset === preset
-                      ? 'bg-blue-600 text-white font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#1E293B]'
+                      ? 'bg-brand-primary text-white font-semibold'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                   }`}
                 >
                   {preset}
@@ -370,23 +370,23 @@ export const ReturnsPage: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* Price Source */}
               <div className="flex items-center gap-1 text-xs">
-                <span className="text-slate-400">Price:</span>
+                <span className="text-text-secondary">Price:</span>
                 <button
                   onClick={() => setPriceSource('adjusted')}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     priceSource === 'adjusted'
-                      ? 'bg-[#1E293B] text-blue-400 border border-blue-500/50 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-brand-primary/10 text-brand-primary border border-brand-primary/30 font-semibold'
+                      : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
                   Adjusted
                 </button>
                 <button
                   onClick={() => setPriceSource('close')}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     priceSource === 'close'
-                      ? 'bg-[#1E293B] text-blue-400 border border-blue-500/50 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-brand-primary/10 text-brand-primary border border-brand-primary/30 font-semibold'
+                      : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
                   Close
@@ -394,24 +394,24 @@ export const ReturnsPage: React.FC = () => {
               </div>
 
               {/* Return Type */}
-              <div className="flex items-center gap-1 text-xs border-l border-[#263244] pl-3">
-                <span className="text-slate-400">Return:</span>
+              <div className="flex items-center gap-1 text-xs border-l border-border pl-3">
+                <span className="text-text-secondary">Return:</span>
                 <button
                   onClick={() => setReturnType('simple')}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     returnType === 'simple'
-                      ? 'bg-[#1E293B] text-emerald-400 border border-emerald-500/50 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold'
+                      : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
                   Simple
                 </button>
                 <button
                   onClick={() => setReturnType('log')}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     returnType === 'log'
-                      ? 'bg-[#1E293B] text-emerald-400 border border-emerald-500/50 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold'
+                      : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
                   Log
@@ -419,23 +419,23 @@ export const ReturnsPage: React.FC = () => {
               </div>
 
               {/* Chart Mode */}
-              <div className="flex items-center gap-1 text-xs border-l border-[#263244] pl-3">
+              <div className="flex items-center gap-1 text-xs border-l border-border pl-3">
                 <button
                   onClick={() => setChartMode('cumulative')}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     chartMode === 'cumulative'
-                      ? 'bg-blue-600 text-white font-semibold'
-                      : 'bg-[#0F172A] text-slate-300 hover:bg-[#1E293B]'
+                      ? 'bg-brand-primary text-white font-semibold'
+                      : 'bg-surface text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'
                   }`}
                 >
                   Cumulative Chart
                 </button>
                 <button
                   onClick={() => setChartMode('periodic')}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     chartMode === 'periodic'
-                      ? 'bg-blue-600 text-white font-semibold'
-                      : 'bg-[#0F172A] text-slate-300 hover:bg-[#1E293B]'
+                      ? 'bg-brand-primary text-white font-semibold'
+                      : 'bg-surface text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'
                   }`}
                 >
                   Periodic Bars
@@ -449,8 +449,8 @@ export const ReturnsPage: React.FC = () => {
       {/* Error / Validation Warning State */}
       {errorMsg && (
         <div className="col-span-12">
-          <div className="p-3 bg-red-950/40 border border-red-800 rounded-lg text-xs font-mono text-red-300 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-mono text-rose-800 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         </div>
@@ -528,19 +528,19 @@ export const ReturnsPage: React.FC = () => {
                 }
               }}
               disabled={series.length === 0 || !selectedInstrument}
-              className="flex items-center gap-1.5 px-3 py-1 bg-[#1E293B] hover:bg-[#263244] text-slate-100 rounded text-xs font-medium transition-colors disabled:opacity-40 border border-[#263244]"
+              className="flex items-center gap-1.5 px-3 py-1 bg-surface hover:bg-surface-hover text-text-primary rounded-lg text-xs font-medium transition-colors disabled:opacity-40 border border-border"
             >
-              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-400" />
+              <FileSpreadsheet className="h-3.5 w-3.5 text-brand-primary" />
               Export Return CSV
             </button>
           }
         >
           {isLoading ? (
-            <div className="py-12 text-center text-xs font-mono text-slate-400 animate-pulse">
+            <div className="py-12 text-center text-xs font-mono text-text-secondary animate-pulse">
               Computing return series...
             </div>
           ) : series.length === 0 ? (
-            <div className="py-12 text-center text-xs text-slate-400">
+            <div className="py-12 text-center text-xs text-text-secondary">
               No return records computed. Ensure market data exists for the selected date range.
             </div>
           ) : (
@@ -548,7 +548,7 @@ export const ReturnsPage: React.FC = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-[#263244] bg-[#0F172A] text-slate-400 uppercase text-[10px]">
+                    <tr className="border-b border-border bg-surface text-text-secondary uppercase text-[10px]">
                       <th className="py-2.5 px-3">Date</th>
                       <th className="py-2.5 px-3 text-right">Price ({priceSource})</th>
                       <th className="py-2.5 px-3 text-right">Simple Return (R_t)</th>
@@ -556,31 +556,31 @@ export const ReturnsPage: React.FC = () => {
                       <th className="py-2.5 px-3 text-right">Cumulative (C_t)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1E293B] text-slate-200">
+                  <tbody className="divide-y divide-border text-text-primary">
                     {displayedSeries.map((obs, idx) => (
-                      <tr key={idx} className="hover:bg-[#1E293B]/40">
-                        <td className="py-2 px-3 text-slate-400">{obs.timestamp.split('T')[0]}</td>
-                        <td className="py-2 px-3 text-right font-semibold text-slate-100">${obs.price.toFixed(2)}</td>
-                        <td className="py-2 px-3 text-right">
+                      <tr key={idx} className="hover:bg-surface/60 transition-colors">
+                        <td className="py-2 px-3 text-text-secondary">{obs.timestamp.split('T')[0]}</td>
+                        <td className="py-2 px-3 text-right font-semibold text-text-primary">${obs.price.toFixed(2)}</td>
+                        <td className="py-2 px-3 text-right font-semibold">
                           {obs.simple_return !== undefined && obs.simple_return !== null ? (
-                            <span className={obs.simple_return >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                            <span className={obs.simple_return >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
                               {obs.simple_return >= 0 ? '+' : ''}{(obs.simple_return * 100).toFixed(2)}%
                             </span>
                           ) : (
-                            <span className="text-slate-500">—</span>
+                            <span className="text-text-muted">—</span>
                           )}
                         </td>
-                        <td className="py-2 px-3 text-right text-slate-300">
+                        <td className="py-2 px-3 text-right text-text-secondary font-semibold">
                           {obs.log_return !== undefined && obs.log_return !== null ? (
-                            <span className={obs.log_return >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                            <span className={obs.log_return >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
                               {obs.log_return >= 0 ? '+' : ''}{(obs.log_return * 100).toFixed(2)}%
                             </span>
                           ) : (
-                            <span className="text-slate-500">—</span>
+                            <span className="text-text-muted">—</span>
                           )}
                         </td>
                         <td className="py-2 px-3 text-right font-semibold">
-                          <span className={obs.cumulative_return >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                          <span className={obs.cumulative_return >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
                             {obs.cumulative_return >= 0 ? '+' : ''}{(obs.cumulative_return * 100).toFixed(2)}%
                           </span>
                         </td>
@@ -592,7 +592,7 @@ export const ReturnsPage: React.FC = () => {
 
               {/* Table Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between p-3 border-t border-[#263244] bg-[#0F172A] text-xs font-mono text-slate-400 mt-2">
+                <div className="flex items-center justify-between p-3 border-t border-border bg-surface text-xs font-mono text-text-secondary mt-2 rounded-b-lg">
                   <span>
                     Page {page} of {totalPages} ({totalItems} records)
                   </span>
@@ -600,14 +600,14 @@ export const ReturnsPage: React.FC = () => {
                     <button
                       onClick={() => setPage((p) => Math.max(p - 1, 1))}
                       disabled={page === 1}
-                      className="px-2.5 py-1 bg-[#1E293B] hover:bg-[#28354A] text-slate-200 rounded disabled:opacity-40"
+                      className="px-2.5 py-1 bg-card border border-border hover:bg-surface-hover text-text-primary rounded-lg disabled:opacity-40"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                       disabled={page === totalPages}
-                      className="px-2.5 py-1 bg-[#1E293B] hover:bg-[#28354A] text-slate-200 rounded disabled:opacity-40"
+                      className="px-2.5 py-1 bg-card border border-border hover:bg-surface-hover text-text-primary rounded-lg disabled:opacity-40"
                     >
                       Next
                     </button>

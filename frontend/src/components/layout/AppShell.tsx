@@ -10,7 +10,7 @@ export const AppShell: React.FC = () => {
   const { isSidebarCollapsed } = useAppStore();
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-[#E5E7EB] flex">
+    <div className="min-h-screen bg-[#F8FAF9] text-[#17211B] flex selection:bg-[#DCFCE7] selection:text-[#14532D]">
       {/* Persistent Sidebar (Desktop & Mobile Drawer) */}
       <Sidebar />
 

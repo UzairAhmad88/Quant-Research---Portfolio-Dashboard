@@ -44,26 +44,26 @@ export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symb
   };
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-card">
       {/* Table Header & Controls */}
-      <div className="p-4 border-b border-[#263244] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">
+          <h3 className="text-sm font-semibold text-text-primary">
             Signal &amp; Crossover History Log ({symbol})
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Standardized signal events generated from validated price observations
           </p>
         </div>
 
         <div className="flex items-center gap-3 font-mono text-xs">
           {/* Signal Filter */}
-          <div className="flex items-center gap-1.5 bg-[#0B1220] border border-[#263244] px-2 py-1 rounded">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex items-center gap-1.5 bg-card border border-border px-2 py-1 rounded-md">
+            <Filter className="w-3.5 h-3.5 text-text-muted" />
             <select
               value={filterMode}
               onChange={(e) => setFilterMode(e.target.value as 'all' | 'buy' | 'sell')}
-              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-text-primary focus:outline-none cursor-pointer"
             >
               <option value="all">All Signals ({crossovers.length})</option>
               <option value="buy">BUY Only</option>
@@ -74,22 +74,22 @@ export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symb
           {/* Sort Order Toggle */}
           <button
             onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-            className="flex items-center gap-1.5 bg-[#0B1220] border border-[#263244] px-2.5 py-1 rounded text-slate-300 hover:text-slate-100 transition-colors"
+            className="flex items-center gap-1.5 bg-card border border-border px-2.5 py-1 rounded-md text-text-secondary hover:text-text-primary transition-colors"
           >
-            <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+            <ArrowUpDown className="w-3.5 h-3.5 text-text-muted" />
             <span>{sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
           </button>
         </div>
       </div>
 
       {processedCrossovers.length === 0 ? (
-        <div className="p-8 text-center text-slate-500 font-mono text-xs">
+        <div className="p-8 text-center text-text-muted font-mono text-xs">
           No crossover events match current filter selection ({filterMode.toUpperCase()}).
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left font-mono text-xs">
-            <thead className="bg-[#0B1220] text-slate-400 border-b border-[#263244]">
+            <thead className="bg-surface text-text-muted border-b border-border">
               <tr>
                 <th className="py-3 px-4 font-medium">Date</th>
                 <th className="py-3 px-4 font-medium">Signal Event</th>
@@ -100,44 +100,44 @@ export const CrossoverTable: React.FC<CrossoverTableProps> = ({ crossovers, symb
                 <th className="py-3 px-4 font-medium text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#263244] text-slate-200">
+            <tbody className="divide-y divide-border text-text-secondary">
               {processedCrossovers.map((cross, idx) => {
                 const isBullish = cross.event_type === 'BULLISH';
                 return (
                   <tr
                     key={idx}
                     onClick={() => handleRowClick(cross)}
-                    className="hover:bg-[#1E293B]/70 transition-colors cursor-pointer group"
+                    className="hover:bg-surface/60 transition-colors cursor-pointer group"
                   >
-                    <td className="py-3 px-4 text-slate-300">{formatDateLabel(cross.timestamp)}</td>
+                    <td className="py-3 px-4 text-text-primary">{formatDateLabel(cross.timestamp)}</td>
                     <td className="py-3 px-4">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded border text-[11px] font-bold ${
+                        className={`inline-block px-2.5 py-0.5 rounded-md border text-[11px] font-bold ${
                           isBullish
-                            ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800/80'
-                            : 'text-rose-400 bg-rose-950/60 border-rose-800/80'
+                            ? 'text-financial-positive bg-emerald-50 border-emerald-200'
+                            : 'text-financial-negative bg-red-50 border-red-200'
                         }`}
                       >
                         {cross.signal}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`text-[11px] font-medium ${isBullish ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      <span className={`text-[11px] font-medium ${isBullish ? 'text-financial-positive' : 'text-financial-negative'}`}>
                         {cross.event_type}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right font-semibold text-slate-100">
+                    <td className="py-3 px-4 text-right font-semibold text-text-primary">
                       {formatCurrency(cross.price)}
                     </td>
-                    <td className="py-3 px-4 text-right text-blue-400">{formatCurrency(cross.fast_ma)}</td>
-                    <td className="py-3 px-4 text-right text-amber-400">{formatCurrency(cross.slow_ma)}</td>
+                    <td className="py-3 px-4 text-right text-brand-primary font-bold">{formatCurrency(cross.fast_ma)}</td>
+                    <td className="py-3 px-4 text-right text-amber-600 font-bold">{formatCurrency(cross.slow_ma)}</td>
                     <td className="py-3 px-4 text-center">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRowClick(cross);
                         }}
-                        className="p-1 rounded text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors inline-flex items-center gap-1 text-[11px]"
+                        className="p-1 rounded text-text-muted hover:text-brand-primary hover:bg-surface-elevated transition-colors inline-flex items-center gap-1 text-[11px]"
                         title="Inspect Signal Detail"
                       >
                         <Info className="w-3.5 h-3.5" /> Details

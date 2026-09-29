@@ -33,19 +33,19 @@ export const UnderwaterChart: React.FC<UnderwaterChartProps> = ({
       width: containerRef.current.clientWidth,
       height: height,
       layout: {
-        background: { color: '#111827' },
-        textColor: '#94A3B8',
+        background: { color: '#FFFFFF' },
+        textColor: '#64748B',
         fontSize: 11,
       },
       grid: {
-        vertLines: { color: '#1F293D' },
-        horzLines: { color: '#1F293D' },
+        vertLines: { color: '#F1F5F9' },
+        horzLines: { color: '#F1F5F9' },
       },
       rightPriceScale: {
-        borderColor: '#263244',
+        borderColor: '#E2E8F0',
       },
       timeScale: {
-        borderColor: '#263244',
+        borderColor: '#E2E8F0',
         timeVisible: true,
       },
     });
@@ -53,9 +53,9 @@ export const UnderwaterChart: React.FC<UnderwaterChartProps> = ({
     chartRef.current = chart;
 
     const areaSeries = chart.addSeries(AreaSeries, {
-      lineColor: '#EF4444',
-      topColor: 'rgba(239, 68, 68, 0.02)',
-      bottomColor: 'rgba(239, 68, 68, 0.35)',
+      lineColor: '#DC2626',
+      topColor: 'rgba(220, 38, 38, 0.02)',
+      bottomColor: 'rgba(220, 38, 38, 0.25)',
       lineWidth: 2,
       priceFormat: {
         type: 'custom',
@@ -124,7 +124,7 @@ export const UnderwaterChart: React.FC<UnderwaterChartProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-8 text-center text-sm text-[#94A3B8]">
+      <div className="bg-card border border-border rounded-xl p-8 text-center text-sm text-text-secondary font-mono shadow-xs">
         Loading underwater drawdown series...
       </div>
     );
@@ -132,25 +132,25 @@ export const UnderwaterChart: React.FC<UnderwaterChartProps> = ({
 
   if (!series || series.length === 0) {
     return (
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-8 text-center text-sm text-[#94A3B8]">
+      <div className="bg-card border border-border rounded-xl p-8 text-center text-sm text-text-secondary font-mono shadow-xs">
         No drawdown series available.
       </div>
     );
   }
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5">
+    <div className="bg-card border border-border rounded-xl p-5 shadow-xs">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h4 className="text-sm font-semibold text-[#E5E7EB] uppercase tracking-wider font-mono">
+          <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wider font-mono">
             Underwater / Drawdown % Chart
           </h4>
-          <p className="text-xs text-[#94A3B8] mt-0.5">
+          <p className="text-xs text-text-secondary mt-0.5 font-sans">
             Drawdown percentage depth from running peak over time (0% to negative peak loss)
           </p>
         </div>
       </div>
-      <div ref={containerRef} className="w-full rounded border border-[#263244] overflow-hidden" />
+      <div ref={containerRef} className="w-full rounded-lg border border-border overflow-hidden bg-white shadow-xs" />
     </div>
   );
 };

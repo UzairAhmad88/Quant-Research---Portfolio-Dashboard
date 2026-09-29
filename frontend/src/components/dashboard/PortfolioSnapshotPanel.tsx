@@ -37,13 +37,13 @@ export const PortfolioSnapshotPanel: React.FC<PortfolioSnapshotPanelProps> = ({
       }
     >
       {isLoading ? (
-        <div className="py-6 text-center text-xs font-mono text-[#94A3B8] animate-pulse">
+        <div className="py-6 text-center text-xs font-mono text-text-muted animate-pulse">
           Loading portfolio snapshot...
         </div>
       ) : !snapshot || snapshot.active_portfolios_count === 0 ? (
-        <div className="py-8 text-center bg-[#111827] rounded border border-[#263244] p-6">
-          <Briefcase className="h-8 w-8 text-[#94A3B8] mx-auto mb-2 opacity-60" />
-          <p className="text-xs text-[#94A3B8] mb-3">No portfolios created yet.</p>
+        <div className="py-8 text-center bg-forest-50/40 rounded-xl border border-forest-100 p-6 shadow-xs">
+          <Briefcase className="h-8 w-8 text-forest-700/60 mx-auto mb-2" />
+          <p className="text-xs text-text-secondary mb-3">No portfolios created yet.</p>
           <NavLink to="/portfolio">
             <Button variant="primary" size="sm" icon={<Plus className="w-3.5 h-3.5" />}>
               Create Portfolio
@@ -52,18 +52,18 @@ export const PortfolioSnapshotPanel: React.FC<PortfolioSnapshotPanelProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 p-3 bg-[#111827] rounded border border-[#263244]">
+          <div className="grid grid-cols-2 gap-3 p-3 bg-forest-50/50 rounded-xl border border-forest-100 shadow-xs">
             <div>
-              <div className="text-[10px] text-[#94A3B8] uppercase font-mono">Total Capital Value</div>
-              <div className="text-lg font-bold text-[#E5E7EB] font-mono">
+              <div className="text-[10px] text-text-muted uppercase font-mono">Total Capital Value</div>
+              <div className="text-lg font-bold text-text-primary font-mono">
                 {formatCurrency(snapshot.total_portfolio_value)}
               </div>
             </div>
             <div>
-              <div className="text-[10px] text-[#94A3B8] uppercase font-mono">Combined Return</div>
+              <div className="text-[10px] text-text-muted uppercase font-mono">Combined Return</div>
               <div
                 className={`text-lg font-bold font-mono ${
-                  snapshot.total_portfolio_return_pct >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'
+                  snapshot.total_portfolio_return_pct >= 0 ? 'text-forest-600' : 'text-rose-600'
                 }`}
               >
                 {formatPct(snapshot.total_portfolio_return_pct)}
@@ -75,16 +75,16 @@ export const PortfolioSnapshotPanel: React.FC<PortfolioSnapshotPanelProps> = ({
             {snapshot.portfolios.map((p) => (
               <div
                 key={p.id}
-                className="flex items-center justify-between p-2.5 bg-[#0F172A] rounded border border-[#263244] text-xs font-mono"
+                className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-border text-xs font-mono shadow-xs hover:border-forest-300 transition-colors"
               >
                 <div>
-                  <div className="font-semibold text-[#E5E7EB]">{p.name}</div>
-                  <div className="text-[11px] text-[#94A3B8]">
+                  <div className="font-semibold text-text-primary">{p.name}</div>
+                  <div className="text-[11px] text-text-muted">
                     {p.positions_count} active position{p.positions_count === 1 ? '' : 's'}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-[#3B82F6]">{formatCurrency(p.initial_capital)}</div>
+                  <div className="font-semibold text-forest-700">{formatCurrency(p.initial_capital)}</div>
                   <Badge variant="outline" className="text-[10px] py-0">
                     Active
                   </Badge>

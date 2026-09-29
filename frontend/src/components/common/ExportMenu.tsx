@@ -63,13 +63,13 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
   const getFormatIcon = (format: string) => {
     switch (format.toLowerCase()) {
       case 'csv':
-        return <FileSpreadsheet className="h-4 w-4 text-emerald-400" />;
+        return <FileSpreadsheet className="h-4 w-4 text-emerald-700" />;
       case 'json':
-        return <FileCode className="h-4 w-4 text-amber-400" />;
+        return <FileCode className="h-4 w-4 text-amber-600" />;
       case 'pdf':
-        return <FileText className="h-4 w-4 text-blue-400" />;
+        return <FileText className="h-4 w-4 text-brand-primary" />;
       default:
-        return <FileSpreadsheet className="h-4 w-4 text-slate-400" />;
+        return <FileSpreadsheet className="h-4 w-4 text-text-muted" />;
     }
   };
 
@@ -79,25 +79,25 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
         type="button"
         disabled={disabled || isExporting}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-[#263244] bg-[#151F2E] text-[#E5E7EB] hover:bg-[#1E293B] hover:border-[#3B82F6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card text-text-primary hover:bg-surface hover:border-brand-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-xs"
       >
         {isExporting ? (
           <>
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-[#3B82F6]" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-primary" />
             <span>{activeFormat === 'pdf' ? 'Generating PDF...' : 'Preparing...'}</span>
           </>
         ) : (
           <>
-            <Download className="h-3.5 w-3.5 text-[#94A3B8]" />
+            <Download className="h-3.5 w-3.5 text-text-muted" />
             <span>{displayLabel}</span>
-            <ChevronDown className="h-3 w-3 text-[#94A3B8] transition-transform duration-150" />
+            <ChevronDown className="h-3 w-3 text-text-muted transition-transform duration-150" />
           </>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1.5 w-56 rounded-md shadow-2xl bg-[#0F172A] border border-[#263244] py-1 z-50 focus:outline-none animate-in fade-in duration-100">
-          <div className="px-3 py-1.5 border-b border-[#1E293B] text-[10px] text-[#64748B] uppercase tracking-wider font-semibold">
+        <div className="absolute right-0 mt-1.5 w-60 rounded-lg shadow-xl bg-card border border-border py-1 z-50 focus:outline-none animate-in fade-in duration-100">
+          <div className="px-3 py-1.5 border-b border-border text-[10px] text-text-muted uppercase tracking-wider font-semibold bg-surface">
             Select Export Format
           </div>
 
@@ -107,22 +107,22 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
                 key={opt.id || `${opt.format}-${opt.label}-${idx}`}
                 type="button"
                 onClick={() => handleSelect(opt)}
-                className="w-full text-left px-3 py-2 text-xs text-[#E5E7EB] hover:bg-[#1E293B] flex items-center justify-between group transition-colors"
+                className="w-full text-left px-3 py-2 text-xs text-text-primary hover:bg-surface flex items-center justify-between group transition-colors"
               >
                 <div className="flex items-center gap-2">
                   {getFormatIcon(opt.format)}
                   <div>
-                    <div className="font-semibold text-xs text-[#E2E8F0] group-hover:text-white">
+                    <div className="font-semibold text-xs text-text-primary group-hover:text-brand-primary">
                       {opt.label}
                     </div>
                     {opt.description && (
-                      <div className="text-[10px] text-[#64748B] group-hover:text-[#94A3B8]">
+                      <div className="text-[10px] text-text-muted">
                         {opt.description}
                       </div>
                     )}
                   </div>
                 </div>
-                <span className="text-[10px] uppercase font-bold text-[#64748B] px-1 py-0.5 rounded bg-[#1E293B]/60">
+                <span className="text-[10px] uppercase font-bold text-text-muted px-1.5 py-0.5 rounded bg-surface-elevated border border-border">
                   {opt.format}
                 </span>
               </button>
@@ -132,13 +132,13 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
       )}
 
       {errorMessage && (
-        <div className="absolute right-0 mt-1 w-64 p-2 bg-red-950/90 border border-red-800 rounded text-[11px] text-red-200 flex items-center gap-1.5 z-50">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-red-400" />
+        <div className="absolute right-0 mt-1 w-64 p-2 bg-red-50 border border-red-200 rounded-md text-[11px] text-financial-negative flex items-center gap-1.5 z-50 shadow-md">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-red-500" />
           <span className="truncate">{errorMessage}</span>
           <button
             type="button"
             onClick={() => setErrorMessage(null)}
-            className="ml-auto text-xs hover:text-white"
+            className="ml-auto text-xs text-red-400 hover:text-red-700"
           >
             ×
           </button>

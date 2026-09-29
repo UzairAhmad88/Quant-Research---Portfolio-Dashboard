@@ -24,7 +24,7 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
 
   if (!instruments || instruments.length === 0 || !matrix) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 p-6 text-center text-slate-500">
+      <div className="flex h-64 items-center justify-center rounded-lg border border-border bg-card p-6 text-center text-text-muted shadow-card">
         <p className="text-sm font-medium">No correlation matrix data available</p>
       </div>
     );
@@ -32,17 +32,16 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
 
   // Get background color for matrix cell
   const getCellColor = (val: number | null, isDiagonal: boolean) => {
-    if (val === null || val === undefined) return 'bg-slate-800/80 text-slate-500';
-    if (isDiagonal) return 'bg-slate-800 text-slate-300 font-bold';
+    if (val === null || val === undefined) return 'bg-surface text-text-muted';
+    if (isDiagonal) return 'bg-emerald-800 text-white font-bold';
 
-    if (val >= 0.8) return 'bg-emerald-600/90 text-white font-bold';
-    if (val >= 0.6) return 'bg-emerald-700/80 text-emerald-100 font-semibold';
-    if (val >= 0.3) return 'bg-blue-600/70 text-blue-100 font-medium';
-    if (val > 0.1) return 'bg-blue-900/50 text-blue-200';
-    if (val > -0.1) return 'bg-slate-900 text-slate-400';
-    if (val > -0.4) return 'bg-amber-900/40 text-amber-200';
-    if (val > -0.7) return 'bg-red-800/60 text-red-200 font-medium';
-    return 'bg-red-600/90 text-white font-bold';
+    if (val >= 0.7) return 'bg-emerald-700 text-white font-bold';
+    if (val >= 0.4) return 'bg-emerald-100 text-emerald-900 font-semibold';
+    if (val >= 0.15) return 'bg-emerald-50 text-emerald-800 font-medium';
+    if (val > -0.15) return 'bg-surface text-text-secondary';
+    if (val > -0.4) return 'bg-amber-50 text-amber-900 font-medium';
+    if (val > -0.7) return 'bg-red-100 text-red-900 font-semibold';
+    return 'bg-red-600 text-white font-bold';
   };
 
   const getCellPairwiseInfo = (i: number, j: number) => {
@@ -66,16 +65,16 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
   };
 
   return (
-    <div className="flex flex-col space-y-4 rounded-lg border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
+    <div className="flex flex-col space-y-4 rounded-lg border border-border bg-card p-5 shadow-card">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">Pearson Correlation Matrix</h3>
-          <p className="text-xs text-slate-400">
+          <h3 className="text-sm font-semibold text-text-primary">Pearson Correlation Matrix</h3>
+          <p className="text-xs text-text-muted">
             Aligned return observations cross-correlation ({data.return_type.toUpperCase()} returns, {data.price_source.toUpperCase()})
           </p>
         </div>
-        <span className="font-mono text-xs font-semibold text-slate-400">
+        <span className="font-mono text-xs font-semibold text-text-muted">
           {instruments.length} × {instruments.length} Matrix
         </span>
       </div>
@@ -89,7 +88,7 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
               {instruments.map((sym, idx) => (
                 <th
                   key={idx}
-                  className="p-2 text-center text-xs font-bold text-slate-300 uppercase tracking-wider"
+                  className="p-2 text-center text-xs font-bold text-text-primary uppercase tracking-wider"
                 >
                   {sym}
                 </th>
@@ -100,7 +99,7 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
             {instruments.map((symA, rowIdx) => (
               <tr key={rowIdx}>
                 {/* Row Header */}
-                <td className="p-2 pr-3 text-right font-bold text-slate-300 uppercase tracking-wider">
+                <td className="p-2 pr-3 text-right font-bold text-text-primary uppercase tracking-wider">
                   {symA}
                 </td>
 
@@ -131,10 +130,10 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
                           onSelectPair(info.idA, info.idB, info.symA, info.symB);
                         }
                       }}
-                      className={`h-11 w-16 text-center border border-slate-800/80 cursor-pointer transition-all duration-150 ${getCellColor(
+                      className={`h-11 w-16 text-center border border-border cursor-pointer transition-all duration-150 ${getCellColor(
                         info.val,
                         isDiagonal
-                      )} ${isSelected ? 'ring-2 ring-blue-400 z-10 scale-105' : 'hover:scale-105 hover:z-10'}`}
+                      )} ${isSelected ? 'ring-2 ring-brand-primary z-10 scale-105 shadow-md' : 'hover:scale-105 hover:z-10'}`}
                     >
                       {info.val !== null && info.val !== undefined ? info.val.toFixed(2) : '—'}
                     </td>
@@ -147,31 +146,31 @@ export const CorrelationHeatmap: React.FC<CorrelationHeatmapProps> = ({
       </div>
 
       {/* Hover Information / Inspection Bar */}
-      <div className="rounded border border-slate-800/80 bg-slate-950/60 px-4 py-2.5 text-xs">
+      <div className="rounded-md border border-border bg-surface px-4 py-2.5 text-xs">
         {hoveredCell ? (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-3">
-              <span className="font-bold text-slate-200">
+              <span className="font-bold text-text-primary">
                 {hoveredCell.symA} × {hoveredCell.symB}
               </span>
-              <span className="text-slate-400">
-                Observations: <strong className="text-slate-200 font-mono">{hoveredCell.obs}</strong>
+              <span className="text-text-muted">
+                Observations: <strong className="text-text-primary font-mono">{hoveredCell.obs}</strong>
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-slate-400">
+              <span className="text-text-muted">
                 Pearson Score:{' '}
-                <strong className="text-blue-400 font-mono">
+                <strong className="text-brand-primary font-mono">
                   {hoveredCell.val !== null ? hoveredCell.val.toFixed(4) : 'N/A'}
                 </strong>
               </span>
-              <span className="rounded bg-slate-800 px-2 py-0.5 font-semibold text-slate-300">
+              <span className="rounded bg-surface-elevated px-2 py-0.5 font-semibold text-text-secondary border border-border">
                 {hoveredCell.interp}
               </span>
             </div>
           </div>
         ) : (
-          <div className="text-center text-slate-500">
+          <div className="text-center text-text-muted">
             Hover over any matrix cell to inspect pair statistics. Click a cell to open Pairwise Analysis.
           </div>
         )}

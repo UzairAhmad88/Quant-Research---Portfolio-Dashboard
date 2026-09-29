@@ -75,7 +75,7 @@ export const DashboardKPIBar: React.FC<DashboardKPIBarProps> = ({ onSelectInstru
       value: '588.42',
       change: '+2.58 (+0.44%)',
       isPositive: true,
-      sparkColor: '#22C55E',
+      sparkColor: '#16A34A',
       sparkData: [540, 545, 552, 548, 560, 568, 574, 572, 580, 584, 588],
       gradientId: 'spark-spy',
       route: '/market-data?symbol=SPY',
@@ -87,7 +87,7 @@ export const DashboardKPIBar: React.FC<DashboardKPIBarProps> = ({ onSelectInstru
       value: '512.18',
       change: '+4.28 (+0.84%)',
       isPositive: true,
-      sparkColor: '#22C55E',
+      sparkColor: '#16A34A',
       sparkData: [460, 468, 475, 470, 485, 492, 498, 495, 502, 508, 512],
       gradientId: 'spark-qqq',
       route: '/market-data?symbol=QQQ',
@@ -99,7 +99,7 @@ export const DashboardKPIBar: React.FC<DashboardKPIBarProps> = ({ onSelectInstru
       value: '$1,175,407.99',
       change: '+17.54% Mark-to-Market',
       isPositive: true,
-      sparkColor: '#3B82F6',
+      sparkColor: '#14532D',
       sparkData: [1000, 1020, 1045, 1030, 1070, 1095, 1120, 1110, 1140, 1162, 1175],
       gradientId: 'spark-port',
       route: '/portfolios',
@@ -110,19 +110,18 @@ export const DashboardKPIBar: React.FC<DashboardKPIBarProps> = ({ onSelectInstru
       value: '+49.95%',
       change: 'Alpha: +28.4% vs Benchmark',
       isPositive: true,
-      sparkColor: '#10B981',
+      sparkColor: '#15803D',
       sparkData: [15, 18, 22, 20, 26, 30, 35, 38, 42, 46, 50],
       gradientId: 'spark-ret',
       route: '/returns',
     },
-
     {
       id: 'volatility',
       label: 'Annualized Volatility',
       value: '18.17%',
       change: 'Daily σ: 1.14% (Low Risk)',
       isPositive: true,
-      sparkColor: '#F59E0B',
+      sparkColor: '#D97706',
       sparkData: [24, 22, 20, 21, 19, 18, 19, 18.5, 18.2, 18.1, 18.17],
       gradientId: 'spark-vol',
       route: '/volatility',
@@ -133,7 +132,7 @@ export const DashboardKPIBar: React.FC<DashboardKPIBarProps> = ({ onSelectInstru
       value: '1.42',
       change: 'Sortino: 2.18 | Max DD: -18.45%',
       isPositive: true,
-      sparkColor: '#38BDF8',
+      sparkColor: '#166534',
       sparkData: [0.8, 0.9, 1.0, 0.95, 1.1, 1.2, 1.25, 1.3, 1.35, 1.4, 1.42],
       gradientId: 'spark-sharpe',
       route: '/backtesting',
@@ -157,27 +156,27 @@ export const DashboardKPIBar: React.FC<DashboardKPIBarProps> = ({ onSelectInstru
           onMouseLeave={() => setHoveredCard(null)}
           role="button"
           tabIndex={0}
-          className="bg-[#0D1525] border border-[#17253D] hover:border-[#3B82F6]/70 rounded-lg p-3.5 flex flex-col justify-between transition-all duration-200 group shadow-sm hover:shadow-lg hover:shadow-blue-950/30 cursor-pointer transform hover:-translate-y-0.5"
+          className="bg-white border border-[#E5E7EB] hover:border-[#14532D]/60 rounded-[10px] p-3.5 flex flex-col justify-between transition-all duration-200 group shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md cursor-pointer transform hover:-translate-y-0.5"
         >
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-[#94A3B8] group-hover:text-[#93C5FD] transition-colors tracking-tight truncate">
+              <span className="text-[11px] font-medium text-[#64748B] group-hover:text-[#14532D] transition-colors tracking-tight truncate">
                 {kpi.label}
               </span>
-              <ArrowUpRight className="w-3 h-3 text-[#64748B] group-hover:text-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpRight className="w-3 h-3 text-[#64748B] group-hover:text-[#14532D] opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="text-lg font-bold font-mono-num text-white mt-1 tracking-tight truncate">
+            <div className="text-lg font-bold font-mono-num text-[#17211B] mt-1 tracking-tight truncate">
               {kpi.value}
             </div>
             <div
               className={`text-[10px] font-mono-num font-medium mt-0.5 truncate ${
-                kpi.isPositive ? 'text-[#22C55E]' : 'text-[#EF4444]'
+                kpi.isPositive ? 'text-[#15803D]' : 'text-[#DC2626]'
               }`}
             >
               {kpi.change}
             </div>
           </div>
-          <div className="mt-2 pt-1 border-t border-[#17253D]/50">
+          <div className="mt-2 pt-1 border-t border-[#E5E7EB]">
             <Sparkline
               data={kpi.sparkData}
               color={kpi.sparkColor}

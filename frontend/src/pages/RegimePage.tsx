@@ -49,23 +49,23 @@ export const RegimePage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-1">
         <div>
           <div className="flex items-center gap-2.5">
-            <Activity className="w-5 h-5 text-[#C084FC]" />
-            <h1 className="text-2xl font-bold text-white tracking-tight">Market Regime Lab</h1>
+            <Activity className="w-5 h-5 text-[#14532D]" />
+            <h1 className="text-2xl font-bold text-[#17211B] tracking-tight">Market Regime Lab</h1>
           </div>
-          <p className="text-xs text-[#94A3B8] mt-1">
+          <p className="text-xs text-[#64748B] mt-1">
             Statistical regime classification (Bull Expansion, Bear Contraction, Sideways, Turbulence) and transition matrices.
           </p>
         </div>
       </div>
 
       {/* Control Configuration Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-[#0D1525] border border-[#17253D] rounded-lg p-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-white border border-[#E5E7EB] rounded-lg p-3.5 shadow-sm">
         <div className="sm:col-span-3">
-          <label className="text-[11px] font-semibold text-[#94A3B8] block mb-1">Target Asset</label>
+          <label className="text-[11px] font-semibold text-[#64748B] block mb-1">Target Asset</label>
           <select
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
-            className="w-full px-3 py-1.5 bg-[#070D18] border border-[#17253D] focus:border-[#3B82F6] text-xs text-white rounded-md outline-none"
+            className="w-full px-3 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/20 text-xs text-[#17211B] rounded-md outline-none"
           >
             {['AAPL', 'MSFT', 'NVDA', 'SPY', 'QQQ', 'GOOGL', 'AMZN'].map((s) => (
               <option key={s} value={s}>{s}</option>
@@ -74,31 +74,31 @@ export const RegimePage: React.FC = () => {
         </div>
 
         <div className="sm:col-span-3">
-          <label className="text-[11px] font-semibold text-[#94A3B8] block mb-1">Fast MA / Slow MA</label>
+          <label className="text-[11px] font-semibold text-[#64748B] block mb-1">Fast MA / Slow MA</label>
           <div className="flex items-center gap-2">
             <input
               type="number"
               value={fastMA}
               onChange={(e) => setFastMA(Number(e.target.value))}
-              className="w-1/2 px-2 py-1.5 bg-[#070D18] border border-[#17253D] rounded text-xs text-white text-center font-mono-num"
+              className="w-1/2 px-2 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] text-center font-mono-num"
             />
             <span className="text-[#64748B]">/</span>
             <input
               type="number"
               value={slowMA}
               onChange={(e) => setSlowMA(Number(e.target.value))}
-              className="w-1/2 px-2 py-1.5 bg-[#070D18] border border-[#17253D] rounded text-xs text-white text-center font-mono-num"
+              className="w-1/2 px-2 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] text-center font-mono-num"
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
-          <label className="text-[11px] font-semibold text-[#94A3B8] block mb-1">Vol Lookback Window</label>
+          <label className="text-[11px] font-semibold text-[#64748B] block mb-1">Vol Lookback Window</label>
           <input
             type="number"
             value={volLookback}
             onChange={(e) => setVolLookback(Number(e.target.value))}
-            className="w-full px-3 py-1.5 bg-[#070D18] border border-[#17253D] rounded text-xs text-white font-mono-num"
+            className="w-full px-3 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] font-mono-num"
           />
         </div>
 
@@ -106,7 +106,7 @@ export const RegimePage: React.FC = () => {
           <button
             onClick={fetchRegimes}
             disabled={loading}
-            className="w-full py-1.5 bg-[#1D4ED8] hover:bg-[#2563EB] text-xs font-semibold text-white rounded-md transition-all shadow-sm flex items-center justify-center gap-1.5"
+            className="w-full py-1.5 bg-[#14532D] hover:bg-[#166534] text-xs font-semibold text-white rounded-md transition-all shadow-sm flex items-center justify-center gap-1.5"
           >
             <Play className={`w-3.5 h-3.5 fill-current ${loading ? 'animate-spin' : ''}`} />
             <span>{loading ? 'Analyzing...' : 'Detect Regimes'}</span>
@@ -121,29 +121,29 @@ export const RegimePage: React.FC = () => {
             const isBull = name === 'BULL_TREND';
             const isBear = name === 'BEAR_TREND';
             const isTurb = name === 'HIGH_VOL_TURBULENCE';
-            const colorClass = isBull ? 'text-[#22C55E]' : isBear ? 'text-[#EF4444]' : isTurb ? 'text-[#F59E0B]' : 'text-[#38BDF8]';
-            const bgBorder = isBull ? 'border-[#22C55E]/30 bg-[#14532D]/10' : isBear ? 'border-[#EF4444]/30 bg-[#7F1D1D]/10' : isTurb ? 'border-[#F59E0B]/30 bg-[#78350F]/10' : 'border-[#17253D] bg-[#0D1525]';
+            const colorClass = isBull ? 'text-[#15803D]' : isBear ? 'text-[#DC2626]' : isTurb ? 'text-[#D97706]' : 'text-[#14532D]';
+            const bgBorder = isBull ? 'border-[#86EFAC] bg-[#DCFCE7]/40' : isBear ? 'border-[#FECACA] bg-[#FEE2E2]/40' : isTurb ? 'border-[#FDE68A] bg-[#FEF3C7]/40' : 'border-[#E5E7EB] bg-white';
 
             return (
               <div key={name} className={`border rounded-lg p-4 shadow-sm ${bgBorder}`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white tracking-tight">{name.replace(/_/g, ' ')}</span>
+                  <span className="text-xs font-bold text-[#17211B] tracking-tight">{name.replace(/_/g, ' ')}</span>
                   <span className={`text-xs font-mono-num font-bold ${colorClass}`}>{r.percentage.toFixed(1)}%</span>
                 </div>
                 <div className="mt-3 space-y-1 text-xs font-mono-num">
-                  <div className="flex justify-between text-[#94A3B8]">
+                  <div className="flex justify-between text-[#64748B]">
                     <span>Ann. Return:</span>
-                    <strong className={r.annualized_return >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}>
+                    <strong className={r.annualized_return >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'}>
                       {(r.annualized_return * 100).toFixed(1)}%
                     </strong>
                   </div>
-                  <div className="flex justify-between text-[#94A3B8]">
+                  <div className="flex justify-between text-[#64748B]">
                     <span>Ann. Volatility:</span>
-                    <strong className="text-white">{(r.annualized_volatility * 100).toFixed(1)}%</strong>
+                    <strong className="text-[#17211B]">{(r.annualized_volatility * 100).toFixed(1)}%</strong>
                   </div>
-                  <div className="flex justify-between text-[#94A3B8]">
+                  <div className="flex justify-between text-[#64748B]">
                     <span>Sharpe Ratio:</span>
-                    <strong className={r.sharpe_ratio >= 0 ? 'text-[#38BDF8]' : 'text-[#EF4444]'}>
+                    <strong className={r.sharpe_ratio >= 0 ? 'text-[#14532D]' : 'text-[#DC2626]'}>
                       {r.sharpe_ratio.toFixed(2)}
                     </strong>
                   </div>
@@ -155,8 +155,8 @@ export const RegimePage: React.FC = () => {
       )}
 
       {/* Regime Timeline Visualizer */}
-      <div className="bg-[#0D1525] border border-[#17253D] rounded-lg p-4 shadow-md">
-        <h3 className="text-sm font-bold text-white tracking-tight pb-3 border-b border-[#17253D]">
+      <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 shadow-sm">
+        <h3 className="text-sm font-bold text-[#17211B] tracking-tight pb-3 border-b border-[#E5E7EB]">
           Structural Regime Timeline ({symbol})
         </h3>
         <div className="h-64 relative pt-4 overflow-hidden">
@@ -167,7 +167,7 @@ export const RegimePage: React.FC = () => {
                 {regimeData.time_series.map((p, i) => {
                   const x = (i / (regimeData.time_series.length - 1)) * 740 + 10;
                   const w = 740 / regimeData.time_series.length;
-                  const color = p.regime === 'BULL_TREND' ? '#22C55E' : p.regime === 'BEAR_TREND' ? '#EF4444' : p.regime === 'HIGH_VOL_TURBULENCE' ? '#F59E0B' : '#3B82F6';
+                  const color = p.regime === 'BULL_TREND' ? '#16A34A' : p.regime === 'BEAR_TREND' ? '#DC2626' : p.regime === 'HIGH_VOL_TURBULENCE' ? '#D97706' : '#64748B';
                   return (
                     <rect key={i} x={x} y={10} width={w} height={160} fill={color} opacity={0.12} />
                   );
@@ -176,8 +176,8 @@ export const RegimePage: React.FC = () => {
                 {/* Price Line */}
                 <polyline
                   fill="none"
-                  stroke="#FFFFFF"
-                  strokeWidth="1.8"
+                  stroke="#14532D"
+                  strokeWidth="2"
                   points={regimeData.time_series
                     .map((p, i) => {
                       const x = (i / (regimeData.time_series.length - 1)) * 740 + 10;

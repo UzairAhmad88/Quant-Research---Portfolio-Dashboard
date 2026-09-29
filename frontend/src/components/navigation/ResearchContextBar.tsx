@@ -48,32 +48,32 @@ export const ResearchContextBar: React.FC<ResearchContextBarProps> = ({
 
   return (
     <div
-      className={`flex flex-wrap items-center justify-between gap-3 p-3 bg-[#151F2E] border border-[#263244] rounded-lg text-xs font-mono ${className}`}
+      className={`flex flex-wrap items-center justify-between gap-3 p-3 bg-white border border-[#E5E7EB] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-xs font-mono ${className}`}
     >
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5 text-[#94A3B8]">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-[#3B82F6]" />
+        <div className="flex items-center gap-1.5 text-[#64748B]">
+          <SlidersHorizontal className="w-3.5 h-3.5 text-[#14532D]" />
           <span className="font-semibold uppercase tracking-wider text-[11px]">Research Context:</span>
         </div>
 
         {/* Single Instrument Selector */}
         {showInstrumentSelect && (
-          <div className="flex items-center gap-1.5 bg-[#0F172A] border border-[#263244] rounded px-2 py-1">
-            <Search className="w-3 h-3 text-[#3B82F6]" />
+          <div className="flex items-center gap-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded-md px-2 py-1">
+            <Search className="w-3 h-3 text-[#14532D]" />
             {availableInstruments.length > 0 ? (
               <select
                 value={currentSymbol}
                 onChange={handleInstrumentChange}
-                className="bg-transparent text-[#E5E7EB] font-bold focus:outline-none cursor-pointer"
+                className="bg-transparent text-[#17211B] font-bold focus:outline-none cursor-pointer"
               >
                 {availableInstruments.map((inst) => (
-                  <option key={inst.id || inst.symbol} value={inst.symbol} className="bg-[#0F172A] text-[#E5E7EB]">
+                  <option key={inst.id || inst.symbol} value={inst.symbol} className="bg-white text-[#17211B]">
                     {inst.symbol} — {inst.name}
                   </option>
                 ))}
               </select>
             ) : (
-              <span className="font-bold text-[#E5E7EB]">{currentSymbol}</span>
+              <span className="font-bold text-[#17211B]">{currentSymbol}</span>
             )}
           </div>
         )}
@@ -81,10 +81,10 @@ export const ResearchContextBar: React.FC<ResearchContextBarProps> = ({
         {/* Multi-Instrument Badge (if Correlation) */}
         {context.symbols && context.symbols.length > 0 && (
           <div className="flex items-center gap-1">
-            <span className="text-[#94A3B8]">Multi-Asset:</span>
+            <span className="text-[#64748B]">Multi-Asset:</span>
             <div className="flex items-center gap-1">
               {context.symbols.map((sym) => (
-                <Badge key={sym} variant="info" className="text-[10px] py-0 px-1 border-[#3B82F6]/40">
+                <Badge key={sym} variant="success" className="text-[10px] py-0 px-1.5">
                   {sym}
                 </Badge>
               ))}
@@ -94,15 +94,15 @@ export const ResearchContextBar: React.FC<ResearchContextBarProps> = ({
 
         {/* Date Range Presets */}
         {showRangeSelect && (
-          <div className="flex items-center gap-1 bg-[#0F172A] p-0.5 rounded border border-[#263244]">
+          <div className="flex items-center gap-1 bg-[#F8FAF9] p-0.5 rounded-md border border-[#CBD5E1]">
             {RANGE_PRESETS.map((preset) => (
               <button
                 key={preset}
                 onClick={() => handleRangeChange(preset)}
-                className={`px-2 py-0.5 rounded transition-colors ${
+                className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                   currentRange === preset
-                    ? 'bg-[#3B82F6] text-white font-bold'
-                    : 'text-[#94A3B8] hover:text-[#E5E7EB] hover:bg-[#1E293B]'
+                    ? 'bg-[#14532D] text-white font-bold shadow-2xs'
+                    : 'text-[#64748B] hover:text-[#17211B] hover:bg-[#F0FDF4]'
                 }`}
               >
                 {preset}
@@ -113,23 +113,23 @@ export const ResearchContextBar: React.FC<ResearchContextBarProps> = ({
 
         {/* Price Source Selection */}
         {showPriceSourceSelect && (
-          <div className="flex items-center gap-1 bg-[#0F172A] p-0.5 rounded border border-[#263244]">
+          <div className="flex items-center gap-1 bg-[#F8FAF9] p-0.5 rounded-md border border-[#CBD5E1]">
             <button
               onClick={() => handlePriceSourceChange('adjusted')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                 currentPriceSource === 'adjusted'
-                  ? 'bg-[#1E293B] text-[#3B82F6] border border-[#3B82F6]/50 font-bold'
-                  : 'text-[#94A3B8] hover:text-[#E5E7EB]'
+                  ? 'bg-[#DCFCE7] text-[#166534] border border-[#86EFAC] font-bold'
+                  : 'text-[#64748B] hover:text-[#17211B]'
               }`}
             >
               Adjusted
             </button>
             <button
               onClick={() => handlePriceSourceChange('close')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                 currentPriceSource === 'close'
-                  ? 'bg-[#1E293B] text-[#3B82F6] border border-[#3B82F6]/50 font-bold'
-                  : 'text-[#94A3B8] hover:text-[#E5E7EB]'
+                  ? 'bg-[#DCFCE7] text-[#166534] border border-[#86EFAC] font-bold'
+                  : 'text-[#64748B] hover:text-[#17211B]'
               }`}
             >
               Close
@@ -138,7 +138,7 @@ export const ResearchContextBar: React.FC<ResearchContextBarProps> = ({
         )}
 
         {/* Frequency */}
-        <Badge variant="outline" className="text-[10px] text-[#94A3B8] border-[#263244]">
+        <Badge variant="outline" className="text-[10px] text-[#64748B] border-[#CBD5E1]">
           Daily
         </Badge>
       </div>
@@ -149,8 +149,8 @@ export const ResearchContextBar: React.FC<ResearchContextBarProps> = ({
           variant="outline"
           size="sm"
           onClick={clearContext}
-          className="text-[11px] h-6 px-2 py-0 border-[#263244]"
-          icon={<RotateCcw className="w-3 h-3 text-[#94A3B8]" />}
+          className="text-[11px] h-6 px-2 py-0 border-[#CBD5E1]"
+          icon={<RotateCcw className="w-3 h-3 text-[#64748B]" />}
         >
           Reset Context
         </Button>

@@ -68,8 +68,8 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
       action={
         <div className="flex items-center gap-2">
           {data && (
-            <span className="text-[11px] font-mono text-[#94A3B8] hidden sm:inline-flex items-center gap-1">
-              <Radio className="w-3 h-3 text-[#3B82F6]" />
+            <span className="text-[11px] font-mono text-[#64748B] hidden sm:inline-flex items-center gap-1">
+              <Radio className="w-3 h-3 text-[#14532D]" />
               Delayed / End-of-Day
             </span>
           )}
@@ -78,7 +78,7 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
             size="sm"
             onClick={onRefresh}
             disabled={isLoading || isRefreshing}
-            icon={<RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#3B82F6]' : ''}`} />}
+            icon={<RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#14532D]' : ''}`} />}
           >
             {isRefreshing ? 'Refreshing...' : 'Refresh Latest'}
           </Button>
@@ -86,43 +86,43 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
       }
     >
       {error && !data ? (
-        <div className="p-4 bg-[#7F1D1D]/20 border border-[#EF4444]/30 rounded-lg text-xs text-[#FCA5A5] flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-[#EF4444] shrink-0 mt-0.5" />
+        <div className="p-4 bg-[#FEE2E2]/60 border border-[#FECACA] rounded-lg text-xs text-[#991B1B] flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold block">Observation Unavailable:</span>
             {error.message || 'No validated market observation available for this instrument.'}
           </div>
         </div>
       ) : isLoading && !data ? (
-        <div className="py-8 text-center text-xs font-mono text-[#94A3B8] animate-pulse">
+        <div className="py-8 text-center text-xs font-mono text-[#64748B] animate-pulse">
           Retrieving latest validated observation...
         </div>
       ) : data ? (
         <div className="space-y-4">
           {/* Warning banner (e.g. rate limit fallback to cache) */}
           {data.warning && (
-            <div className="p-2.5 bg-[#B45309]/15 border border-[#F59E0B]/30 rounded-md text-xs text-[#FCD34D] flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-[#F59E0B] shrink-0 mt-0.5" />
+            <div className="p-2.5 bg-[#FEF3C7]/60 border border-[#FDE68A] rounded-md text-xs text-[#92400E] flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-[#D97706] shrink-0 mt-0.5" />
               <span>{data.warning}</span>
             </div>
           )}
 
           {/* Primary Price Header Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-3 border-b border-[#1E293B]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-3 border-b border-[#E5E7EB]">
             {/* Price & Change */}
             <div className="md:col-span-2 space-y-1">
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold font-mono text-[#F8FAFC]">
+                <span className="text-3xl font-extrabold font-mono text-[#17211B]">
                   ${formatNumber(data.price, 2)}
                 </span>
-                <span className="text-xs font-mono text-[#94A3B8]">
+                <span className="text-xs font-mono text-[#64748B]">
                   {data.currency}
                 </span>
 
                 {data.change !== undefined && data.change !== null && (
                   <div
                     className={`flex items-center gap-1 text-xs font-mono font-semibold ml-2 ${
-                      data.change >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                      data.change >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'
                     }`}
                   >
                     {data.change >= 0 ? (
@@ -142,14 +142,14 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
                 )}
               </div>
 
-              <div className="text-[11px] text-[#94A3B8] flex items-center gap-2">
+              <div className="text-[11px] text-[#64748B] flex items-center gap-2">
                 <span>Prev Close: ${formatNumber(data.previous_close, 2)}</span>
                 <span>•</span>
                 <span>Frequency: {data.frequency}</span>
                 {data.is_cached && (
                   <>
                     <span>•</span>
-                    <span className="text-[#38BDF8] flex items-center gap-1">
+                    <span className="text-[#14532D] flex items-center gap-1 font-semibold">
                       <Database className="w-3 h-3" /> Cached
                     </span>
                   </>
@@ -179,7 +179,7 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
               <div className="text-[10px] uppercase tracking-wider text-[#64748B] font-mono">
                 Provider Provenance
               </div>
-              <div className="text-xs font-mono text-[#E2E8F0]">
+              <div className="text-xs font-mono text-[#17211B] font-semibold">
                 {data.provider.replace('_', ' ').toUpperCase()}
               </div>
               <div className="text-[10px] text-[#64748B]">
@@ -190,49 +190,49 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
 
           {/* OHLCV Statistics Row */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1">
-            <div className="p-2 bg-[#0F172A] border border-[#1E293B] rounded">
-              <div className="text-[10px] text-[#94A3B8] font-mono uppercase">Open</div>
-              <div className="text-xs font-mono font-semibold text-[#F8FAFC]">
+            <div className="p-2 bg-[#F8FAF9] border border-[#E5E7EB] rounded">
+              <div className="text-[10px] text-[#64748B] font-mono uppercase">Open</div>
+              <div className="text-xs font-mono font-semibold text-[#17211B]">
                 ${formatNumber(data.open, 2)}
               </div>
             </div>
 
-            <div className="p-2 bg-[#0F172A] border border-[#1E293B] rounded">
-              <div className="text-[10px] text-[#94A3B8] font-mono uppercase">Day High</div>
-              <div className="text-xs font-mono font-semibold text-emerald-400">
+            <div className="p-2 bg-[#F8FAF9] border border-[#E5E7EB] rounded">
+              <div className="text-[10px] text-[#64748B] font-mono uppercase">Day High</div>
+              <div className="text-xs font-mono font-semibold text-[#15803D]">
                 ${formatNumber(data.high, 2)}
               </div>
             </div>
 
-            <div className="p-2 bg-[#0F172A] border border-[#1E293B] rounded">
-              <div className="text-[10px] text-[#94A3B8] font-mono uppercase">Day Low</div>
-              <div className="text-xs font-mono font-semibold text-rose-400">
+            <div className="p-2 bg-[#F8FAF9] border border-[#E5E7EB] rounded">
+              <div className="text-[10px] text-[#64748B] font-mono uppercase">Day Low</div>
+              <div className="text-xs font-mono font-semibold text-[#DC2626]">
                 ${formatNumber(data.low, 2)}
               </div>
             </div>
 
-            <div className="p-2 bg-[#0F172A] border border-[#1E293B] rounded">
-              <div className="text-[10px] text-[#94A3B8] font-mono uppercase">Close / Adj</div>
-              <div className="text-xs font-mono font-semibold text-[#F8FAFC]">
+            <div className="p-2 bg-[#F8FAF9] border border-[#E5E7EB] rounded">
+              <div className="text-[10px] text-[#64748B] font-mono uppercase">Close / Adj</div>
+              <div className="text-xs font-mono font-semibold text-[#17211B]">
                 ${formatNumber(data.close, 2)} / ${formatNumber(data.adjusted_close, 2)}
               </div>
             </div>
 
-            <div className="p-2 bg-[#0F172A] border border-[#1E293B] rounded col-span-2 sm:col-span-1">
-              <div className="text-[10px] text-[#94A3B8] font-mono uppercase">Volume</div>
-              <div className="text-xs font-mono font-semibold text-[#F8FAFC]">
+            <div className="p-2 bg-[#F8FAF9] border border-[#E5E7EB] rounded col-span-2 sm:col-span-1">
+              <div className="text-[10px] text-[#64748B] font-mono uppercase">Volume</div>
+              <div className="text-xs font-mono font-semibold text-[#17211B]">
                 {formatVolume(data.volume)}
               </div>
             </div>
           </div>
 
           {/* Timestamps Provenance Footer */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#64748B] pt-2 border-t border-[#1E293B]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#64748B] pt-2 border-t border-[#E5E7EB]">
             <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-[#3B82F6]" />
+              <Clock className="w-3.5 h-3.5 text-[#14532D]" />
               <span>
                 Market Timestamp:{' '}
-                <span className="text-[#94A3B8]">
+                <span className="text-[#17211B]">
                   {new Date(data.market_timestamp).toISOString().replace('T', ' ').substring(0, 19)} UTC
                 </span>
               </span>
@@ -240,14 +240,14 @@ export const LatestMarketDataPanel: React.FC<LatestMarketDataPanelProps> = ({
 
             <div>
               Retrieved At:{' '}
-              <span className="text-[#94A3B8]">
+              <span className="text-[#17211B]">
                 {new Date(data.received_at).toISOString().replace('T', ' ').substring(0, 19)} UTC
               </span>
             </div>
           </div>
         </div>
       ) : (
-        <div className="py-6 text-center text-xs text-[#94A3B8] font-mono">
+        <div className="py-6 text-center text-xs text-[#64748B] font-mono">
           No observation data available.
         </div>
       )}

@@ -39,22 +39,22 @@ export const Dialog: React.FC<DialogProps> = ({
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Dialog Body */}
       <div
-        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-[#151F2E] border border-[#263244] rounded-md shadow-2xl overflow-hidden text-[#E5E7EB] z-10`}
+        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white border border-[#E5E7EB] rounded-[10px] shadow-2xl overflow-hidden text-[#17211B] z-10`}
         role="dialog"
         aria-modal="true"
       >
         {title && (
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#263244] bg-[#111827]">
-            <h3 className="text-sm font-semibold tracking-tight text-[#E5E7EB]">{title}</h3>
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#E5E7EB] bg-[#F8FAF9]">
+            <h3 className="text-sm font-semibold tracking-tight text-[#17211B]">{title}</h3>
             <button
               onClick={onClose}
-              className="p-1 rounded text-[#94A3B8] hover:text-[#E5E7EB] hover:bg-[#151F2E] transition-colors"
+              className="p-1 rounded text-[#64748B] hover:text-[#17211B] hover:bg-[#F0FDF4] transition-colors"
               aria-label="Close dialog"
             >
               <X className="w-4 h-4" />

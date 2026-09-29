@@ -197,14 +197,14 @@ export const CorrelationPage: React.FC = () => {
       <ResearchContextBar availableInstruments={availableInstruments} showInstrumentSelect={false} />
 
       {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-card p-5 shadow-card">
         <div className="flex items-center space-x-3">
-          <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-400 border border-blue-500/20">
+          <div className="rounded-lg bg-emerald-50 p-2.5 text-emerald-800 border border-emerald-200">
             <Grid className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-100">Correlation Analyzer & Matrix</h1>
-            <p className="text-xs text-slate-400">
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">Correlation Analyzer & Matrix</h1>
+            <p className="text-xs text-text-muted">
               Multi-instrument return cross-correlation, pairwise distribution scatter, and rolling window stability
             </p>
           </div>
@@ -285,7 +285,7 @@ export const CorrelationPage: React.FC = () => {
           />
           <button
             onClick={loadMatrix}
-            className="rounded border border-slate-800 bg-slate-950 p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="rounded-md border border-border bg-card p-2 text-text-muted hover:bg-surface hover:text-text-primary transition-colors"
           >
             <RefreshCw className={`h-4 w-4 ${isLoadingMatrix ? 'animate-spin' : ''}`} />
           </button>
@@ -294,26 +294,26 @@ export const CorrelationPage: React.FC = () => {
 
       {/* Error Message */}
       {errorMsg && (
-        <div className="flex items-center space-x-2 rounded-lg border border-red-500/50 bg-red-950/40 p-4 text-sm text-red-400">
+        <div className="flex items-center space-x-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-financial-negative">
           <AlertTriangle className="h-5 w-5 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Controls & Instrument Selector Bar */}
-      <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 space-y-4 backdrop-blur-sm">
+      <div className="rounded-lg border border-border bg-card p-4 space-y-4 shadow-card">
         {/* Selected Instruments Tags */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-slate-400">Analyzed Instruments ({selectedInstruments.length}/20):</span>
+          <span className="text-xs font-semibold text-text-muted">Analyzed Instruments ({selectedInstruments.length}/20):</span>
           {selectedInstruments.map((inst) => (
             <span
               key={inst.id}
-              className="inline-flex items-center space-x-1.5 rounded border border-blue-500/30 bg-blue-950/40 px-2.5 py-1 text-xs font-semibold text-blue-300"
+              className="inline-flex items-center space-x-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-900"
             >
               <span>{inst.symbol}</span>
               <button
                 onClick={() => handleRemoveInstrument(inst.id)}
-                className="rounded text-blue-400 hover:text-red-400"
+                className="rounded text-emerald-700 hover:text-financial-negative transition-colors"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -327,7 +327,7 @@ export const CorrelationPage: React.FC = () => {
               if (found) handleAddInstrument(found);
             }}
             value=""
-            className="rounded border border-slate-800 bg-slate-950 px-3 py-1 text-xs text-slate-300 focus:border-blue-500 focus:outline-none"
+            className="rounded-md border border-border bg-surface px-3 py-1 text-xs text-text-primary focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
           >
             <option value="" disabled>
               + Add Registered Instrument
@@ -343,16 +343,16 @@ export const CorrelationPage: React.FC = () => {
         </div>
 
         {/* Controls Row */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-800/80 pt-3 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-3 text-xs">
           {/* Date Range */}
           <div className="flex items-center space-x-1">
-            <span className="text-slate-400">Range:</span>
+            <span className="text-text-muted">Range:</span>
             {['1M', '3M', '6M', '1Y', '3Y', '5Y', 'MAX'].map((r) => (
               <button
                 key={r}
                 onClick={() => setDateRange(r)}
-                className={`rounded px-2.5 py-1 font-semibold ${
-                  dateRange === r ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2.5 py-1 font-semibold transition-colors ${
+                  dateRange === r ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 {r}
@@ -363,19 +363,19 @@ export const CorrelationPage: React.FC = () => {
           {/* Return Type & Price Source */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
-              <span className="text-slate-400">Returns:</span>
+              <span className="text-text-muted">Returns:</span>
               <button
                 onClick={() => setReturnType('simple')}
-                className={`rounded px-2 py-1 font-semibold ${
-                  returnType === 'simple' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2 py-1 font-semibold transition-colors ${
+                  returnType === 'simple' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 Simple
               </button>
               <button
                 onClick={() => setReturnType('log')}
-                className={`rounded px-2 py-1 font-semibold ${
-                  returnType === 'log' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2 py-1 font-semibold transition-colors ${
+                  returnType === 'log' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 Log
@@ -383,19 +383,19 @@ export const CorrelationPage: React.FC = () => {
             </div>
 
             <div className="flex items-center space-x-1">
-              <span className="text-slate-400">Price:</span>
+              <span className="text-text-muted">Price:</span>
               <button
                 onClick={() => setPriceSource('adjusted')}
-                className={`rounded px-2 py-1 font-semibold ${
-                  priceSource === 'adjusted' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2 py-1 font-semibold transition-colors ${
+                  priceSource === 'adjusted' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 Adjusted
               </button>
               <button
                 onClick={() => setPriceSource('close')}
-                className={`rounded px-2 py-1 font-semibold ${
-                  priceSource === 'close' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2 py-1 font-semibold transition-colors ${
+                  priceSource === 'close' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 Raw Close
@@ -403,19 +403,19 @@ export const CorrelationPage: React.FC = () => {
             </div>
 
             <div className="flex items-center space-x-1">
-              <span className="text-slate-400">Alignment:</span>
+              <span className="text-text-muted">Alignment:</span>
               <button
                 onClick={() => setAlignmentMode('pairwise_complete')}
-                className={`rounded px-2 py-1 font-semibold ${
-                  alignmentMode === 'pairwise_complete' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2 py-1 font-semibold transition-colors ${
+                  alignmentMode === 'pairwise_complete' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 Pairwise Complete
               </button>
               <button
                 onClick={() => setAlignmentMode('common_intersection')}
-                className={`rounded px-2 py-1 font-semibold ${
-                  alignmentMode === 'common_intersection' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                className={`rounded px-2 py-1 font-semibold transition-colors ${
+                  alignmentMode === 'common_intersection' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                 }`}
               >
                 Common Intersection
@@ -428,26 +428,26 @@ export const CorrelationPage: React.FC = () => {
       {/* Metric Cards Bar */}
       {matrixData && (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-            <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Instruments Analyzed</span>
-            <div className="mt-1 font-mono text-base font-bold text-slate-100">{matrixData.instruments.length}</div>
+          <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+            <span className="text-2xs font-semibold uppercase tracking-wider text-text-muted">Instruments Analyzed</span>
+            <div className="mt-1 font-mono text-base font-bold text-text-primary">{matrixData.instruments.length}</div>
           </div>
 
-          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-            <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Average Pairwise Correlation</span>
-            <div className="mt-1 font-mono text-base font-bold text-blue-400">{avgCorr.toFixed(4)}</div>
+          <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+            <span className="text-2xs font-semibold uppercase tracking-wider text-text-muted">Average Pairwise Correlation</span>
+            <div className="mt-1 font-mono text-base font-bold text-brand-primary">{avgCorr.toFixed(4)}</div>
           </div>
 
-          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-            <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Highest Positive Pair</span>
-            <div className="mt-1 font-mono text-sm font-bold text-emerald-400">
+          <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+            <span className="text-2xs font-semibold uppercase tracking-wider text-text-muted">Highest Positive Pair</span>
+            <div className="mt-1 font-mono text-sm font-bold text-financial-positive">
               {highestPair ? `${highestPair.symbol_a} × ${highestPair.symbol_b} (${highestPair.correlation?.toFixed(2)})` : '—'}
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-            <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Lowest Pairwise Pair</span>
-            <div className="mt-1 font-mono text-sm font-bold text-amber-400">
+          <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+            <span className="text-2xs font-semibold uppercase tracking-wider text-text-muted">Lowest Pairwise Pair</span>
+            <div className="mt-1 font-mono text-sm font-bold text-amber-600">
               {lowestPair ? `${lowestPair.symbol_a} × ${lowestPair.symbol_b} (${lowestPair.correlation?.toFixed(2)})` : '—'}
             </div>
           </div>
@@ -473,15 +473,15 @@ export const CorrelationPage: React.FC = () => {
 
           {/* Rolling Correlation Chart */}
           <div className="lg:col-span-6 space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-2 text-xs">
-              <span className="font-semibold text-slate-300">Rolling Window Size:</span>
+            <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2 text-xs shadow-card">
+              <span className="font-semibold text-text-primary">Rolling Window Size:</span>
               <div className="flex items-center space-x-1 font-mono">
                 {[30, 60, 90, 120, 252].map((w) => (
                   <button
                     key={w}
                     onClick={() => setRollingWindow(w)}
-                    className={`rounded px-2.5 py-1 text-2xs font-semibold ${
-                      rollingWindow === w ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'
+                    className={`rounded px-2.5 py-1 text-2xs font-semibold transition-colors ${
+                      rollingWindow === w ? 'bg-brand-primary text-white shadow-xs' : 'text-text-muted hover:bg-surface hover:text-text-primary'
                     }`}
                   >
                     {w}D
@@ -497,18 +497,18 @@ export const CorrelationPage: React.FC = () => {
 
       {/* Pairwise Table */}
       {matrixData && matrixData.pairwise.length > 0 && (
-        <div className="rounded-lg border border-slate-800 bg-slate-900/60 backdrop-blur-sm overflow-hidden">
-          <div className="flex items-center justify-between border-b border-slate-800 p-4 bg-slate-900">
+        <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border p-4 bg-surface">
             <div className="flex items-center space-x-2">
-              <Layers className="h-4 w-4 text-blue-400" />
-              <h3 className="text-sm font-semibold text-slate-200">Pairwise Correlation Breakdown</h3>
+              <Layers className="h-4 w-4 text-brand-primary" />
+              <h3 className="text-sm font-semibold text-text-primary">Pairwise Correlation Breakdown</h3>
             </div>
-            <span className="font-mono text-xs text-slate-400">{matrixData.pairwise.length} Pair Relationships</span>
+            <span className="font-mono text-xs text-text-muted">{matrixData.pairwise.length} Pair Relationships</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-2xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <thead className="bg-surface text-2xs uppercase tracking-wider text-text-muted border-b border-border">
                 <tr>
                   <th className="px-4 py-3">Pair</th>
                   <th className="px-4 py-3 text-right">Pearson Correlation ($\rho$)</th>
@@ -516,7 +516,7 @@ export const CorrelationPage: React.FC = () => {
                   <th className="px-4 py-3">Qualitative Interpretation</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300 font-mono">
+              <tbody className="divide-y divide-border text-text-secondary font-mono">
                 {matrixData.pairwise.map((item, idx) => (
                   <tr
                     key={idx}
@@ -527,16 +527,16 @@ export const CorrelationPage: React.FC = () => {
                         setSelectedPair({ idA, idB, symA: item.symbol_a, symB: item.symbol_b });
                       }
                     }}
-                    className="hover:bg-slate-800/40 cursor-pointer"
+                    className="hover:bg-surface/60 cursor-pointer transition-colors"
                   >
-                    <td className="px-4 py-3 font-semibold text-slate-200">
+                    <td className="px-4 py-3 font-semibold text-text-primary">
                       {item.symbol_a} × {item.symbol_b}
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-blue-400">
+                    <td className="px-4 py-3 text-right font-bold text-brand-primary">
                       {item.correlation !== null && item.correlation !== undefined ? item.correlation.toFixed(4) : '—'}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-400">{item.observations}</td>
-                    <td className="px-4 py-3 font-sans text-slate-400">{item.interpretation}</td>
+                    <td className="px-4 py-3 text-right text-text-muted">{item.observations}</td>
+                    <td className="px-4 py-3 font-sans text-text-muted">{item.interpretation}</td>
                   </tr>
                 ))}
               </tbody>

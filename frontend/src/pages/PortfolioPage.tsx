@@ -126,14 +126,14 @@ export const PortfolioPage: React.FC = () => {
       <ResearchContextBar showInstrumentSelect={false} showRangeSelect={false} />
 
       {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-card p-5 shadow-card">
         <div className="flex items-center space-x-3">
-          <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-400 border border-blue-500/20">
+          <div className="rounded-lg bg-emerald-50 p-2.5 text-emerald-800 border border-emerald-200">
             <Briefcase className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-100">Portfolio Calculator & Analytics</h1>
-            <p className="text-xs text-slate-400">
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">Portfolio Calculator & Analytics</h1>
+            <p className="text-xs text-text-muted">
               Institutional portfolio performance engine & position contribution workspace
             </p>
           </div>
@@ -143,11 +143,11 @@ export const PortfolioPage: React.FC = () => {
         <div className="flex items-center space-x-3">
           {portfolios.length > 0 && (
             <div className="flex items-center space-x-2">
-              <FolderOpen className="h-4 w-4 text-slate-400" />
+              <FolderOpen className="h-4 w-4 text-text-muted" />
               <select
                 value={selectedPortfolioId || ''}
                 onChange={(e) => setSelectedPortfolioId(e.target.value)}
-                className="rounded border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs font-semibold text-slate-200 focus:border-blue-500 focus:outline-none"
+                className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-primary focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               >
                 {portfolios.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -160,7 +160,7 @@ export const PortfolioPage: React.FC = () => {
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-1.5 rounded bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors"
+            className="flex items-center space-x-1.5 rounded-md bg-brand-primary px-3 py-1.5 text-xs font-semibold text-white shadow-button hover:bg-brand-deep transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Create Portfolio</span>
@@ -225,7 +225,7 @@ export const PortfolioPage: React.FC = () => {
             <button
               onClick={handleDeletePortfolio}
               title="Deactivate Portfolio"
-              className="rounded border border-slate-800 bg-slate-950 p-2 text-slate-400 hover:border-red-900/50 hover:bg-red-950/40 hover:text-red-400 transition-colors"
+              className="rounded-md border border-border bg-card p-2 text-text-muted hover:border-red-200 hover:bg-red-50 hover:text-financial-negative transition-colors"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -234,7 +234,7 @@ export const PortfolioPage: React.FC = () => {
           <button
             onClick={loadAnalytics}
             title="Refresh Analytics"
-            className="rounded border border-slate-800 bg-slate-950 p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="rounded-md border border-border bg-card p-2 text-text-muted hover:bg-surface hover:text-text-primary transition-colors"
           >
             <RefreshCw className={`h-4 w-4 ${isLoadingAnalytics ? 'animate-spin' : ''}`} />
           </button>
@@ -243,7 +243,7 @@ export const PortfolioPage: React.FC = () => {
 
       {/* Error Message */}
       {errorMsg && (
-        <div className="flex items-center space-x-2 rounded-lg border border-red-500/50 bg-red-950/40 p-4 text-sm text-red-400">
+        <div className="flex items-center space-x-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-financial-negative">
           <AlertTriangle className="h-5 w-5 shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -251,11 +251,11 @@ export const PortfolioPage: React.FC = () => {
 
       {/* Quality Warnings Banner */}
       {analytics && analytics.quality_warnings.length > 0 && (
-        <div className="flex items-start space-x-3 rounded-lg border border-amber-500/30 bg-amber-950/20 p-4 text-xs text-amber-300">
-          <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+        <div className="flex items-start space-x-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">
+          <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
           <div>
-            <strong className="font-semibold text-amber-200">Market Data Coverage Note:</strong>
-            <ul className="mt-1 list-disc list-inside space-y-0.5 text-slate-300">
+            <strong className="font-semibold text-amber-900">Market Data Coverage Note:</strong>
+            <ul className="mt-1 list-disc list-inside space-y-0.5 text-amber-800">
               {analytics.quality_warnings.map((w, idx) => (
                 <li key={idx}>{w}</li>
               ))}
@@ -266,15 +266,15 @@ export const PortfolioPage: React.FC = () => {
 
       {/* No Portfolio Selected State */}
       {(!selectedPortfolio || portfolios.length === 0) && !isLoadingPortfolios && (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 p-12 text-center">
-          <Briefcase className="h-12 w-12 text-slate-600 mb-3" />
-          <h2 className="text-base font-semibold text-slate-300">No Portfolio Selected</h2>
-          <p className="text-xs text-slate-500 max-w-md mt-1 mb-4">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card p-12 text-center shadow-card">
+          <Briefcase className="h-12 w-12 text-text-muted mb-3" />
+          <h2 className="text-base font-semibold text-text-primary">No Portfolio Selected</h2>
+          <p className="text-xs text-text-muted max-w-md mt-1 mb-4">
             Create a portfolio to organize equity, ETF, index, and crypto holdings into a unified quantitative research model.
           </p>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-2 rounded bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500"
+            className="flex items-center space-x-2 rounded-md bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-button hover:bg-brand-deep"
           >
             <Plus className="h-4 w-4" />
             <span>Create Your First Portfolio</span>
@@ -287,8 +287,8 @@ export const PortfolioPage: React.FC = () => {
         <div className="space-y-6">
           {/* Summary Metric Cards Bar */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 <span>Initial Capital</span>
                 <MetricInfoTooltip
                   title="Portfolio Initial Capital"
@@ -296,13 +296,13 @@ export const PortfolioPage: React.FC = () => {
                   formula="Capital_0 = Cash_0 + Sum(Qty_i × Price_i,0)"
                 />
               </div>
-              <div className="mt-1 font-mono text-base font-bold text-slate-100">
+              <div className="mt-1 font-mono text-base font-bold text-text-primary">
                 ${analytics.summary.initial_capital.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 <span>Invested Value</span>
                 <MetricInfoTooltip
                   title="Invested Market Value"
@@ -310,13 +310,13 @@ export const PortfolioPage: React.FC = () => {
                   formula="V_invested = Sum_{i} (Quantity_i × LatestPrice_i)"
                 />
               </div>
-              <div className="mt-1 font-mono text-base font-bold text-blue-400">
+              <div className="mt-1 font-mono text-base font-bold text-brand-primary">
                 ${analytics.summary.current_invested_value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 <span>Uninvested Cash</span>
                 <MetricInfoTooltip
                   title="Uninvested Cash Balance"
@@ -324,13 +324,13 @@ export const PortfolioPage: React.FC = () => {
                   formula="Cash_t = Capital_0 - InitialCost + RealizedPnL - Fees"
                 />
               </div>
-              <div className="mt-1 font-mono text-base font-bold text-slate-300">
+              <div className="mt-1 font-mono text-base font-bold text-text-secondary">
                 ${analytics.summary.cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 <span>Total Value</span>
                 <MetricInfoTooltip
                   title="Current Total Portfolio Value (NAV)"
@@ -338,13 +338,13 @@ export const PortfolioPage: React.FC = () => {
                   formula="NAV_t = Cash_t + V_invested,t"
                 />
               </div>
-              <div className="mt-1 font-mono text-base font-bold text-slate-100">
+              <div className="mt-1 font-mono text-base font-bold text-text-primary">
                 ${analytics.summary.current_portfolio_value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 <span>Total P&L ($)</span>
                 <MetricInfoTooltip
                   title="Total Dollar Profit & Loss"
@@ -354,7 +354,7 @@ export const PortfolioPage: React.FC = () => {
               </div>
               <div
                 className={`mt-1 font-mono text-base font-bold ${
-                  analytics.summary.total_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
+                  analytics.summary.total_pnl >= 0 ? 'text-financial-positive' : 'text-financial-negative'
                 }`}
               >
                 {analytics.summary.total_pnl >= 0 ? '+' : ''}
@@ -362,8 +362,8 @@ export const PortfolioPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-card">
+              <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 <span>Total Return</span>
                 <MetricInfoTooltip
                   title="Total Percentage Return"
@@ -373,7 +373,7 @@ export const PortfolioPage: React.FC = () => {
               </div>
               <div
                 className={`mt-1 font-mono text-base font-bold ${
-                  analytics.summary.total_return >= 0 ? 'text-emerald-400' : 'text-red-400'
+                  analytics.summary.total_return >= 0 ? 'text-financial-positive' : 'text-financial-negative'
                 }`}
               >
                 {analytics.summary.total_return >= 0 ? '+' : ''}
@@ -393,12 +393,12 @@ export const PortfolioPage: React.FC = () => {
           </div>
 
           {/* Holdings & Contribution Table */}
-          <div className="rounded-lg border border-slate-800 bg-slate-900/60 backdrop-blur-sm overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 p-4 bg-slate-900">
+          <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 bg-surface">
               <div className="flex items-center space-x-2">
-                <Layers className="h-4 w-4 text-blue-400" />
-                <h3 className="text-sm font-semibold text-slate-200">Position Holdings & Contribution</h3>
-                <span className="rounded bg-slate-800 px-2 py-0.5 text-2xs font-mono text-slate-400">
+                <Layers className="h-4 w-4 text-brand-primary" />
+                <h3 className="text-sm font-semibold text-text-primary">Position Holdings & Contribution</h3>
+                <span className="rounded bg-surface-elevated px-2 py-0.5 text-2xs font-mono text-text-secondary border border-border">
                   {analytics.holdings.length} Active Positions
                 </span>
               </div>
@@ -406,19 +406,19 @@ export const PortfolioPage: React.FC = () => {
               <div className="flex items-center space-x-3">
                 {/* Price Source Selector */}
                 <div className="flex items-center space-x-1 text-xs">
-                  <span className="text-slate-400">Price Source:</span>
+                  <span className="text-text-muted">Price Source:</span>
                   <button
                     onClick={() => setPriceSource('adjusted')}
-                    className={`rounded px-2 py-1 text-2xs font-semibold ${
-                      priceSource === 'adjusted' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                    className={`rounded px-2 py-1 text-2xs font-semibold transition-colors ${
+                      priceSource === 'adjusted' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-secondary hover:text-text-primary'
                     }`}
                   >
                     Adjusted Close
                   </button>
                   <button
                     onClick={() => setPriceSource('close')}
-                    className={`rounded px-2 py-1 text-2xs font-semibold ${
-                      priceSource === 'close' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                    className={`rounded px-2 py-1 text-2xs font-semibold transition-colors ${
+                      priceSource === 'close' ? 'bg-brand-primary text-white shadow-xs' : 'text-text-secondary hover:text-text-primary'
                     }`}
                   >
                     Unadjusted Close
@@ -427,7 +427,7 @@ export const PortfolioPage: React.FC = () => {
 
                 <button
                   onClick={() => setIsAddHoldingModalOpen(true)}
-                  className="flex items-center space-x-1.5 rounded bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
+                  className="flex items-center space-x-1.5 rounded-md bg-brand-primary px-3 py-1.5 text-xs font-semibold text-white shadow-button hover:bg-brand-deep transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Add Holding</span>
@@ -438,7 +438,7 @@ export const PortfolioPage: React.FC = () => {
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/80 text-2xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                <thead className="bg-surface text-2xs uppercase tracking-wider text-text-muted border-b border-border">
                   <tr>
                     <th className="px-4 py-3">Instrument</th>
                     <th className="px-3 py-3">Asset Type</th>
@@ -454,47 +454,47 @@ export const PortfolioPage: React.FC = () => {
                     <th className="px-4 py-3 text-center">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300 font-mono">
+                <tbody className="divide-y divide-border text-text-secondary font-mono">
                   {analytics.holdings.map((h) => (
-                    <tr key={h.holding_id} className="hover:bg-slate-800/40">
-                      <td className="px-4 py-3 font-semibold text-slate-100">
+                    <tr key={h.holding_id} className="hover:bg-surface/60 transition-colors">
+                      <td className="px-4 py-3 font-semibold text-text-primary">
                         <div>{h.symbol}</div>
-                        <div className="text-2xs font-sans text-slate-500 font-normal">{h.name}</div>
+                        <div className="text-2xs font-sans text-text-muted font-normal">{h.name}</div>
                       </td>
                       <td className="px-3 py-3">
-                        <span className="rounded bg-slate-800 px-2 py-0.5 text-2xs uppercase text-slate-300 font-sans">
+                        <span className="rounded bg-surface-elevated px-2 py-0.5 text-2xs uppercase text-text-secondary font-sans border border-border">
                           {h.asset_type}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-right">{h.quantity.toLocaleString()}</td>
+                      <td className="px-3 py-3 text-right text-text-primary">{h.quantity.toLocaleString()}</td>
                       <td className="px-3 py-3 text-right">${h.entry_price.toFixed(2)}</td>
-                      <td className="px-3 py-3 text-right font-bold text-slate-200">${h.current_price.toFixed(2)}</td>
-                      <td className="px-3 py-3 text-right font-bold text-blue-400">
+                      <td className="px-3 py-3 text-right font-bold text-text-primary">${h.current_price.toFixed(2)}</td>
+                      <td className="px-3 py-3 text-right font-bold text-brand-primary">
                         ${h.current_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
-                      <td className="px-3 py-3 text-right font-semibold text-slate-200">
+                      <td className="px-3 py-3 text-right font-semibold text-text-primary">
                         {h.total_weight.toFixed(2)}%
                       </td>
-                      <td className="px-3 py-3 text-right text-slate-400">
+                      <td className="px-3 py-3 text-right text-text-muted">
                         {h.target_weight !== null && h.target_weight !== undefined ? `${h.target_weight}%` : '—'}
                       </td>
                       <td
                         className={`px-3 py-3 text-right font-semibold ${
-                          h.pnl_amount >= 0 ? 'text-emerald-400' : 'text-red-400'
+                          h.pnl_amount >= 0 ? 'text-financial-positive' : 'text-financial-negative'
                         }`}
                       >
                         {h.pnl_amount >= 0 ? '+' : ''}${h.pnl_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                       <td
                         className={`px-3 py-3 text-right font-semibold ${
-                          h.pnl_percent >= 0 ? 'text-emerald-400' : 'text-red-400'
+                          h.pnl_percent >= 0 ? 'text-financial-positive' : 'text-financial-negative'
                         }`}
                       >
                         {h.pnl_percent >= 0 ? '+' : ''}{h.pnl_percent.toFixed(2)}%
                       </td>
                       <td
                         className={`px-3 py-3 text-right font-semibold ${
-                          h.contribution_percent >= 0 ? 'text-emerald-400' : 'text-red-400'
+                          h.contribution_percent >= 0 ? 'text-financial-positive' : 'text-financial-negative'
                         }`}
                       >
                         {h.contribution_percent >= 0 ? '+' : ''}{h.contribution_percent.toFixed(2)}%
@@ -503,7 +503,7 @@ export const PortfolioPage: React.FC = () => {
                         <button
                           onClick={() => handleRemoveHolding(h.holding_id, h.symbol)}
                           title="Remove holding"
-                          className="rounded p-1 text-slate-500 hover:bg-red-950/40 hover:text-red-400 transition-colors"
+                          className="rounded p-1 text-text-muted hover:bg-red-50 hover:text-financial-negative transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -512,23 +512,23 @@ export const PortfolioPage: React.FC = () => {
                   ))}
 
                   {/* Cash Position Row */}
-                  <tr className="bg-slate-950/40 font-mono text-slate-400">
-                    <td className="px-4 py-3 font-semibold text-slate-200">
+                  <tr className="bg-surface/40 font-mono text-text-muted">
+                    <td className="px-4 py-3 font-semibold text-text-primary">
                       <div>CASH</div>
-                      <div className="text-2xs font-sans text-slate-500">Uninvested Capital</div>
+                      <div className="text-2xs font-sans text-text-muted">Uninvested Capital</div>
                     </td>
                     <td className="px-3 py-3">
-                      <span className="rounded bg-slate-800/80 px-2 py-0.5 text-2xs uppercase text-slate-400 font-sans">
+                      <span className="rounded bg-surface-elevated px-2 py-0.5 text-2xs uppercase text-text-secondary font-sans border border-border">
                         CASH
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right">—</td>
                     <td className="px-3 py-3 text-right">$1.00</td>
                     <td className="px-3 py-3 text-right">$1.00</td>
-                    <td className="px-3 py-3 text-right font-bold text-slate-300">
+                    <td className="px-3 py-3 text-right font-bold text-text-primary">
                       ${analytics.summary.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="px-3 py-3 text-right font-semibold text-slate-300">
+                    <td className="px-3 py-3 text-right font-semibold text-text-primary">
                       {((analytics.summary.cash / analytics.summary.current_portfolio_value) * 100).toFixed(2)}%
                     </td>
                     <td className="px-3 py-3 text-right">—</td>

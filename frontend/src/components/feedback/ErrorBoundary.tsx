@@ -54,20 +54,20 @@ export class GlobalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
       }
 
       return (
-        <div className="min-h-screen bg-[#0B1220] text-[#E5E7EB] flex items-center justify-center p-6">
-          <div className="max-w-lg w-full p-8 rounded-lg border border-[#EF4444]/40 bg-[#111827] shadow-2xl text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#EF4444]/10 text-[#EF4444] flex items-center justify-center">
+        <div className="min-h-screen bg-app text-text-primary flex items-center justify-center p-6">
+          <div className="max-w-lg w-full p-8 rounded-2xl border border-rose-200 bg-card shadow-xl text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center">
               <AlertOctagon className="w-8 h-8" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight mb-2">Application Rendering Error</h1>
-            <p className="text-sm text-[#94A3B8] mb-6 leading-relaxed">
+            <h1 className="text-xl font-bold tracking-tight mb-2 text-text-primary">Application Rendering Error</h1>
+            <p className="text-sm text-text-secondary mb-6 leading-relaxed">
               An unexpected error prevented the quantitative interface from displaying.
               No portfolio or market data records were modified.
             </p>
 
             {this.state.error && (
-              <div className="mb-6 p-3 rounded bg-[#151F2E] border border-[#263244] text-left overflow-auto max-h-36">
-                <p className="text-xs font-mono text-[#F87171] break-words">
+              <div className="mb-6 p-3 rounded-lg bg-rose-50 border border-rose-200 text-left overflow-auto max-h-36 shadow-xs">
+                <p className="text-xs font-mono text-rose-800 break-words">
                   {this.state.error.name}: {this.state.error.message}
                 </p>
               </div>
@@ -139,20 +139,20 @@ export class ModuleErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
       const mod = this.props.moduleName || 'Analytical Module';
 
       return (
-        <div className="p-8 rounded-lg border border-[#EF4444]/30 bg-[#151F2E] text-center my-4">
-          <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-[#EF4444]/10 text-[#F87171] flex items-center justify-center">
+        <div className="p-8 rounded-xl border border-rose-200 bg-rose-50/60 text-center my-4 shadow-xs">
+          <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center">
             <AlertOctagon className="w-5 h-5" />
           </div>
-          <h3 className="text-sm font-semibold text-[#E5E7EB] mb-1">
+          <h3 className="text-sm font-semibold text-text-primary mb-1">
             {mod} Error
           </h3>
-          <p className="text-xs text-[#94A3B8] max-w-md mx-auto mb-4 leading-relaxed">
+          <p className="text-xs text-text-secondary max-w-md mx-auto mb-4 leading-relaxed">
             The {mod} encountered a display or calculation rendering issue. Other workstation modules and research navigation remain unaffected.
           </p>
 
           {this.state.error && (
-            <div className="mb-4 p-2.5 rounded bg-[#111827] border border-[#263244] max-w-md mx-auto text-left">
-              <p className="text-[11px] font-mono text-[#F87171] truncate">
+            <div className="mb-4 p-2.5 rounded-lg bg-card border border-rose-200 max-w-md mx-auto text-left shadow-xs">
+              <p className="text-[11px] font-mono text-rose-800 truncate">
                 {this.state.error.message || 'Render failure'}
               </p>
             </div>

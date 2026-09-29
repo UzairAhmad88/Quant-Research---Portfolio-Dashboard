@@ -50,20 +50,20 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     switch (trend) {
       case 'positive':
         return {
-          color: 'text-[#4ADE80]',
-          bg: 'bg-[#22C55E]/10 border-[#22C55E]/20',
+          color: 'text-[#15803D]',
+          bg: 'bg-[#DCFCE7] border-[#86EFAC]',
           icon: TrendingUp,
         };
       case 'negative':
         return {
-          color: 'text-[#F87171]',
-          bg: 'bg-[#EF4444]/10 border-[#EF4444]/20',
+          color: 'text-[#DC2626]',
+          bg: 'bg-[#FEE2E2] border-[#FECACA]',
           icon: TrendingDown,
         };
       default:
         return {
-          color: 'text-[#94A3B8]',
-          bg: 'bg-[#1E293B] border-[#263244]',
+          color: 'text-[#64748B]',
+          bg: 'bg-[#F1F5F9] border-[#E2E8F0]',
           icon: Minus,
         };
     }
@@ -77,14 +77,14 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       <div>
         <div className="flex items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-xs font-medium text-[#94A3B8] tracking-tight truncate">{label}</span>
+            <span className="text-xs font-medium text-[#64748B] tracking-tight truncate">{label}</span>
             {(metricKey || tooltipText) && (
               <MetricInfoTooltip metricKey={metricKey} description={tooltipText} />
             )}
           </div>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {isDemo && (
-              <Badge variant="outline" className="text-[9px] py-0 px-1 border-[#263244] text-[#64748B]">
+              <Badge variant="outline" className="text-[9px] py-0 px-1 border-[#CBD5E1] text-[#64748B]">
                 Demo
               </Badge>
             )}
@@ -94,18 +94,18 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
         {isUnavailable ? (
           <div className="flex items-center gap-2 py-2 text-xs text-[#64748B] font-mono-num">
-            <HelpCircle className="w-4 h-4 text-[#475569]" />
+            <HelpCircle className="w-4 h-4 text-[#94A3B8]" />
             <span>Data Unavailable</span>
           </div>
         ) : (
           <div className="flex items-baseline justify-between gap-2">
-            <span className="text-financial-metric text-[#E5E7EB]">
+            <span className="text-financial-metric text-[#17211B]">
               {value ?? '—'}
             </span>
 
             {(change !== undefined || changePercent !== undefined) && (
               <div
-                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono-num font-medium border ${trendStyle.bg} ${trendStyle.color}`}
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono-num font-semibold border ${trendStyle.bg} ${trendStyle.color}`}
               >
                 <TrendIcon className="w-3 h-3" />
                 <span>
@@ -119,7 +119,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       </div>
 
       {subtitle && (
-        <div className="mt-3 pt-2 border-t border-[#263244]/60 text-[10px] font-mono-num text-[#64748B] truncate">
+        <div className="mt-3 pt-2 border-t border-[#E5E7EB] text-[10px] font-mono-num text-[#64748B] truncate">
           {subtitle}
         </div>
       )}

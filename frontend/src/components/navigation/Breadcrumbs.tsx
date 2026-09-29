@@ -17,12 +17,12 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, className = '' 
   const { buildUrl } = useResearchContext();
 
   return (
-    <nav className={`flex items-center gap-1.5 text-xs font-mono text-[#94A3B8] ${className}`}>
+    <nav className={`flex items-center gap-1.5 text-xs font-mono text-text-muted ${className}`}>
       <NavLink
         to={buildUrl('/')}
-        className="flex items-center gap-1 hover:text-[#E5E7EB] transition-colors"
+        className="flex items-center gap-1 hover:text-text-primary transition-colors"
       >
-        <Home className="w-3.5 h-3.5 text-[#3B82F6]" />
+        <Home className="w-3.5 h-3.5 text-forest-700" />
         <span>Dashboard</span>
       </NavLink>
 
@@ -30,13 +30,13 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, className = '' 
         const isLast = idx === items.length - 1;
         return (
           <React.Fragment key={idx}>
-            <ChevronRight className="w-3 h-3 text-[#263244] shrink-0" />
+            <ChevronRight className="w-3 h-3 text-border-strong shrink-0" />
             {isLast || !item.route ? (
-              <span className="font-semibold text-[#E5E7EB] truncate">{item.label}</span>
+              <span className="font-semibold text-text-primary truncate">{item.label}</span>
             ) : (
               <NavLink
                 to={buildUrl(item.route)}
-                className="hover:text-[#3B82F6] transition-colors truncate"
+                className="hover:text-forest-700 transition-colors truncate"
               >
                 {item.label}
               </NavLink>

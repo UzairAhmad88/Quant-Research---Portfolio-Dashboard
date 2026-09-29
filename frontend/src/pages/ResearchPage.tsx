@@ -67,60 +67,60 @@ export const ResearchPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-1">
         <div>
           <div className="flex items-center gap-2.5">
-            <FileText className="w-5 h-5 text-[#3B82F6]" />
-            <h1 className="text-2xl font-bold text-white tracking-tight">Research Notebook & Experiment Tracker</h1>
+            <FileText className="w-5 h-5 text-[#14532D]" />
+            <h1 className="text-2xl font-bold text-[#17211B] tracking-tight">Research Notebook & Experiment Tracker</h1>
           </div>
-          <p className="text-xs text-[#94A3B8] mt-1">
+          <p className="text-xs text-[#64748B] mt-1">
             Track reproducible research hypotheses, experiment fingerprints, data provenance, and analytical conclusions.
           </p>
         </div>
 
         <button
           onClick={() => inspectLineage('AAPL')}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0D1525] hover:bg-[#152136] border border-[#17253D] hover:border-[#3B82F6] text-xs font-semibold text-[#93C5FD] rounded-lg transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#F0FDF4] border border-[#CBD5E1] hover:border-[#14532D] text-xs font-semibold text-[#14532D] rounded-lg transition-all shadow-sm"
         >
-          <Database className="w-3.5 h-3.5 text-[#3B82F6]" />
+          <Database className="w-3.5 h-3.5 text-[#14532D]" />
           <span>Inspect Data Lineage</span>
         </button>
       </div>
 
       {/* Experiment Tracker Table */}
-      <div className="bg-[#0D1525] border border-[#17253D] rounded-lg p-4 shadow-md overflow-hidden">
-        <h3 className="text-sm font-bold text-white tracking-tight pb-3 border-b border-[#17253D]">
+      <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 shadow-sm overflow-hidden">
+        <h3 className="text-sm font-bold text-[#17211B] tracking-tight pb-3 border-b border-[#E5E7EB]">
           Tracked Quantitative Experiments
         </h3>
         <div className="overflow-x-auto pt-2">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="text-[11px] text-[#94A3B8] border-b border-[#17253D]/80">
-                <th className="pb-3 font-medium">Experiment ID</th>
-                <th className="pb-3 font-medium">Hypothesis & Objective</th>
-                <th className="pb-3 font-medium">Dataset</th>
-                <th className="pb-3 font-medium">Strategy</th>
-                <th className="pb-3 font-medium text-right">Return</th>
-                <th className="pb-3 font-medium text-right">Sharpe</th>
-                <th className="pb-3 font-medium text-right">Fingerprint</th>
-                <th className="pb-3 font-medium text-right">Lineage</th>
+              <tr className="text-[11px] text-[#64748B] bg-[#F0FDF4] border-b border-[#E5E7EB]">
+                <th className="py-2.5 px-2 font-semibold">Experiment ID</th>
+                <th className="py-2.5 px-2 font-semibold">Hypothesis & Objective</th>
+                <th className="py-2.5 px-2 font-semibold">Dataset</th>
+                <th className="py-2.5 px-2 font-semibold">Strategy</th>
+                <th className="py-2.5 px-2 font-semibold text-right">Return</th>
+                <th className="py-2.5 px-2 font-semibold text-right">Sharpe</th>
+                <th className="py-2.5 px-2 font-semibold text-right">Fingerprint</th>
+                <th className="py-2.5 px-2 font-semibold text-right">Lineage</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#17253D]/40 text-xs font-mono-num">
+            <tbody className="divide-y divide-[#E5E7EB] text-xs font-mono-num">
               {experiments.map((exp) => (
-                <tr key={exp.id} className="hover:bg-[#152136]/50 transition-colors">
-                  <td className="py-3 font-bold text-[#60A5FA]">{exp.id}</td>
-                  <td className="py-3 text-[#E2E8F0] font-sans max-w-xs">{exp.hypothesis}</td>
-                  <td className="py-3 text-[#94A3B8]">{exp.dataset_identifier}</td>
-                  <td className="py-3 text-white font-sans">{exp.strategy_name}</td>
-                  <td className="py-3 text-right font-bold text-[#22C55E]">+{exp.metrics.total_return_pct}%</td>
-                  <td className="py-3 text-right font-bold text-white">{exp.metrics.sharpe}</td>
-                  <td className="py-3 text-right">
-                    <span className="px-2 py-0.5 bg-[#070D18] border border-[#17253D] rounded text-[10px] text-[#94A3B8]">
+                <tr key={exp.id} className="hover:bg-[#F8FAF9] transition-colors">
+                  <td className="py-3 px-2 font-bold text-[#14532D]">{exp.id}</td>
+                  <td className="py-3 px-2 text-[#17211B] font-sans max-w-xs">{exp.hypothesis}</td>
+                  <td className="py-3 px-2 text-[#64748B]">{exp.dataset_identifier}</td>
+                  <td className="py-3 px-2 text-[#17211B] font-sans font-medium">{exp.strategy_name}</td>
+                  <td className="py-3 px-2 text-right font-bold text-[#15803D]">+{exp.metrics.total_return_pct}%</td>
+                  <td className="py-3 px-2 text-right font-bold text-[#17211B]">{exp.metrics.sharpe}</td>
+                  <td className="py-3 px-2 text-right">
+                    <span className="px-2 py-0.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-[10px] text-[#64748B]">
                       {exp.fingerprint}
                     </span>
                   </td>
-                  <td className="py-3 text-right">
+                  <td className="py-3 px-2 text-right">
                     <button
                       onClick={() => inspectLineage('AAPL')}
-                      className="p-1 hover:bg-[#1E3A8A] text-[#3B82F6] rounded"
+                      className="p-1 hover:bg-[#F0FDF4] text-[#14532D] rounded"
                       title="View Data Lineage"
                     >
                       <Fingerprint className="w-4 h-4" />
@@ -135,36 +135,36 @@ export const ResearchPage: React.FC = () => {
 
       {/* Data Lineage Modal */}
       {isLineageOpen && activeLineage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#0D1525] border border-[#1E3A8A] rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#17253D]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white border border-[#CBD5E1] rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-[#22C55E]" />
-                <h3 className="text-base font-bold text-white">Data Lineage & Provenance</h3>
+                <ShieldCheck className="w-5 h-5 text-[#15803D]" />
+                <h3 className="text-base font-bold text-[#17211B]">Data Lineage & Provenance</h3>
               </div>
-              <button onClick={() => setIsLineageOpen(false)} className="text-xs text-[#94A3B8] hover:text-white">
+              <button onClick={() => setIsLineageOpen(false)} className="text-xs text-[#64748B] hover:text-[#17211B]">
                 Close ✕
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 bg-[#070D18] rounded-md border border-[#17253D] space-y-1">
+              <div className="p-3 bg-[#F8FAF9] rounded-md border border-[#E5E7EB] space-y-1">
                 <div className="text-[10px] text-[#64748B]">Source Provider</div>
-                <div className="font-semibold text-white">{activeLineage.lineage.provider}</div>
+                <div className="font-semibold text-[#17211B]">{activeLineage.lineage.provider}</div>
               </div>
-              <div className="p-3 bg-[#070D18] rounded-md border border-[#17253D] space-y-1">
+              <div className="p-3 bg-[#F8FAF9] rounded-md border border-[#E5E7EB] space-y-1">
                 <div className="text-[10px] text-[#64748B]">Adjustments & Corporate Actions</div>
-                <div className="font-semibold text-[#86EFAC]">{activeLineage.lineage.adjustments}</div>
+                <div className="font-semibold text-[#15803D]">{activeLineage.lineage.adjustments}</div>
               </div>
-              <div className="p-3 bg-[#070D18] rounded-md border border-[#17253D] space-y-1">
+              <div className="p-3 bg-[#F8FAF9] rounded-md border border-[#E5E7EB] space-y-1">
                 <div className="text-[10px] text-[#64748B]">Date Range & Bars</div>
-                <div className="font-semibold text-white font-mono-num">
+                <div className="font-semibold text-[#17211B] font-mono-num">
                   {activeLineage.lineage.date_range.start} → {activeLineage.lineage.date_range.end} ({activeLineage.lineage.observation_count} bars)
                 </div>
               </div>
-              <div className="p-3 bg-[#070D18] rounded-md border border-[#17253D] space-y-1">
+              <div className="p-3 bg-[#F8FAF9] rounded-md border border-[#E5E7EB] space-y-1">
                 <div className="text-[10px] text-[#64748B]">Quality Verification</div>
-                <div className="font-semibold text-[#22C55E]">STATUS: {activeLineage.lineage.data_quality} (Zero Outliers / Valid Bounds)</div>
+                <div className="font-semibold text-[#15803D]">STATUS: {activeLineage.lineage.data_quality} (Zero Outliers / Valid Bounds)</div>
               </div>
             </div>
           </div>

@@ -367,7 +367,7 @@ export const MarketDataPage: React.FC = () => {
           />
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded text-xs font-medium transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#14532D] hover:bg-[#166534] text-white rounded text-xs font-semibold transition-colors cursor-pointer shadow-sm"
           >
             <Plus className="h-4 w-4" />
             Add Instrument
@@ -393,14 +393,14 @@ export const MarketDataPage: React.FC = () => {
                 placeholder="Filter saved symbols..."
                 value={instSearchQuery}
                 onChange={(e) => setInstSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:border-[#3B82F6]"
+                className="w-full pl-8 pr-3 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] placeholder-[#64748B] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/20"
               />
             </div>
 
             {/* List */}
             {isLoadingInstruments ? (
               <div className="py-8 text-center text-xs text-[#64748B]">
-                <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-[#3B82F6]" />
+                <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-[#14532D]" />
                 Loading instruments...
               </div>
             ) : filteredInstruments.length === 0 ? (
@@ -420,15 +420,15 @@ export const MarketDataPage: React.FC = () => {
                       }}
                       className={`w-full text-left p-2.5 rounded text-xs transition-colors flex items-center justify-between border ${
                         isSelected
-                          ? 'bg-[#1E293B] border-[#3B82F6] text-[#F8FAFC]'
-                          : 'bg-[#0B0F17] border-[#1E293B] text-[#94A3B8] hover:bg-[#111827] hover:text-[#F8FAFC]'
+                          ? 'bg-[#DCFCE7] border-[#14532D] text-[#14532D] font-semibold'
+                          : 'bg-white border-[#E5E7EB] text-[#17211B] hover:bg-[#F8FAF9]'
                       }`}
                     >
                       <div>
-                        <div className="flex items-center gap-1.5 font-bold font-mono-num text-[#F8FAFC]">
+                        <div className="flex items-center gap-1.5 font-bold font-mono-num text-[#17211B]">
                           <span>{inst.symbol}</span>
                           {!inst.active && (
-                            <span className="text-[10px] text-[#EF4444] font-normal">(Inactive)</span>
+                            <span className="text-[10px] text-[#DC2626] font-normal">(Inactive)</span>
                           )}
                         </div>
                         <div className="text-[11px] text-[#64748B] truncate max-w-[140px]">{inst.name}</div>
@@ -492,7 +492,6 @@ export const MarketDataPage: React.FC = () => {
 
               {/* Data Range Presets & Acquisition Controls Bar */}
               <Card title="Acquisition Controls & Range Presets">
-
                 <div className="space-y-3">
                   {/* Preset Toolbar */}
                   <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -503,8 +502,8 @@ export const MarketDataPage: React.FC = () => {
                         onClick={() => handlePresetChange(preset)}
                         className={`px-3 py-1 rounded text-xs font-mono-num font-medium transition-colors ${
                           activePreset === preset
-                            ? 'bg-[#3B82F6] text-white'
-                            : 'bg-[#1E293B] text-[#94A3B8] hover:bg-[#263244] hover:text-[#F8FAFC]'
+                            ? 'bg-[#14532D] text-white font-semibold shadow-sm'
+                            : 'bg-[#F8FAF9] text-[#64748B] border border-[#CBD5E1] hover:bg-[#F0FDF4] hover:text-[#17211B]'
                         }`}
                       >
                         {preset}
@@ -515,7 +514,7 @@ export const MarketDataPage: React.FC = () => {
                   {/* Date Input Pickers */}
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
                     <div>
-                      <label className="block text-[11px] text-[#94A3B8] mb-1">Start Date</label>
+                      <label className="block text-[11px] text-[#64748B] mb-1 font-semibold">Start Date</label>
                       <div className="relative">
                         <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#64748B]" />
                         <input
@@ -525,13 +524,13 @@ export const MarketDataPage: React.FC = () => {
                             setStartDate(e.target.value);
                             setActivePreset('CUSTOM');
                           }}
-                          className="w-full pl-8 pr-2 py-1.5 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]"
+                          className="w-full pl-8 pr-2 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/20 font-mono-num"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-[#94A3B8] mb-1">End Date</label>
+                      <label className="block text-[11px] text-[#64748B] mb-1 font-semibold">End Date</label>
                       <div className="relative">
                         <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#64748B]" />
                         <input
@@ -541,28 +540,28 @@ export const MarketDataPage: React.FC = () => {
                             setEndDate(e.target.value);
                             setActivePreset('CUSTOM');
                           }}
-                          className="w-full pl-8 pr-2 py-1.5 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]"
+                          className="w-full pl-8 pr-2 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/20 font-mono-num"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-[#94A3B8] mb-1">Frequency</label>
+                      <label className="block text-[11px] text-[#64748B] mb-1 font-semibold">Frequency</label>
                       <select
                         value={frequency}
                         disabled
-                        className="w-full px-2 py-1.5 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] opacity-75"
+                        className="w-full px-2 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] opacity-75"
                       >
                         <option value="DAILY">Daily (1d)</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-[#94A3B8] mb-1">Provider</label>
+                      <label className="block text-[11px] text-[#64748B] mb-1 font-semibold">Provider</label>
                       <select
                         value={provider}
                         disabled
-                        className="w-full px-2 py-1.5 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] opacity-75"
+                        className="w-full px-2 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] opacity-75"
                       >
                         <option value="yahoo_finance">Yahoo Finance</option>
                       </select>
@@ -570,13 +569,13 @@ export const MarketDataPage: React.FC = () => {
                   </div>
 
                   {/* Actions & Force Refresh */}
-                  <div className="flex items-center justify-between pt-2 border-t border-[#1E293B]">
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#94A3B8] hover:text-[#F8FAFC]">
+                  <div className="flex items-center justify-between pt-2 border-t border-[#E5E7EB]">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#64748B] hover:text-[#17211B]">
                       <input
                         type="checkbox"
                         checked={forceRefresh}
                         onChange={(e) => setForceRefresh(e.target.checked)}
-                        className="rounded border-[#263244] bg-[#111827] text-[#3B82F6]"
+                        className="rounded border-[#CBD5E1] text-[#14532D] focus:ring-[#14532D]"
                       />
                       Force Refresh (Ignore Cache)
                     </label>
@@ -584,7 +583,7 @@ export const MarketDataPage: React.FC = () => {
                     <button
                       onClick={() => handleFetchData(false)}
                       disabled={isFetching}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded text-xs font-medium transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-[#14532D] hover:bg-[#166534] text-white rounded text-xs font-semibold transition-colors disabled:opacity-50 shadow-sm"
                     >
                       {isFetching ? (
                         <>
@@ -614,29 +613,29 @@ export const MarketDataPage: React.FC = () => {
 
               {/* Coverage & Missing Range Awareness Banner */}
               {coverage && (
-                <div className="p-3 bg-[#111827] border border-[#263244] rounded-lg text-xs font-mono-num flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-[#94A3B8]">
-                    <Database className="h-4 w-4 text-[#3B82F6] shrink-0" />
+                <div className="p-3 bg-card border border-border rounded-xl text-xs font-mono-num flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs">
+                  <div className="flex items-center gap-2 text-text-secondary">
+                    <Database className="h-4 w-4 text-forest-700 shrink-0" />
                     <div>
-                      <span className="text-[#F8FAFC]">PostgreSQL Coverage: </span>
+                      <span className="text-text-primary font-medium">PostgreSQL Coverage: </span>
                       {coverage.min_timestamp ? (
                         <span>
                           {new Date(coverage.min_timestamp).toLocaleDateString()} $\rightarrow$ {new Date(coverage.max_timestamp!).toLocaleDateString()} ({coverage.total_bars} bars stored)
                         </span>
                       ) : (
-                        <span className="text-[#EAB308]">No historical data stored in DB</span>
+                        <span className="text-amber-700">No historical data stored in DB</span>
                       )}
                     </div>
                   </div>
 
                   {coverage.has_missing_range && (
                     <div className="flex items-center gap-2">
-                      <span className="text-[#F59E0B] text-[11px] font-medium flex items-center gap-1">
+                      <span className="text-amber-700 text-[11px] font-medium flex items-center gap-1">
                         <AlertTriangle className="h-3.5 w-3.5" /> Missing Coverage Gap Detected
                       </span>
                       <button
                         onClick={() => handleFetchData(false)}
-                        className="px-2.5 py-1 bg-[#F59E0B]/20 text-[#FBBF24] border border-[#F59E0B]/40 hover:bg-[#F59E0B]/30 rounded text-[11px] font-medium transition-colors"
+                        className="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 rounded-lg text-[11px] font-medium transition-colors shadow-xs"
                       >
                         Fetch Missing Data
                       </button>
@@ -647,29 +646,29 @@ export const MarketDataPage: React.FC = () => {
 
               {/* Ingestion Result Summary */}
               {fetchSummary && (
-                <div className="p-3 bg-[#14532D]/20 border border-[#22C55E]/30 rounded-lg text-xs font-mono-num space-y-2">
-                  <div className="flex items-center justify-between text-[#4ADE80]">
+                <div className="p-3 bg-forest-50/70 border border-forest-200 rounded-xl text-xs font-mono-num space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between text-forest-800">
                     <span className="font-semibold flex items-center gap-1.5">
-                      <CheckCircle2 className="h-4 w-4" /> Acquisition Complete ({fetchSummary.status})
+                      <CheckCircle2 className="h-4 w-4 text-forest-600" /> Acquisition Complete ({fetchSummary.status})
                     </span>
-                    <span className="text-[11px] text-[#94A3B8]">Duration: {fetchSummary.duration_ms} ms</span>
+                    <span className="text-[11px] text-text-muted">Duration: {fetchSummary.duration_ms} ms</span>
                   </div>
                   <div className="grid grid-cols-4 gap-2 text-center text-[11px]">
-                    <div className="bg-[#111827] p-1.5 rounded border border-[#263244]">
-                      <span className="text-[#64748B] block text-[10px]">Received</span>
-                      <span className="font-semibold text-[#F8FAFC]">{fetchSummary.rows_received}</span>
+                    <div className="bg-white p-1.5 rounded-lg border border-forest-100 shadow-xs">
+                      <span className="text-text-muted block text-[10px]">Received</span>
+                      <span className="font-semibold text-text-primary">{fetchSummary.rows_received}</span>
                     </div>
-                    <div className="bg-[#111827] p-1.5 rounded border border-[#263244]">
-                      <span className="text-[#64748B] block text-[10px]">Inserted</span>
-                      <span className="font-semibold text-[#10B981]">{fetchSummary.rows_inserted}</span>
+                    <div className="bg-white p-1.5 rounded-lg border border-forest-100 shadow-xs">
+                      <span className="text-text-muted block text-[10px]">Inserted</span>
+                      <span className="font-semibold text-forest-700">{fetchSummary.rows_inserted}</span>
                     </div>
-                    <div className="bg-[#111827] p-1.5 rounded border border-[#263244]">
-                      <span className="text-[#64748B] block text-[10px]">Skipped</span>
-                      <span className="font-semibold text-[#3B82F6]">{fetchSummary.rows_skipped}</span>
+                    <div className="bg-white p-1.5 rounded-lg border border-forest-100 shadow-xs">
+                      <span className="text-text-muted block text-[10px]">Skipped</span>
+                      <span className="font-semibold text-blue-700">{fetchSummary.rows_skipped}</span>
                     </div>
-                    <div className="bg-[#111827] p-1.5 rounded border border-[#263244]">
-                      <span className="text-[#64748B] block text-[10px]">Invalid</span>
-                      <span className="font-semibold text-[#EF4444]">{fetchSummary.rows_invalid}</span>
+                    <div className="bg-white p-1.5 rounded-lg border border-forest-100 shadow-xs">
+                      <span className="text-text-muted block text-[10px]">Invalid</span>
+                      <span className="font-semibold text-rose-600">{fetchSummary.rows_invalid}</span>
                     </div>
                   </div>
                 </div>
@@ -711,35 +710,35 @@ export const MarketDataPage: React.FC = () => {
                     <button
                       onClick={handleExportCsv}
                       disabled={bars.length === 0}
-                      className="flex items-center gap-1.5 px-3 py-1 bg-[#1E293B] hover:bg-[#263244] text-[#F8FAFC] rounded text-xs font-medium transition-colors disabled:opacity-40 border border-[#263244]"
+                      className="flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-forest-50 text-text-primary rounded-lg text-xs font-medium transition-colors disabled:opacity-40 border border-border shadow-xs"
                     >
-                      <FileSpreadsheet className="h-3.5 w-3.5 text-[#10B981]" />
+                      <FileSpreadsheet className="h-3.5 w-3.5 text-forest-600" />
                       Export CSV
                     </button>
-                    <span className="text-xs text-[#64748B] font-mono-num">
+                    <span className="text-xs text-text-muted font-mono-num">
                       Total: {totalBars.toLocaleString()}
                     </span>
                   </div>
                 }
               >
                 {isLoadingBars ? (
-                  <div className="py-12 text-center text-xs text-[#64748B]">
-                    <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-[#3B82F6]" />
+                  <div className="py-12 text-center text-xs text-text-muted">
+                    <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-forest-600" />
                     Loading database records...
                   </div>
                 ) : bars.length === 0 ? (
-                  <div className="py-12 text-center text-xs text-[#64748B]">
+                  <div className="py-12 text-center text-xs text-text-muted">
                     No historical data available for selected range. Click &quot;Fetch Market Data&quot; to download series.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-[#263244] text-[#94A3B8] font-medium bg-[#111827]/50">
+                        <tr className="border-b border-border text-text-secondary font-medium bg-forest-50/50">
                           <th className="py-2.5 px-3">
                             <button
                               onClick={() => setSortOrder((o) => (o === 'desc' ? 'asc' : 'desc'))}
-                              className="flex items-center gap-1 hover:text-[#F8FAFC]"
+                              className="flex items-center gap-1 hover:text-text-primary"
                             >
                               Date (UTC)
                               <ArrowUpDown className="h-3 w-3" />
@@ -754,20 +753,20 @@ export const MarketDataPage: React.FC = () => {
                           <th className="py-2.5 px-3 text-center">Provider</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#1E293B] font-mono-num text-[#F8FAFC]">
+                      <tbody className="divide-y divide-border/60 font-mono-num text-text-primary">
                         {bars.map((bar) => (
-                          <tr key={bar.id} className="hover:bg-[#1E293B]/40 transition-colors">
-                            <td className="py-2 px-3 text-[#94A3B8]">
+                          <tr key={bar.id} className="hover:bg-forest-50/40 transition-colors">
+                            <td className="py-2 px-3 text-text-secondary">
                               {new Date(bar.timestamp).toLocaleDateString()}
                             </td>
                             <td className="py-2 px-3 text-right">${bar.open.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-right text-[#10B981]">${bar.high.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-right text-[#EF4444]">${bar.low.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-right font-semibold">${bar.close.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-right text-[#94A3B8]">
+                            <td className="py-2 px-3 text-right text-forest-600 font-medium">${bar.high.toFixed(2)}</td>
+                            <td className="py-2 px-3 text-right text-rose-600 font-medium">${bar.low.toFixed(2)}</td>
+                            <td className="py-2 px-3 text-right font-bold text-text-primary">${bar.close.toFixed(2)}</td>
+                            <td className="py-2 px-3 text-right text-text-secondary">
                               {bar.adjusted_close ? `$${bar.adjusted_close.toFixed(2)}` : '-'}
                             </td>
-                            <td className="py-2 px-3 text-right text-[#94A3B8]">
+                            <td className="py-2 px-3 text-right text-text-secondary">
                               {bar.volume.toLocaleString()}
                             </td>
                             <td className="py-2 px-3 text-center">
@@ -781,22 +780,22 @@ export const MarketDataPage: React.FC = () => {
                     </table>
 
                     {/* Pagination */}
-                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-[#1E293B] text-xs font-mono-num">
-                      <span className="text-[#64748B]">
+                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-border text-xs font-mono-num">
+                      <span className="text-text-muted">
                         Page {page} of {Math.max(1, Math.ceil(totalBars / pageSize))} ({totalBars} total rows)
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           disabled={page <= 1}
                           onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          className="px-2.5 py-1 bg-[#1E293B] hover:bg-[#263244] text-[#F8FAFC] rounded disabled:opacity-40"
+                          className="px-2.5 py-1 bg-white hover:bg-forest-50 text-text-primary rounded-lg border border-border disabled:opacity-40 transition-colors shadow-xs"
                         >
                           Previous
                         </button>
                         <button
                           disabled={page >= Math.ceil(totalBars / pageSize)}
                           onClick={() => setPage((p) => p + 1)}
-                          className="px-2.5 py-1 bg-[#1E293B] hover:bg-[#263244] text-[#F8FAFC] rounded disabled:opacity-40"
+                          className="px-2.5 py-1 bg-white hover:bg-forest-50 text-text-primary rounded-lg border border-border disabled:opacity-40 transition-colors shadow-xs"
                         >
                           Next
                         </button>
@@ -812,7 +811,7 @@ export const MarketDataPage: React.FC = () => {
                 action={
                   <button
                     onClick={() => setIsLogsOpen((o) => !o)}
-                    className="flex items-center gap-1 text-xs text-[#3B82F6] hover:text-[#60A5FA]"
+                    className="flex items-center gap-1 text-xs text-[#14532D] hover:text-[#166534] font-semibold"
                   >
                     {isLogsOpen ? (
                       <>
@@ -836,39 +835,39 @@ export const MarketDataPage: React.FC = () => {
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs font-mono-num">
                           <thead>
-                            <tr className="border-b border-[#263244] text-[#94A3B8] bg-[#111827]/50">
-                              <th className="py-2 px-3">Timestamp</th>
-                              <th className="py-2 px-3">Provider</th>
-                              <th className="py-2 px-3">Requested Window</th>
-                              <th className="py-2 px-3 text-right">Inserted</th>
-                              <th className="py-2 px-3 text-right">Skipped</th>
-                              <th className="py-2 px-3 text-center">Status</th>
-                              <th className="py-2 px-3 text-right">Duration</th>
-                              <th className="py-2 px-3 text-center">Detail</th>
+                            <tr className="border-b border-[#E5E7EB] text-[#64748B] bg-[#F0FDF4]">
+                              <th className="py-2.5 px-3 font-semibold">Timestamp</th>
+                              <th className="py-2.5 px-3 font-semibold">Provider</th>
+                              <th className="py-2.5 px-3 font-semibold">Requested Window</th>
+                              <th className="py-2.5 px-3 font-semibold text-right">Inserted</th>
+                              <th className="py-2.5 px-3 font-semibold text-right">Skipped</th>
+                              <th className="py-2.5 px-3 font-semibold text-center">Status</th>
+                              <th className="py-2.5 px-3 font-semibold text-right">Duration</th>
+                              <th className="py-2.5 px-3 font-semibold text-center">Detail</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#1E293B] text-[#F8FAFC]">
+                          <tbody className="divide-y divide-[#E5E7EB] text-[#17211B]">
                             {ingestionLogs.map((log) => (
-                              <tr key={log.id} className="hover:bg-[#1E293B]/40">
-                                <td className="py-2 px-3 text-[#94A3B8]">
+                              <tr key={log.id} className="hover:bg-[#F8FAF9]">
+                                <td className="py-2.5 px-3 text-[#64748B]">
                                   {new Date(log.created_at).toLocaleString()}
                                 </td>
-                                <td className="py-2 px-3">{log.provider}</td>
-                                <td className="py-2 px-3 text-[#94A3B8]">
-                                  {new Date(log.requested_start).toLocaleDateString()} $\rightarrow$ {new Date(log.requested_end).toLocaleDateString()}
+                                <td className="py-2.5 px-3 font-medium">{log.provider}</td>
+                                <td className="py-2.5 px-3 text-[#64748B]">
+                                  {new Date(log.requested_start).toLocaleDateString()} → {new Date(log.requested_end).toLocaleDateString()}
                                 </td>
-                                <td className="py-2 px-3 text-right text-[#10B981]">{log.rows_inserted}</td>
-                                <td className="py-2 px-3 text-right text-[#3B82F6]">{log.rows_skipped}</td>
-                                <td className="py-2 px-3 text-center">
+                                <td className="py-2.5 px-3 text-right text-[#15803D] font-bold">{log.rows_inserted}</td>
+                                <td className="py-2.5 px-3 text-right text-[#14532D]">{log.rows_skipped}</td>
+                                <td className="py-2.5 px-3 text-center">
                                   <Badge variant={log.status === 'COMPLETED' ? 'success' : 'warning'} className="text-[10px]">
                                     {log.status}
                                   </Badge>
                                 </td>
-                                <td className="py-2 px-3 text-right text-[#94A3B8]">{log.duration_ms} ms</td>
-                                <td className="py-2 px-3 text-center">
+                                <td className="py-2.5 px-3 text-right text-[#64748B]">{log.duration_ms} ms</td>
+                                <td className="py-2.5 px-3 text-center">
                                   <button
                                     onClick={() => setSelectedLog(log)}
-                                    className="p-1 text-[#3B82F6] hover:text-[#60A5FA]"
+                                    className="p-1 text-[#14532D] hover:text-[#166534]"
                                   >
                                     <Activity className="h-3.5 w-3.5" />
                                   </button>
@@ -886,8 +885,8 @@ export const MarketDataPage: React.FC = () => {
           ) : (
             <Card>
               <div className="py-16 text-center text-xs text-[#64748B]">
-                <Database className="h-10 w-10 mx-auto mb-3 opacity-40 text-[#3B82F6]" />
-                <span className="text-sm font-semibold text-[#F8FAFC]">No Instrument Selected</span>
+                <Database className="h-10 w-10 mx-auto mb-3 opacity-40 text-[#14532D]" />
+                <span className="text-sm font-semibold text-[#17211B]">No Instrument Selected</span>
                 <p className="mt-1">Select an instrument from the left master list or add a new one.</p>
               </div>
             </Card>

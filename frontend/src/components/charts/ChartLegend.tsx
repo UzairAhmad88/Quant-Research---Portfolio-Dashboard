@@ -20,9 +20,9 @@ interface ChartLegendProps {
 export const ChartLegend: React.FC<ChartLegendProps> = ({ symbol, data, priceMode }) => {
   if (!data) {
     return (
-      <div className="flex items-center gap-4 text-xs font-mono-num text-[#64748B] py-1 px-3 bg-[#0B0F17]/80 rounded border border-[#1E293B]/60">
-        <span className="font-bold text-[#F8FAFC]">{symbol}</span>
-        <span>Hover over candles to view OHLCV values</span>
+      <div className="flex items-center gap-4 text-xs font-mono-num text-[#64748B] py-1 px-3 bg-[#F8FAF9] rounded border border-[#E5E7EB]">
+        <span className="font-bold text-[#17211B]">{symbol}</span>
+        <span>Hover over candles to inspect OHLCV data</span>
       </div>
     );
   }
@@ -32,12 +32,12 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ symbol, data, priceMod
   const isUp = change >= 0;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono-num py-1 px-3 bg-[#0B0F17]/90 rounded border border-[#263244] shadow-md select-none">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono-num py-1.5 px-3 bg-[#17211B] text-white rounded-md border border-[#334155] shadow-md select-none">
       <div className="flex items-center gap-2">
-        <span className="font-bold text-[#F8FAFC]">{symbol}</span>
+        <span className="font-bold text-white tracking-wide">{symbol}</span>
         <span className="text-[#94A3B8]">{data.time}</span>
         {priceMode === 'adjusted_close' && (
-          <span className="text-[10px] text-[#3B82F6] px-1 py-0.2 bg-[#3B82F6]/10 rounded border border-[#3B82F6]/30">
+          <span className="text-[10px] text-[#86EFAC] px-1 py-0.2 bg-[#14532D] rounded border border-[#166534]">
             Adj
           </span>
         )}
@@ -45,17 +45,17 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ symbol, data, priceMod
 
       <div className="flex items-center gap-3">
         <span>O <strong className="text-[#F8FAFC]">${data.open.toFixed(2)}</strong></span>
-        <span>H <strong className="text-[#10B981]">${data.high.toFixed(2)}</strong></span>
-        <span>L <strong className="text-[#EF4444]">${data.low.toFixed(2)}</strong></span>
-        <span>C <strong className="text-[#F8FAFC]">${data.close.toFixed(2)}</strong></span>
+        <span>H <strong className="text-[#86EFAC]">${data.high.toFixed(2)}</strong></span>
+        <span>L <strong className="text-[#FCA5A5]">${data.low.toFixed(2)}</strong></span>
+        <span>C <strong className="text-white">${data.close.toFixed(2)}</strong></span>
         
-        <span className={isUp ? 'text-[#10B981] font-medium' : 'text-[#EF4444] font-medium'}>
+        <span className={isUp ? 'text-[#86EFAC] font-semibold' : 'text-[#FCA5A5] font-semibold'}>
           {isUp ? '+' : ''}{change.toFixed(2)} ({isUp ? '+' : ''}{changePercent.toFixed(2)}%)
         </span>
 
         {data.volume !== undefined && (
           <span className="text-[#94A3B8]">
-            Vol <strong className="text-[#F8FAFC]">{data.volume.toLocaleString()}</strong>
+            Vol <strong className="text-white">{data.volume.toLocaleString()}</strong>
           </span>
         )}
       </div>

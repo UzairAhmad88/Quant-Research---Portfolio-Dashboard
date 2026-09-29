@@ -13,10 +13,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
   if (!bars || bars.length === 0) {
     return (
       <div
-        className="w-full flex items-center justify-center rounded border border-[#263244] bg-[#0B0F17]"
+        className="w-full flex items-center justify-center rounded-xl border border-border bg-forest-50/30"
         style={{ height }}
       >
-        <span className="text-xs font-mono-num text-[#64748B]">No price history available to display chart.</span>
+        <span className="text-xs font-mono-num text-text-muted">No price history available to display chart.</span>
       </div>
     );
   }
@@ -88,17 +88,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
   };
 
   return (
-    <div className="relative w-full rounded border border-[#263244] bg-[#0B0F17] p-3 overflow-hidden select-none">
+    <div className="relative w-full rounded-md border border-[#E5E7EB] bg-white p-3 overflow-hidden select-none shadow-2xs">
       {/* Metrics Header Bar */}
-      <div className="flex items-center justify-between mb-2 pb-2 border-b border-[#1E293B] text-xs font-mono-num">
-        <div className="flex items-center gap-4 text-[#94A3B8]">
-          <span>Observations: <strong className="text-[#F8FAFC]">{sortedBars.length}</strong></span>
-          <span>Min: <strong className="text-[#EF4444]">${minPrice.toFixed(2)}</strong></span>
-          <span>Max: <strong className="text-[#10B981]">${maxPrice.toFixed(2)}</strong></span>
-          <span>Latest: <strong className="text-[#3B82F6]">${sortedBars[sortedBars.length - 1].close.toFixed(2)}</strong></span>
+      <div className="flex items-center justify-between mb-2 pb-2 border-b border-[#E5E7EB] text-xs font-mono-num">
+        <div className="flex items-center gap-4 text-[#64748B]">
+          <span>Observations: <strong className="text-[#17211B]">{sortedBars.length}</strong></span>
+          <span>Min: <strong className="text-[#DC2626]">${minPrice.toFixed(2)}</strong></span>
+          <span>Max: <strong className="text-[#15803D]">${maxPrice.toFixed(2)}</strong></span>
+          <span>Latest: <strong className="text-[#14532D] font-bold">${sortedBars[sortedBars.length - 1].close.toFixed(2)}</strong></span>
         </div>
         {hoveredBar && (
-          <div className="text-[#3B82F6] font-medium">
+          <div className="text-[#14532D] font-bold">
             {new Date(hoveredBar.timestamp).toLocaleDateString()} — Close: ${hoveredBar.close.toFixed(2)} (Vol: {hoveredBar.volume.toLocaleString()})
           </div>
         )}
@@ -112,8 +112,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
       >
         <defs>
           <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+            <stop offset="0%" stopColor="#14532D" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#DCFCE7" stopOpacity="0.0" />
           </linearGradient>
         </defs>
 
@@ -125,7 +125,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
               y1={t.y}
               x2={width - padding.right}
               y2={t.y}
-              stroke="#1E293B"
+              stroke="#E5E7EB"
               strokeDasharray="3 3"
             />
             <text
@@ -145,7 +145,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
         <path d={areaD} fill="url(#priceGradient)" />
 
         {/* Main Line */}
-        <path d={pathD} fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathD} fill="none" stroke="#14532D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 
         {/* X Axis Labels */}
         {xTicks.map((pt, i) => (
@@ -170,7 +170,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
               y1={padding.top}
               x2={hoverPos.x}
               y2={height - padding.bottom}
-              stroke="#60A5FA"
+              stroke="#166534"
               strokeDasharray="2 2"
             />
             <line
@@ -178,10 +178,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ bars, height = 300 }) =>
               y1={hoverPos.y}
               x2={width - padding.right}
               y2={hoverPos.y}
-              stroke="#60A5FA"
+              stroke="#166534"
               strokeDasharray="2 2"
             />
-            <circle cx={hoverPos.x} cy={hoverPos.y} r="4" fill="#3B82F6" stroke="#FFFFFF" strokeWidth="2" />
+            <circle cx={hoverPos.x} cy={hoverPos.y} r="4" fill="#14532D" stroke="#FFFFFF" strokeWidth="2" />
           </g>
         )}
       </svg>

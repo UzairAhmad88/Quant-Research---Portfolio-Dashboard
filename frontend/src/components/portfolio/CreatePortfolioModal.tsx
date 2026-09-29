@@ -58,17 +58,17 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-900 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-xl border border-border bg-card shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
-          <div className="flex items-center space-x-2 text-slate-100">
-            <FolderPlus className="h-5 w-5 text-blue-400" />
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div className="flex items-center space-x-2 text-text-primary">
+            <FolderPlus className="h-5 w-5 text-brand-primary" />
             <h2 className="text-base font-semibold">Create New Portfolio</h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="rounded p-1 text-text-muted hover:bg-surface hover:text-text-primary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -77,45 +77,45 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           {errorMsg && (
-            <div className="rounded border border-red-500/50 bg-red-950/40 p-3 text-xs text-red-400">
+            <div className="rounded border border-red-200 bg-red-50 p-3 text-xs text-financial-negative">
               {errorMsg}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300">
-              Portfolio Name <span className="text-red-400">*</span>
+            <label className="block text-xs font-semibold text-text-primary">
+              Portfolio Name <span className="text-financial-negative">*</span>
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Quantitative Multi-Asset Fund"
-              className="mt-1 w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:outline-none"
+              className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300">
-              Description <span className="text-slate-500">(Optional)</span>
+            <label className="block text-xs font-semibold text-text-primary">
+              Description <span className="text-text-muted">(Optional)</span>
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Portfolio strategy objectives and asset notes..."
               rows={3}
-              className="mt-1 w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:outline-none"
+              className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Base Currency</label>
+              <label className="block text-xs font-semibold text-text-primary">Base Currency</label>
               <select
                 value={baseCurrency}
                 onChange={(e) => setBaseCurrency(e.target.value)}
-                className="mt-1 w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               >
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
@@ -125,8 +125,8 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300">
-                Initial Capital <span className="text-red-400">*</span>
+              <label className="block text-xs font-semibold text-text-primary">
+                Initial Capital <span className="text-financial-negative">*</span>
               </label>
               <input
                 type="number"
@@ -134,25 +134,25 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
                 min="1"
                 value={initialCapital}
                 onChange={(e) => setInitialCapital(parseFloat(e.target.value) || 0)}
-                className="mt-1 w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none font-mono"
+                className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary font-mono"
                 required
               />
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-border">
             <button
               type="button"
               onClick={onClose}
-              className="rounded px-4 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              className="rounded-md border border-border px-4 py-2 text-xs font-semibold text-text-muted hover:bg-surface hover:text-text-primary transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+              className="rounded-md bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-button hover:bg-brand-deep disabled:opacity-50 transition-colors"
             >
               {isSubmitting ? 'Creating...' : 'Create Portfolio'}
             </button>

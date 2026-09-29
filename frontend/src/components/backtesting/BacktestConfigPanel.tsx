@@ -71,25 +71,25 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
   };
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5 space-y-4">
-      <div className="flex flex-wrap items-center justify-between border-b border-[#263244] pb-3 gap-2">
+    <div className="bg-card border border-border rounded-xl p-5 space-y-4 shadow-xs">
+      <div className="flex flex-wrap items-center justify-between border-b border-border pb-3 gap-2">
         <div>
-          <h3 className="text-sm font-semibold text-[#E5E7EB] flex items-center gap-2 font-mono uppercase tracking-wider">
-            <Play className="h-4 w-4 text-[#3B82F6]" />
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 font-mono uppercase tracking-wider">
+            <Play className="h-4 w-4 text-brand-primary" />
             Backtest Simulation Configuration
           </h3>
-          <p className="text-xs text-[#94A3B8] font-sans mt-0.5">
+          <p className="text-xs text-text-secondary font-sans mt-0.5">
             Configure chronological trade simulation, execution timing models, and realistic transaction cost friction.
           </p>
         </div>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#111827] text-[#94A3B8] border border-[#263244]">
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface text-text-secondary border border-border">
           Deterministic Execution Engine
         </span>
       </div>
 
-      {/* Preset Backtest Scenarios (HCI: Recognition over Recall) */}
+      {/* Preset Backtest Scenarios */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] text-[#94A3B8] font-medium">Simulation Presets:</span>
+        <span className="text-[11px] text-text-secondary font-medium">Simulation Presets:</span>
         <button
           type="button"
           onClick={() => {
@@ -98,10 +98,10 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
             setSlippage(0.0002);
             setErrorMsg(null);
           }}
-          className={`px-2.5 py-1 rounded text-[11px] font-mono border transition-colors ${
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors ${
             initialCapital === 100000 && commission === 0.0005 && slippage === 0.0002
-              ? 'bg-[#3B82F6]/20 border-[#3B82F6] text-[#60A5FA] font-bold'
-              : 'bg-[#0B1220] border-[#263244] text-[#94A3B8] hover:text-[#E5E7EB]'
+              ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold'
+              : 'bg-surface border-border text-text-secondary hover:text-text-primary hover:border-border-hover'
           }`}
         >
           Institutional Standard ($100k, 5bps comm, 2bps slip)
@@ -114,10 +114,10 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
             setSlippage(0);
             setErrorMsg(null);
           }}
-          className={`px-2.5 py-1 rounded text-[11px] font-mono border transition-colors ${
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors ${
             initialCapital === 100000 && commission === 0 && slippage === 0
-              ? 'bg-[#3B82F6]/20 border-[#3B82F6] text-[#60A5FA] font-bold'
-              : 'bg-[#0B1220] border-[#263244] text-[#94A3B8] hover:text-[#E5E7EB]'
+              ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold'
+              : 'bg-surface border-border text-text-secondary hover:text-text-primary hover:border-border-hover'
           }`}
         >
           Zero-Friction Baseline ($100k, $0 fees)
@@ -130,10 +130,10 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
             setSlippage(0.001);
             setErrorMsg(null);
           }}
-          className={`px-2.5 py-1 rounded text-[11px] font-mono border transition-colors ${
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors ${
             initialCapital === 500000 && commission === 0.001 && slippage === 0.001
-              ? 'bg-[#3B82F6]/20 border-[#3B82F6] text-[#60A5FA] font-bold'
-              : 'bg-[#0B1220] border-[#263244] text-[#94A3B8] hover:text-[#E5E7EB]'
+              ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold'
+              : 'bg-surface border-border text-text-secondary hover:text-text-primary hover:border-border-hover'
           }`}
         >
           High-Friction Stress ($500k, 10bps comm, 10bps slip)
@@ -141,8 +141,8 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
       </div>
 
       {errorMsg && (
-        <div className="p-3 bg-red-950/40 border border-red-800/60 rounded text-red-300 text-xs flex items-center gap-2 font-mono">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs flex items-center gap-2 font-mono">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -150,11 +150,11 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Instrument Selector */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Instrument</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Instrument</label>
           <select
             value={selectedInstrumentId}
             onChange={(e) => onSelectInstrument(e.target.value)}
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           >
             <option value="">-- Select Instrument --</option>
             {instruments.map((inst) => (
@@ -167,24 +167,24 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
 
         {/* Initial Capital */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Initial Capital ($)</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Initial Capital ($)</label>
           <input
             type="number"
             min="1"
             step="1000"
             value={initialCapital}
             onChange={(e) => setInitialCapital(parseFloat(e.target.value) || 0)}
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           />
         </div>
 
         {/* Execution Timing */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Execution Timing</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Execution Timing</label>
           <select
             value={executionTiming}
             onChange={(e) => setExecutionTiming(e.target.value as 'NEXT_OPEN')}
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           >
             <option value="NEXT_OPEN">Next Observation Open (NEXT_OPEN)</option>
           </select>
@@ -192,11 +192,11 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
 
         {/* Position Sizing */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Position Sizing</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Position Sizing</label>
           <select
             value={positionSizing}
             onChange={(e) => setPositionSizing(e.target.value as 'FULL_CAPITAL')}
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           >
             <option value="FULL_CAPITAL">Full Capital (100% Available Cash)</option>
           </select>
@@ -204,7 +204,7 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
 
         {/* Commission */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Commission Rate (bps / fractional)</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Commission Rate (bps / fractional)</label>
           <input
             type="number"
             min="0"
@@ -212,14 +212,14 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
             value={commission}
             onChange={(e) => setCommission(parseFloat(e.target.value) || 0)}
             placeholder="0.0000"
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           />
-          <span className="text-[10px] text-[#94A3B8]">Default: 0 (Zero Cost)</span>
+          <span className="text-[10px] text-text-muted mt-1 block">Default: 0 (Zero Cost)</span>
         </div>
 
         {/* Slippage */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Slippage Rate (bps / fractional)</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Slippage Rate (bps / fractional)</label>
           <input
             type="number"
             min="0"
@@ -227,18 +227,18 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
             value={slippage}
             onChange={(e) => setSlippage(parseFloat(e.target.value) || 0)}
             placeholder="0.0000"
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           />
-          <span className="text-[10px] text-[#94A3B8]">Default: 0 (Zero Cost)</span>
+          <span className="text-[10px] text-text-muted mt-1 block">Default: 0 (Zero Cost)</span>
         </div>
 
         {/* Direction */}
         <div>
-          <label className="block text-xs text-[#94A3B8] font-medium mb-1">Direction Mode</label>
+          <label className="block text-xs text-text-secondary font-medium mb-1">Direction Mode</label>
           <select
             value={direction}
             onChange={(e) => setDirection(e.target.value as 'LONG_ONLY')}
-            className="w-full bg-[#0B1220] border border-[#263244] text-[#E5E7EB] text-sm rounded px-3 py-2 focus:outline-none focus:border-[#3B82F6]"
+            className="w-full bg-surface border border-border text-text-primary text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-brand-primary font-mono"
           >
             <option value="LONG_ONLY">Long Only (No Shorting / Leverage)</option>
           </select>
@@ -249,7 +249,7 @@ export const BacktestConfigPanel: React.FC<BacktestConfigPanelProps> = ({
           <Button
             type="submit"
             disabled={isLoading || !selectedInstrumentId || !strategyConfigurationId}
-            className="w-full bg-[#3B82F6] hover:bg-blue-600 text-white font-medium py-2 px-4 rounded text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-brand-primary hover:bg-brand-secondary text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs"
           >
             {isLoading ? (
               <>

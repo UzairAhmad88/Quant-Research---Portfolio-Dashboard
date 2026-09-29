@@ -15,25 +15,25 @@ export const VolatilitySummaryCards: React.FC<VolatilitySummaryCardsProps> = ({ 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
       {/* Annualized Volatility (Primary metric) */}
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4">
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-card">
+        <div className="flex items-center justify-between text-xs text-text-muted mb-1">
           <div className="flex items-center gap-1">
             <span>Ann. Volatility ({symbol})</span>
             <MetricInfoTooltip metricKey="annualized_volatility" />
           </div>
-          <Percent className="w-3.5 h-3.5 text-blue-400" />
+          <Percent className="w-3.5 h-3.5 text-brand-primary" />
         </div>
-        <div className="text-2xl font-mono font-semibold text-slate-100 mb-1">
+        <div className="text-2xl font-mono font-semibold text-text-primary mb-1">
           {formatPct(summary.annualized_volatility)}
         </div>
-        <div className="text-[11px] text-slate-500 font-mono">
+        <div className="text-[11px] text-text-muted font-mono">
           Factor: {summary.annualization_factor} days ({assetType})
         </div>
       </div>
 
       {/* Daily Volatility */}
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4">
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-card">
+        <div className="flex items-center justify-between text-xs text-text-muted mb-1">
           <div className="flex items-center gap-1">
             <span>Daily Volatility</span>
             <MetricInfoTooltip
@@ -42,17 +42,17 @@ export const VolatilitySummaryCards: React.FC<VolatilitySummaryCardsProps> = ({ 
               description="Sample standard deviation of single-period discrete daily returns with Bessel's correction (ddof=1)."
             />
           </div>
-          <Activity className="w-3.5 h-3.5 text-slate-400" />
+          <Activity className="w-3.5 h-3.5 text-text-muted" />
         </div>
-        <div className="text-xl font-mono font-semibold text-slate-200 mb-1">
+        <div className="text-xl font-mono font-semibold text-text-primary mb-1">
           {formatPct(summary.daily_volatility)}
         </div>
-        <div className="text-[11px] text-slate-500 font-mono">Sample StdDev (ddof=1)</div>
+        <div className="text-[11px] text-text-muted font-mono">Sample StdDev (ddof=1)</div>
       </div>
 
       {/* Upside Volatility */}
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4">
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-card">
+        <div className="flex items-center justify-between text-xs text-text-muted mb-1">
           <div className="flex items-center gap-1">
             <span>Upside Volatility</span>
             <MetricInfoTooltip
@@ -61,17 +61,17 @@ export const VolatilitySummaryCards: React.FC<VolatilitySummaryCardsProps> = ({ 
               description="Standard deviation evaluated strictly on positive return trading sessions."
             />
           </div>
-          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-financial-positive" />
         </div>
-        <div className="text-xl font-mono font-semibold text-slate-200 mb-1">
+        <div className="text-xl font-mono font-semibold text-text-primary mb-1">
           {formatPct(summary.upside_volatility)}
         </div>
-        <div className="text-[11px] text-slate-500 font-mono">StdDev (R &gt; 0)</div>
+        <div className="text-[11px] text-text-muted font-mono">StdDev (R &gt; 0)</div>
       </div>
 
       {/* Downside Volatility */}
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4">
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-card">
+        <div className="flex items-center justify-between text-xs text-text-muted mb-1">
           <div className="flex items-center gap-1">
             <span>Downside Volatility</span>
             <MetricInfoTooltip
@@ -80,24 +80,24 @@ export const VolatilitySummaryCards: React.FC<VolatilitySummaryCardsProps> = ({ 
               description="Semi-variance of returns falling below the minimum acceptable threshold. Direct denominator for Sortino Ratio."
             />
           </div>
-          <ArrowDownRight className="w-3.5 h-3.5 text-amber-400" />
+          <ArrowDownRight className="w-3.5 h-3.5 text-amber-600" />
         </div>
-        <div className="text-xl font-mono font-semibold text-slate-200 mb-1">
+        <div className="text-xl font-mono font-semibold text-text-primary mb-1">
           {formatPct(summary.downside_volatility)}
         </div>
-        <div className="text-[11px] text-slate-500 font-mono">StdDev (R &lt; 0)</div>
+        <div className="text-[11px] text-text-muted font-mono">StdDev (R &lt; 0)</div>
       </div>
 
       {/* Observations Count */}
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4">
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-card">
+        <div className="flex items-center justify-between text-xs text-text-muted mb-1">
           <span>Observations</span>
-          <Hash className="w-3.5 h-3.5 text-slate-400" />
+          <Hash className="w-3.5 h-3.5 text-text-muted" />
         </div>
-        <div className="text-xl font-mono font-semibold text-slate-200 mb-1">
+        <div className="text-xl font-mono font-semibold text-text-primary mb-1">
           {summary.observation_count}
         </div>
-        <div className="text-[11px] text-slate-500 font-mono">Valid Return Sample</div>
+        <div className="text-[11px] text-text-muted font-mono">Valid Return Sample</div>
       </div>
     </div>
   );

@@ -147,18 +147,18 @@ export const VolatilityPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-slate-100 p-6 space-y-6">
+    <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Volatility' }, { label: singleInstrument?.symbol || 'Instrument' }]} />
       <ResearchContextBar availableInstruments={availableInstruments} />
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#263244] pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border rounded-xl p-5 shadow-card">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
-            <Activity className="w-6 h-6 text-blue-400" />
+          <h1 className="text-xl font-bold tracking-tight text-text-primary flex items-center gap-2">
+            <Activity className="w-5 h-5 text-brand-primary" />
             Volatility Analyzer &amp; Risk Measurement
           </h1>
-          <p className="text-xs text-slate-400 mt-1 font-mono">
+          <p className="text-xs text-text-muted mt-1 font-mono">
             Historical variability, rolling volatility, upside/downside risk &amp; return distribution statistics
           </p>
         </div>
@@ -221,23 +221,23 @@ export const VolatilityPage: React.FC = () => {
             ]}
           />
 
-          <div className="flex items-center gap-2 bg-[#151F2E] border border-[#263244] p-1 rounded-lg">
+          <div className="flex items-center gap-1 bg-surface border border-border p-1 rounded-lg">
             <button
               onClick={() => setAnalysisMode('single')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                 analysisMode === 'single'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-brand-primary text-white shadow-xs'
+                  : 'text-text-muted hover:text-text-primary'
               }`}
             >
               Single Instrument Analysis
             </button>
             <button
               onClick={() => setAnalysisMode('comparison')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                 analysisMode === 'comparison'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-brand-primary text-white shadow-xs'
+                  : 'text-text-muted hover:text-text-primary'
               }`}
             >
               Multi-Instrument Comparison
@@ -247,19 +247,19 @@ export const VolatilityPage: React.FC = () => {
       </div>
 
       {/* Control Panel */}
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-4 space-y-4">
+      <div className="bg-card border border-border rounded-xl p-4 space-y-4 shadow-card">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Instrument Selection Control */}
           {analysisMode === 'single' ? (
             <div className="flex items-center gap-3">
-              <label className="text-xs font-semibold text-slate-400">Target Instrument:</label>
+              <label className="text-xs font-semibold text-text-muted">Target Instrument:</label>
               <select
                 value={singleInstrument?.id || ''}
                 onChange={(e) => {
                   const inst = availableInstruments.find((i) => i.id === e.target.value);
                   if (inst) setSingleInstrument(inst);
                 }}
-                className="bg-[#0B1220] border border-[#263244] text-slate-200 text-xs rounded px-3 py-1.5 font-mono focus:outline-none focus:border-blue-500"
+                className="bg-surface border border-border text-text-primary text-xs rounded-md px-3 py-1.5 font-mono focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
               >
                 {availableInstruments.map((inst) => (
                   <option key={inst.id} value={inst.id}>
@@ -270,16 +270,16 @@ export const VolatilityPage: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-slate-400 mr-1">Comparison Set:</span>
+              <span className="text-xs font-semibold text-text-muted mr-1">Comparison Set:</span>
               {selectedInstruments.map((inst) => (
                 <span
                   key={inst.id}
-                  className="bg-[#0B1220] border border-[#263244] text-xs font-mono px-2.5 py-1 rounded-md text-slate-200 flex items-center gap-1.5"
+                  className="bg-emerald-50 border border-emerald-200 text-xs font-mono px-2.5 py-1 rounded-md text-emerald-900 flex items-center gap-1.5"
                 >
                   {inst.symbol}
                   <button
                     onClick={() => toggleSelectInstrument(inst)}
-                    className="text-slate-500 hover:text-slate-300"
+                    className="text-emerald-700 hover:text-financial-negative transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -294,7 +294,7 @@ export const VolatilityPage: React.FC = () => {
                   e.target.value = '';
                 }}
                 defaultValue=""
-                className="bg-[#0B1220] border border-[#263244] text-slate-400 text-xs rounded px-2.5 py-1 font-mono hover:text-slate-200 cursor-pointer"
+                className="bg-surface border border-border text-text-muted text-xs rounded-md px-2.5 py-1 font-mono hover:text-text-primary cursor-pointer"
               >
                 <option value="" disabled>
                   + Add Instrument
@@ -314,7 +314,7 @@ export const VolatilityPage: React.FC = () => {
           <button
             onClick={loadVolatility}
             disabled={isLoading}
-            className="p-1.5 bg-[#0B1220] border border-[#263244] rounded text-slate-400 hover:text-slate-200 disabled:opacity-50"
+            className="p-1.5 bg-surface border border-border rounded-md text-text-muted hover:text-text-primary disabled:opacity-50 transition-colors"
             title="Refresh Analytics"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -322,14 +322,14 @@ export const VolatilityPage: React.FC = () => {
         </div>
 
         {/* Parameters Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 pt-3 border-t border-[#263244] text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 pt-3 border-t border-border text-xs">
           {/* Date Range */}
           <div>
-            <label className="text-slate-400 block mb-1">Date Range</label>
+            <label className="text-text-muted block mb-1">Date Range</label>
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1 font-mono"
+              className="w-full bg-surface border border-border text-text-primary rounded-md px-2.5 py-1 font-mono focus:border-brand-primary focus:outline-none"
             >
               <option value="1M">1 Month</option>
               <option value="3M">3 Months</option>
@@ -343,11 +343,11 @@ export const VolatilityPage: React.FC = () => {
 
           {/* Price Source */}
           <div>
-            <label className="text-slate-400 block mb-1">Price Source</label>
+            <label className="text-text-muted block mb-1">Price Source</label>
             <select
               value={priceSource}
               onChange={(e) => setPriceSource(e.target.value as 'adjusted' | 'close')}
-              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1 font-mono"
+              className="w-full bg-surface border border-border text-text-primary rounded-md px-2.5 py-1 font-mono focus:border-brand-primary focus:outline-none"
             >
               <option value="adjusted">Adjusted Close</option>
               <option value="close">Unadjusted Close</option>
@@ -356,11 +356,11 @@ export const VolatilityPage: React.FC = () => {
 
           {/* Return Type */}
           <div>
-            <label className="text-slate-400 block mb-1">Return Type</label>
+            <label className="text-text-muted block mb-1">Return Type</label>
             <select
               value={returnType}
               onChange={(e) => setReturnType(e.target.value as 'simple' | 'log')}
-              className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1 font-mono"
+              className="w-full bg-surface border border-border text-text-primary rounded-md px-2.5 py-1 font-mono focus:border-brand-primary focus:outline-none"
             >
               <option value="simple">Simple Return (R_t)</option>
               <option value="log">Log Return (r_t)</option>
@@ -370,11 +370,11 @@ export const VolatilityPage: React.FC = () => {
           {/* Rolling Window */}
           {analysisMode === 'single' && (
             <div>
-              <label className="text-slate-400 block mb-1">Rolling Window (obs)</label>
+              <label className="text-text-muted block mb-1">Rolling Window (obs)</label>
               <select
                 value={rollingWindow}
                 onChange={(e) => setRollingWindow(Number(e.target.value))}
-                className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1 font-mono"
+                className="w-full bg-surface border border-border text-text-primary rounded-md px-2.5 py-1 font-mono focus:border-brand-primary focus:outline-none"
               >
                 <option value={10}>10 observations</option>
                 <option value={20}>20 observations (Default)</option>
@@ -390,11 +390,11 @@ export const VolatilityPage: React.FC = () => {
           {/* Annualization Toggle */}
           {analysisMode === 'single' && (
             <div>
-              <label className="text-slate-400 block mb-1">Annualized Mode</label>
+              <label className="text-text-muted block mb-1">Annualized Mode</label>
               <select
                 value={isAnnualized ? 'true' : 'false'}
                 onChange={(e) => setIsAnnualized(e.target.value === 'true')}
-                className="w-full bg-[#0B1220] border border-[#263244] text-slate-200 rounded px-2.5 py-1 font-mono"
+                className="w-full bg-surface border border-border text-text-primary rounded-md px-2.5 py-1 font-mono focus:border-brand-primary focus:outline-none"
               >
                 <option value="true">Annualized Volatility</option>
                 <option value="false">Daily Volatility</option>
@@ -406,7 +406,7 @@ export const VolatilityPage: React.FC = () => {
 
       {/* Error Message */}
       {errorMsg && (
-        <div className="bg-rose-950/40 border border-rose-900/60 rounded-lg p-4 flex items-center gap-3 text-rose-300 text-sm">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3 text-financial-negative text-sm">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -414,19 +414,19 @@ export const VolatilityPage: React.FC = () => {
 
       {/* Insufficient Data Warning Banner */}
       {analysisMode === 'single' && singleData && !singleData.is_sufficient && (
-        <div className="bg-amber-950/40 border border-amber-900/60 rounded-lg p-4 flex items-center gap-3 text-amber-300 text-sm">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3 text-amber-800 text-sm">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-600" />
           <div>
-            <div className="font-semibold">Insufficient Data Warning</div>
-            <div className="text-xs text-amber-400/80">{singleData.message}</div>
+            <div className="font-semibold text-amber-900">Insufficient Data Warning</div>
+            <div className="text-xs text-amber-700">{singleData.message}</div>
           </div>
         </div>
       )}
 
       {/* Main Content Area */}
       {isLoading ? (
-        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-500 mb-3" />
+        <div className="bg-card border border-border rounded-xl p-12 text-center text-text-muted shadow-card">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-brand-primary mb-3" />
           <span>Calculating return volatility &amp; distribution metrics...</span>
         </div>
       ) : analysisMode === 'single' && singleData ? (

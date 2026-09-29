@@ -34,20 +34,20 @@ export const FullscreenChartModal: React.FC<FullscreenChartModalProps> = ({
   if (!isFullscreen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#0B0F17] p-4 text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background p-4 text-text-primary">
       {/* Modal Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#263244] mb-2">
+      <div className="flex items-center justify-between pb-3 border-b border-border mb-2">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold font-mono-num text-[#F8FAFC]">{symbol}</h2>
-          <span className="text-xs text-[#94A3B8]">Fullscreen Research Workstation Chart</span>
+          <h2 className="text-lg font-bold font-mono-num text-forest-700">{symbol}</h2>
+          <span className="text-xs text-text-secondary">Fullscreen Research Workstation Chart</span>
         </div>
 
         <button
           onClick={toggleFullscreen}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] hover:bg-[#263244] text-[#94A3B8] hover:text-[#F8FAFC] text-xs font-medium rounded transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-forest-50 text-text-primary text-xs font-medium rounded-lg border border-border transition-colors shadow-xs"
         >
-          <Minimize2 className="h-4 w-4" />
-          Exit Fullscreen <span className="text-[10px] text-[#64748B]">(ESC)</span>
+          <Minimize2 className="h-4 w-4 text-forest-700" />
+          Exit Fullscreen <span className="text-[10px] text-text-muted">(ESC)</span>
         </button>
       </div>
 
@@ -57,7 +57,7 @@ export const FullscreenChartModal: React.FC<FullscreenChartModalProps> = ({
       </div>
 
       {/* Expanded Canvas Chart */}
-      <div className="flex-1 w-full bg-[#0B0F17] rounded border border-[#263244] overflow-hidden">
+      <div className="flex-1 w-full bg-card rounded-xl border border-border overflow-hidden shadow-xs">
         <MarketChart bars={bars} symbol={symbol} height={window.innerHeight - 180} />
       </div>
     </div>

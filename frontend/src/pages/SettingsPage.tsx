@@ -38,15 +38,15 @@ export const SettingsPage: React.FC = () => {
             <Card title="Workstation Environment" subtitle="Global application identification parameters.">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Platform Name</label>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Platform Name</label>
                   <Input value="Quant Research Dashboard" disabled />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Version</label>
-                  <Input value="v0.2.0 (Step 02 — Design System & Shell)" disabled />
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Version</label>
+                  <Input value="v0.2.0 (Forest Green Institutional Theme)" disabled />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Default Asset Class View</label>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Default Asset Class View</label>
                   <Input value="EQUITY (Stocks & ETFs)" disabled />
                 </div>
               </div>
@@ -57,11 +57,11 @@ export const SettingsPage: React.FC = () => {
             <Card title="Timezone & Market Hours" subtitle="Timestamps and market close settings.">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Display Timezone</label>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Display Timezone</label>
                   <Input value="UTC / Local Market Time" disabled />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Numeric Precision Format</label>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Numeric Precision Format</label>
                   <Input value="Tabular Monospace (2 Decimal Places)" disabled />
                 </div>
               </div>
@@ -77,11 +77,11 @@ export const SettingsPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Primary Provider</label>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Primary Provider</label>
                   <Input value="Yahoo Finance Adapter (yahoo_finance)" disabled icon={<Sliders className="w-3.5 h-3.5" />} />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Supported Capabilities</label>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Supported Capabilities</label>
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     <Badge variant="success">Historical: Supported</Badge>
                     <Badge variant="success">Latest Available: Supported</Badge>
@@ -93,15 +93,15 @@ export const SettingsPage: React.FC = () => {
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Provider Architecture</label>
-                  <div className="p-2.5 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8] space-y-1">
-                    <div className="text-[#F8FAFC] font-semibold">Database-First Cache Strategy</div>
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Provider Architecture</label>
+                  <div className="p-2.5 rounded bg-[#F8FAF9] border border-[#E5E7EB] text-xs text-[#64748B] space-y-1">
+                    <div className="text-[#17211B] font-semibold">Database-First Cache Strategy</div>
                     <div>Queries local PostgreSQL observations before issuing external network requests.</div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">Connection State</label>
-                  <div className="p-2 rounded bg-[#111827] border border-[#22C55E]/40 text-xs text-[#4ADE80] flex items-center justify-between">
+                  <label className="block text-xs font-mono-num text-[#64748B] mb-1">Connection State</label>
+                  <div className="p-2 rounded bg-[#F0FDF4] border border-[#BBF7D0] text-xs text-[#166534] flex items-center justify-between">
                     <span>Operational (yfinance Provider Adapter)</span>
                     <Badge variant="success">ONLINE</Badge>
                   </div>
@@ -113,8 +113,8 @@ export const SettingsPage: React.FC = () => {
           <Card title="Market Data Acquisition & Freshness Settings" subtitle="System-wide defaults for frequency, calendar scheduling, and polling.">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="block text-xs font-mono-num text-[#94A3B8]">Default Frequency</label>
-                <select disabled className="w-full px-3 py-2 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] opacity-80">
+                <label className="block text-xs font-mono-num text-[#64748B]">Default Frequency</label>
+                <select disabled className="w-full px-3 py-2 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] opacity-80">
                   <option value="DAILY">DAILY (1-Day Bars)</option>
                   <option value="HOURLY" disabled>HOURLY (Disabled)</option>
                   <option value="MINUTE" disabled>MINUTE (Disabled)</option>
@@ -123,16 +123,16 @@ export const SettingsPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs font-mono-num text-[#94A3B8]">Freshness Policy</label>
-                <select disabled className="w-full px-3 py-2 bg-[#111827] border border-[#263244] rounded text-xs text-[#F8FAFC] opacity-80">
+                <label className="block text-xs font-mono-num text-[#64748B]">Freshness Policy</label>
+                <select disabled className="w-full px-3 py-2 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-xs text-[#17211B] opacity-80">
                   <option value="CALENDAR_AWARE">Calendar-Aware (Equity & Crypto Calendars)</option>
                 </select>
                 <p className="text-[10px] text-[#64748B]">Prevents false stale warnings during market weekends and holidays.</p>
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs font-mono-num text-[#94A3B8]">Auto-Refresh Polling</label>
-                <div className="p-2 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8] flex items-center justify-between">
+                <label className="block text-xs font-mono-num text-[#64748B]">Auto-Refresh Polling</label>
+                <div className="p-2 rounded bg-[#F8FAF9] border border-[#E5E7EB] text-xs text-[#64748B] flex items-center justify-between">
                   <span>Disabled (Manual Refresh)</span>
                   <Badge variant="outline">INACTIVE</Badge>
                 </div>
@@ -143,23 +143,22 @@ export const SettingsPage: React.FC = () => {
         </div>
       )}
 
-
       {/* Tab 3: Appearance */}
       {activeTab === 'appearance' && (
         <div className="col-span-12">
-          <Card title="Theme & Visual Palette" subtitle="Institutional quant workstation dark theme.">
+          <Card title="Theme & Visual Palette" subtitle="Institutional quant workstation forest green light theme.">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded bg-[#0B1220] border border-[#3B82F6] flex items-center justify-between">
+              <div className="p-4 rounded bg-[#F0FDF4] border border-[#14532D] flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-semibold text-[#E5E7EB]">Institutional Dark</div>
-                  <div className="text-[10px] text-[#94A3B8] font-mono-num mt-0.5">Primary (#0B1220)</div>
+                  <div className="text-xs font-semibold text-[#17211B]">Forest Green Light</div>
+                  <div className="text-[10px] text-[#14532D] font-mono-num mt-0.5">Primary (#14532D)</div>
                 </div>
                 <Badge variant="success">Active</Badge>
               </div>
-              <div className="p-4 rounded bg-[#111827] border border-[#263244] opacity-50 flex items-center justify-between">
+              <div className="p-4 rounded bg-[#F8FAF9] border border-[#CBD5E1] opacity-50 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-semibold text-[#E5E7EB]">High Contrast Dark</div>
-                  <div className="text-[10px] text-[#94A3B8] font-mono-num mt-0.5">Option</div>
+                  <div className="text-xs font-semibold text-[#64748B]">High Contrast Light</div>
+                  <div className="text-[10px] text-[#64748B] font-mono-num mt-0.5">Option</div>
                 </div>
                 <Badge variant="outline">Disabled</Badge>
               </div>
@@ -172,17 +171,17 @@ export const SettingsPage: React.FC = () => {
       {activeTab === 'notifications' && (
         <div className="col-span-12">
           <Card title="Notification Preferences" subtitle="Configure workstation alert channels.">
-            <div className="space-y-3 text-xs text-[#94A3B8]">
-              <div className="flex items-center justify-between p-3 rounded bg-[#111827] border border-[#263244]">
+            <div className="space-y-3 text-xs text-[#64748B]">
+              <div className="flex items-center justify-between p-3 rounded bg-[#F8FAF9] border border-[#E5E7EB]">
                 <div>
-                  <div className="font-semibold text-[#E5E7EB]">System & Health Notifications</div>
+                  <div className="font-semibold text-[#17211B]">System & Health Notifications</div>
                   <div className="text-[11px] text-[#64748B]">API connection changes and health alerts</div>
                 </div>
                 <Badge variant="success">Enabled</Badge>
               </div>
-              <div className="flex items-center justify-between p-3 rounded bg-[#111827] border border-[#263244]">
+              <div className="flex items-center justify-between p-3 rounded bg-[#F8FAF9] border border-[#E5E7EB]">
                 <div>
-                  <div className="font-semibold text-[#E5E7EB]">Market Data Ingestion Alerts</div>
+                  <div className="font-semibold text-[#17211B]">Market Data Ingestion Alerts</div>
                   <div className="text-[11px] text-[#64748B]">Data provider updates and download progress</div>
                 </div>
                 <Badge variant="success">Enabled</Badge>
@@ -196,10 +195,10 @@ export const SettingsPage: React.FC = () => {
       {activeTab === 'security' && (
         <div className="col-span-12">
           <Card title="Authentication & Security Architecture">
-            <div className="flex items-center gap-3 p-4 rounded bg-[#111827] border border-[#263244] text-xs text-[#94A3B8]">
-              <ShieldCheck className="w-5 h-5 text-[#3B82F6]" />
+            <div className="flex items-center gap-3 p-4 rounded bg-[#F8FAF9] border border-[#E5E7EB] text-xs text-[#64748B]">
+              <ShieldCheck className="w-5 h-5 text-[#14532D]" />
               <div>
-                <strong className="text-[#E5E7EB] font-semibold">Local Quantitative Workflow Mode</strong>
+                <strong className="text-[#17211B] font-semibold">Local Quantitative Workflow Mode</strong>
                 <p className="mt-0.5">Authentication is architecture-ready but bypassed for local quant research productivity.</p>
               </div>
             </div>
@@ -213,11 +212,11 @@ export const SettingsPage: React.FC = () => {
           <Card title="Database & Container Status">
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">PostgreSQL URI</label>
+                <label className="block text-xs font-mono-num text-[#64748B] mb-1">PostgreSQL URI</label>
                 <Input value="postgresql+psycopg://postgres:password@localhost:5432/quant_dashboard" disabled icon={<Database className="w-3.5 h-3.5" />} />
               </div>
               <div>
-                <label className="block text-xs font-mono-num text-[#94A3B8] mb-1">FastAPI Backend Endpoint</label>
+                <label className="block text-xs font-mono-num text-[#64748B] mb-1">FastAPI Backend Endpoint</label>
                 <Input value="http://localhost:8000/api/v1" disabled icon={<Server className="w-3.5 h-3.5" />} />
               </div>
             </div>

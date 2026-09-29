@@ -8,16 +8,16 @@ export const NotFoundPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-4 text-center">
       <Card className="max-w-md w-full p-8 flex flex-col items-center justify-center">
-        <div className="p-3 rounded-full bg-[#111827] border border-[#263244] text-[#F59E0B] mb-4">
+        <div className="p-3.5 rounded-full bg-amber-50 border border-amber-200 text-amber-600 mb-4 shadow-xs">
           <HelpCircle className="w-8 h-8" />
         </div>
-        <div className="text-[11px] font-mono-num font-semibold text-[#64748B] tracking-wider uppercase mb-1">
+        <div className="text-[11px] font-mono-num font-semibold text-text-muted tracking-wider uppercase mb-1">
           404 — Page Not Found
         </div>
-        <h2 className="text-lg font-semibold text-[#E5E7EB] tracking-tight mb-2">
+        <h2 className="text-xl font-bold text-text-primary tracking-tight mb-2 font-sans">
           Unknown Module Route
         </h2>
-        <p className="text-xs text-[#94A3B8] mb-6 leading-relaxed">
+        <p className="text-xs text-text-secondary mb-6 leading-relaxed">
           The requested page route does not exist in the Quant Research Dashboard specification.
         </p>
         <NavLink to="/">

@@ -41,7 +41,7 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
 
   if (series.length === 0) {
     return (
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-6 text-center text-slate-400 font-mono text-xs">
+      <div className="bg-card border border-border rounded-xl p-8 text-center text-text-secondary font-mono text-xs shadow-xs">
         No price or strategy data available.
       </div>
     );
@@ -50,17 +50,17 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
   const hoverPoint = hoveredIndex !== null ? series[hoveredIndex] : null;
 
   const chartContent = (
-    <div className={`bg-[#151F2E] border border-[#263244] rounded-lg p-5 ${isFullscreen ? 'h-full flex flex-col justify-between' : ''}`}>
+    <div className={`bg-white border border-[#E5E7EB] rounded-lg p-5 shadow-sm ${isFullscreen ? 'h-full flex flex-col justify-between' : ''}`}>
       {/* Chart Header & Legend */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-[#17211B] flex items-center gap-2">
             Price &amp; Technical Overlay Chart ({symbol})
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#0B1220] border border-[#263244] text-slate-400">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#F8FAF9] border border-[#CBD5E1] text-[#64748B]">
               {chartType.toUpperCase()}
             </span>
           </h3>
-          <p className="text-xs text-slate-400 font-mono">
+          <p className="text-xs text-[#64748B] font-mono">
             {maType} Fast ({fastWindow}d) vs Slow ({slowWindow}d) Overlay
           </p>
         </div>
@@ -68,29 +68,29 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
         {/* Legend & Fullscreen toggle */}
         <div className="flex items-center gap-4 text-xs font-mono">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-0.5 bg-slate-400 rounded-full" />
-            <span className="text-slate-400">Price</span>
+            <span className="w-2.5 h-0.5 bg-[#64748B] rounded-full" />
+            <span className="text-[#64748B]">Price</span>
           </div>
           {showFastMA && (
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-0.5 bg-blue-500 rounded-full" />
-              <span className="text-blue-400">Fast MA ({fastWindow})</span>
+              <span className="w-2.5 h-0.5 bg-[#14532D] rounded-full" />
+              <span className="text-[#14532D] font-bold">Fast MA ({fastWindow})</span>
             </div>
           )}
           {showSlowMA && (
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-0.5 bg-amber-500 rounded-full" />
-              <span className="text-amber-400">Slow MA ({slowWindow})</span>
+              <span className="w-2.5 h-0.5 bg-[#D97706] rounded-full" />
+              <span className="text-[#D97706] font-bold">Slow MA ({slowWindow})</span>
             </div>
           )}
           {showSignals && (
-            <div className="flex items-center gap-1 text-[11px] text-slate-400">
-              <span className="text-emerald-400 font-bold">▲</span> BUY / <span className="text-amber-400 font-bold">▼</span> SELL
+            <div className="flex items-center gap-1 text-[11px] text-[#64748B]">
+              <span className="text-[#16A34A] font-bold">▲</span> BUY / <span className="text-[#DC2626] font-bold">▼</span> SELL
             </div>
           )}
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-1 bg-[#0B1220] border border-[#263244] rounded text-slate-400 hover:text-slate-200 transition-colors ml-2"
+            className="p-1 bg-[#F8FAF9] border border-[#CBD5E1] rounded text-[#64748B] hover:text-[#17211B] transition-colors ml-2"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Mode'}
           >
             {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
@@ -100,36 +100,36 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
 
       {/* Hover Info Tooltip Header */}
       {hoverPoint && (
-        <div className="bg-[#0B1220]/90 border border-[#263244] px-3 py-2 rounded mb-3 flex flex-wrap items-center justify-between font-mono text-xs text-slate-300">
+        <div className="bg-[#17211B] text-white border border-[#334155] px-3 py-2 rounded mb-3 flex flex-wrap items-center justify-between font-mono text-xs shadow-md">
           <div>
-            <span className="text-slate-500 mr-1.5">Date:</span>
-            <span className="text-slate-200 font-semibold">{formatDateLabel(hoverPoint.timestamp)}</span>
+            <span className="text-[#94A3B8] mr-1.5">Date:</span>
+            <span className="text-white font-semibold">{formatDateLabel(hoverPoint.timestamp)}</span>
           </div>
           <div>
-            <span className="text-slate-500 mr-1.5">Price:</span>
-            <span className="text-slate-200 font-semibold">{formatCurrency(hoverPoint.price)}</span>
+            <span className="text-[#94A3B8] mr-1.5">Price:</span>
+            <span className="text-white font-semibold">{formatCurrency(hoverPoint.price)}</span>
           </div>
           {showFastMA && (
             <div>
-              <span className="text-slate-500 mr-1.5">Fast MA:</span>
-              <span className="text-blue-400 font-semibold">{formatCurrency(hoverPoint.fast_ma)}</span>
+              <span className="text-[#94A3B8] mr-1.5">Fast MA:</span>
+              <span className="text-[#86EFAC] font-semibold">{formatCurrency(hoverPoint.fast_ma)}</span>
             </div>
           )}
           {showSlowMA && (
             <div>
-              <span className="text-slate-500 mr-1.5">Slow MA:</span>
-              <span className="text-amber-400 font-semibold">{formatCurrency(hoverPoint.slow_ma)}</span>
+              <span className="text-[#94A3B8] mr-1.5">Slow MA:</span>
+              <span className="text-[#FDE68A] font-semibold">{formatCurrency(hoverPoint.slow_ma)}</span>
             </div>
           )}
           <div>
-            <span className="text-slate-500 mr-1.5">Signal:</span>
+            <span className="text-[#94A3B8] mr-1.5">Signal:</span>
             <span
               className={`font-semibold ${
                 hoverPoint.signal === 'BUY'
-                  ? 'text-emerald-400'
+                  ? 'text-[#4ADE80]'
                   : hoverPoint.signal === 'SELL'
-                  ? 'text-amber-400'
-                  : 'text-slate-400'
+                  ? 'text-[#F87171]'
+                  : 'text-[#94A3B8]'
               }`}
             >
               {hoverPoint.signal}
@@ -156,7 +156,7 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
                   y1={yPos}
                   x2={800 - padding.right}
                   y2={yPos}
-                  stroke="#1E293B"
+                  stroke="#E5E7EB"
                   strokeDasharray={ratio === 0 ? undefined : '3 3'}
                 />
                 <text
@@ -216,12 +216,12 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
 
                 {/* Slow MA Line */}
                 {showSlowMA && (
-                  <path d={slowPath} fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+                  <path d={slowPath} fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
                 )}
 
                 {/* Fast MA Line */}
                 {showFastMA && (
-                  <path d={fastPath} fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" />
+                  <path d={fastPath} fill="none" stroke="#14532D" strokeWidth="2" strokeLinecap="round" />
                 )}
 
                 {/* Crossover Markers */}
@@ -240,16 +240,16 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
                           // Bullish BUY Triangle Marker (▲)
                           <polygon
                             points={`${x},${y - 14} ${x - 6},${y - 4} ${x + 6},${y - 4}`}
-                            fill="#10B981"
-                            stroke="#0B1220"
+                            fill="#16A34A"
+                            stroke="#FFFFFF"
                             strokeWidth="1.5"
                           />
                         ) : (
                           // Bearish SELL Triangle Marker (▼)
                           <polygon
                             points={`${x},${y + 14} ${x - 6},${y + 4} ${x + 6},${y + 4}`}
-                            fill="#F59E0B"
-                            stroke="#0B1220"
+                            fill="#DC2626"
+                            stroke="#FFFFFF"
                             strokeWidth="1.5"
                           />
                         )}
@@ -283,15 +283,15 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
                       y1={padding.top}
                       x2={getX(hoveredIndex)}
                       y2={baseChartHeight - padding.bottom}
-                      stroke="#475569"
+                      stroke="#94A3B8"
                       strokeDasharray="3 3"
                     />
                     <circle
                       cx={getX(hoveredIndex)}
                       cy={getY(series[hoveredIndex].price)}
                       r="4"
-                      fill="#3B82F6"
-                      stroke="#0B1220"
+                      fill="#14532D"
+                      stroke="#FFFFFF"
                       strokeWidth="2"
                     />
                   </g>
@@ -327,8 +327,8 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
         </svg>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-500 mt-2 font-mono">
-        <span>▲ Green = Bullish BUY Crossover | ▼ Amber = Bearish SELL Crossover</span>
+      <div className="flex items-center justify-between text-xs text-[#64748B] mt-2 font-mono">
+        <span>▲ Green = Bullish BUY Crossover | ▼ Red = Bearish SELL Crossover</span>
         <span>Observation Window: {series.length} bars</span>
       </div>
     </div>
@@ -336,7 +336,7 @@ export const StrategyPriceChart: React.FC<StrategyPriceChartProps> = ({
 
   if (isFullscreen) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#0B1220]/95 p-6 backdrop-blur-sm flex flex-col">
+      <div className="fixed inset-0 z-50 bg-[#17211B]/95 p-6 backdrop-blur-sm flex flex-col">
         {chartContent}
       </div>
     );

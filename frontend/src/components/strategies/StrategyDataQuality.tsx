@@ -17,17 +17,17 @@ export const StrategyDataQuality: React.FC<StrategyDataQualityProps> = ({
   const isGood = qualityStatus === 'GOOD';
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5 space-y-3">
-      <div className="flex items-center justify-between border-b border-[#263244] pb-2 text-xs">
-        <div className="flex items-center gap-2 font-semibold text-slate-200">
-          <Database className="w-4 h-4 text-blue-400" />
+    <div className="bg-card border border-border rounded-xl p-5 space-y-3 shadow-xs">
+      <div className="flex items-center justify-between border-b border-border pb-2 text-xs">
+        <div className="flex items-center gap-2 font-semibold text-text-primary">
+          <Database className="w-4 h-4 text-brand-primary" />
           <span>Market Data Provenance &amp; Integrity</span>
         </div>
         <span
-          className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border flex items-center gap-1 ${
+          className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold border flex items-center gap-1 ${
             isGood
-              ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800/80'
-              : 'text-amber-400 bg-amber-950/60 border-amber-800/80'
+              ? 'text-emerald-800 bg-emerald-50 border-emerald-300'
+              : 'text-amber-800 bg-amber-50 border-amber-300'
           }`}
         >
           {isGood ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
@@ -35,19 +35,19 @@ export const StrategyDataQuality: React.FC<StrategyDataQualityProps> = ({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 text-xs font-mono text-slate-300">
-        <div className="bg-[#0B1220] p-2.5 rounded border border-[#263244]">
-          <div className="text-[10px] text-slate-500">OBSERVATIONS</div>
-          <div className="text-slate-100 font-semibold">{observationCount} Bars</div>
+      <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+        <div className="bg-surface p-2.5 rounded-lg border border-border">
+          <div className="text-[10px] text-text-muted">OBSERVATIONS</div>
+          <div className="text-text-primary font-semibold">{observationCount} Bars</div>
         </div>
-        <div className="bg-[#0B1220] p-2.5 rounded border border-[#263244]">
-          <div className="text-[10px] text-slate-500">PRICE SOURCE</div>
-          <div className="text-slate-100 font-semibold uppercase">{priceSource}</div>
+        <div className="bg-surface p-2.5 rounded-lg border border-border">
+          <div className="text-[10px] text-text-muted">PRICE SOURCE</div>
+          <div className="text-text-primary font-semibold uppercase">{priceSource}</div>
         </div>
       </div>
 
       {qualityWarning && (
-        <div className="text-[11px] text-amber-300 bg-amber-950/40 p-2 rounded border border-amber-900/60 font-mono">
+        <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 font-mono">
           Warning: {qualityWarning}
         </div>
       )}

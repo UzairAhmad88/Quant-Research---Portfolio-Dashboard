@@ -53,24 +53,24 @@ export const ReportHeader: React.FC<ReportHeaderProps> = ({ report }) => {
   ];
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-6 font-mono mb-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#263244] pb-4 mb-4">
+    <div className="bg-card border border-border rounded-xl p-6 font-mono mb-6 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4 mb-4">
         <div>
           <div className="flex items-center gap-3">
-            <span className="text-xs uppercase tracking-widest text-[#3B82F6] font-semibold flex items-center gap-1.5">
-              <FileText className="h-4 w-4" />
+            <span className="text-xs uppercase tracking-widest text-forest-700 font-semibold flex items-center gap-1.5">
+              <FileText className="h-4 w-4 text-forest-600" />
               Quant Research Report
             </span>
-            <span className="text-[10px] bg-[#111827] text-[#94A3B8] border border-[#263244] px-2 py-0.5 rounded">
+            <span className="text-[10px] bg-forest-50 text-forest-800 border border-forest-100 px-2 py-0.5 rounded font-bold">
               v{report.report_version}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-[#E5E7EB] mt-1">
+          <h2 className="text-xl font-bold text-text-primary mt-1 font-sans">
             {symbol} — {strategyName}
           </h2>
-          <p className="text-xs text-[#94A3B8] mt-1">
-            Backtest ID: <span className="text-[#E5E7EB]">{report.backtest_id}</span> | Generated UTC:{' '}
-            <span className="text-[#E5E7EB]">{new Date(report.generated_at).toUTCString()}</span>
+          <p className="text-xs text-text-secondary mt-1">
+            Backtest ID: <span className="text-text-primary font-medium">{report.backtest_id}</span> | Generated UTC:{' '}
+            <span className="text-text-primary font-medium">{new Date(report.generated_at).toUTCString()}</span>
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export const ReportHeader: React.FC<ReportHeaderProps> = ({ report }) => {
       </div>
 
       {/* Meta Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-[#94A3B8]">
+      <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-text-secondary">
         <div className="flex items-center gap-4">
           <div>
             Status:{' '}
@@ -99,13 +99,13 @@ export const ReportHeader: React.FC<ReportHeaderProps> = ({ report }) => {
           </div>
           <div>
             Data Quality:{' '}
-            <span className="text-[#E5E7EB] font-bold">{report.data_quality.overall_status}</span>
+            <span className="text-forest-700 font-bold">{report.data_quality.overall_status}</span>
           </div>
         </div>
 
-        <div className="text-[11px] text-[#64748B] flex items-center gap-1">
+        <div className="text-[11px] text-text-muted flex items-center gap-1">
           Fingerprint Hash:{' '}
-          <code className="bg-[#111827] text-[#3B82F6] px-1.5 py-0.5 rounded text-[10px]">
+          <code className="bg-forest-50 text-forest-700 border border-forest-100 px-1.5 py-0.5 rounded text-[10px] font-semibold">
             {report.configuration_hash.slice(0, 16)}...
           </code>
         </div>

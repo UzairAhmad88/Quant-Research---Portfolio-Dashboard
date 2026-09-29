@@ -10,12 +10,12 @@ interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({ variant = 'default', children, className = '' }) => {
   const variantStyles: Record<BadgeVariant, string> = {
-    default: 'bg-[#1E293B] text-[#94A3B8] border-[#263244]',
-    success: 'bg-[#22C55E]/10 text-[#4ADE80] border-[#22C55E]/30',
-    warning: 'bg-[#F59E0B]/10 text-[#FBBF24] border-[#F59E0B]/30',
-    danger: 'bg-[#EF4444]/10 text-[#F87171] border-[#EF4444]/30',
-    info: 'bg-[#3B82F6]/10 text-[#60A5FA] border-[#3B82F6]/30',
-    outline: 'bg-transparent text-[#94A3B8] border-[#263244]',
+    default: 'bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]',
+    success: 'bg-[#DCFCE7] text-[#166534] border-[#86EFAC]',
+    warning: 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]',
+    danger: 'bg-[#FEE2E2] text-[#991B1B] border-[#FECACA]',
+    info: 'bg-[#DBEAFE] text-[#1E40AF] border-[#BFDBFE]',
+    outline: 'bg-transparent text-[#64748B] border-[#CBD5E1]',
   };
 
   return (

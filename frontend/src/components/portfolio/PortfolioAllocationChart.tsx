@@ -8,7 +8,7 @@ interface PortfolioAllocationChartProps {
 export const PortfolioAllocationChart: React.FC<PortfolioAllocationChartProps> = ({ items }) => {
   if (!items || items.length === 0) {
     return (
-      <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 p-6 text-center text-slate-500">
+      <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-border bg-card p-6 text-center text-text-muted shadow-card">
         <p className="text-sm font-medium">No allocation data available</p>
       </div>
     );
@@ -36,13 +36,13 @@ export const PortfolioAllocationChart: React.FC<PortfolioAllocationChartProps> =
   };
 
   return (
-    <div className="flex flex-col space-y-4 rounded-lg border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div className="flex flex-col space-y-4 rounded-lg border border-border bg-card p-5 shadow-card">
+      <div className="flex items-center justify-between border-b border-border pb-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">Portfolio Allocation</h3>
-          <p className="text-xs text-slate-400">Asset distribution by invested market value</p>
+          <h3 className="text-sm font-semibold text-text-primary">Portfolio Allocation</h3>
+          <p className="text-xs text-text-muted">Asset distribution by invested market value</p>
         </div>
-        <span className="font-mono text-xs font-semibold text-slate-400">
+        <span className="font-mono text-xs font-semibold text-text-muted">
           Total: ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
       </div>
@@ -61,7 +61,7 @@ export const PortfolioAllocationChart: React.FC<PortfolioAllocationChartProps> =
                       cy="0"
                       r="0.75"
                       fill="none"
-                      stroke={seg.color || '#3B82F6'}
+                      stroke={seg.color || '#14532D'}
                       strokeWidth="0.35"
                     />
                   );
@@ -80,7 +80,7 @@ export const PortfolioAllocationChart: React.FC<PortfolioAllocationChartProps> =
                     key={idx}
                     d={pathData}
                     fill="none"
-                    stroke={seg.color || '#3B82F6'}
+                    stroke={seg.color || '#14532D'}
                     strokeWidth="0.35"
                     className="transition-all duration-300 hover:opacity-80"
                   />
@@ -88,8 +88,8 @@ export const PortfolioAllocationChart: React.FC<PortfolioAllocationChartProps> =
               })}
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Holdings</span>
-              <span className="font-mono text-base font-bold text-slate-100">{items.length}</span>
+              <span className="text-2xs font-semibold uppercase tracking-wider text-text-muted">Holdings</span>
+              <span className="font-mono text-base font-bold text-text-primary">{items.length}</span>
             </div>
           </div>
         </div>
@@ -99,20 +99,20 @@ export const PortfolioAllocationChart: React.FC<PortfolioAllocationChartProps> =
           {items.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between rounded border border-slate-800/60 bg-slate-950/40 px-3 py-2 text-xs"
+              className="flex items-center justify-between rounded-md border border-border bg-surface px-3 py-2 text-xs"
             >
               <div className="flex items-center space-x-2.5">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color || '#3B82F6' }} />
-                <span className="font-semibold text-slate-200">{item.label}</span>
+                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color || '#14532D' }} />
+                <span className="font-semibold text-text-primary">{item.label}</span>
                 {item.symbol && item.symbol !== item.label && (
-                  <span className="font-mono text-slate-500">({item.symbol})</span>
+                  <span className="font-mono text-text-muted">({item.symbol})</span>
                 )}
               </div>
               <div className="flex items-center space-x-4">
-                <span className="font-mono text-slate-300">
+                <span className="font-mono text-text-secondary">
                   ${item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
-                <span className="w-12 text-right font-mono font-semibold text-blue-400">
+                <span className="w-12 text-right font-mono font-semibold text-brand-primary">
                   {item.weight.toFixed(2)}%
                 </span>
               </div>

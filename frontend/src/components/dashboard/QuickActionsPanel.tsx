@@ -11,14 +11,14 @@ interface QuickAction {
 }
 
 const actions: QuickAction[] = [
-  { label: 'Download Market Data', route: '/market-data', icon: <Database className="w-4 h-4 text-[#3B82F6]" />, description: 'Ingest OHLCV historical price data' },
-  { label: 'Calculate Returns', route: '/returns', icon: <TrendingUp className="w-4 h-4 text-[#22C55E]" />, description: 'Simple & log return series' },
-  { label: 'Analyze Correlation', route: '/correlation', icon: <Grid className="w-4 h-4 text-[#A855F7]" />, description: 'Multi-asset correlation matrix' },
-  { label: 'Analyze Volatility', route: '/volatility', icon: <Activity className="w-4 h-4 text-[#F59E0B]" />, description: 'Rolling volatility & VaR risk' },
-  { label: 'Create Portfolio', route: '/portfolio', icon: <Briefcase className="w-4 h-4 text-[#EC4899]" />, description: 'Portfolio positions & weights' },
-  { label: 'Run Strategy', route: '/strategies', icon: <Cpu className="w-4 h-4 text-[#06B6D4]" />, description: 'Calibrate MA crossover signals' },
-  { label: 'Run Backtest', route: '/backtesting', icon: <PlayCircle className="w-4 h-4 text-[#3B82F6]" />, description: 'Historical trade simulation' },
-  { label: 'View Reports', route: '/backtesting', icon: <FileText className="w-4 h-4 text-[#10B981]" />, description: 'Reproducible research reports' },
+  { label: 'Download Market Data', route: '/market-data', icon: <Database className="w-4 h-4 text-brand-primary" />, description: 'Ingest OHLCV historical price data' },
+  { label: 'Calculate Returns', route: '/returns', icon: <TrendingUp className="w-4 h-4 text-emerald-600" />, description: 'Simple & log return series' },
+  { label: 'Analyze Correlation', route: '/correlation', icon: <Grid className="w-4 h-4 text-teal-600" />, description: 'Multi-asset correlation matrix' },
+  { label: 'Analyze Volatility', route: '/volatility', icon: <Activity className="w-4 h-4 text-amber-600" />, description: 'Rolling volatility & VaR risk' },
+  { label: 'Create Portfolio', route: '/portfolio', icon: <Briefcase className="w-4 h-4 text-emerald-700" />, description: 'Portfolio positions & weights' },
+  { label: 'Run Strategy', route: '/strategies', icon: <Cpu className="w-4 h-4 text-brand-secondary" />, description: 'Calibrate MA crossover signals' },
+  { label: 'Run Backtest', route: '/backtesting', icon: <PlayCircle className="w-4 h-4 text-brand-primary" />, description: 'Historical trade simulation' },
+  { label: 'View Reports', route: '/backtesting', icon: <FileText className="w-4 h-4 text-emerald-800" />, description: 'Reproducible research reports' },
 ];
 
 export const QuickActionsPanel: React.FC = () => {
@@ -30,14 +30,14 @@ export const QuickActionsPanel: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 pt-1">
         {actions.map((act) => (
           <NavLink key={act.label} to={act.route} className="group">
-            <div className="flex flex-col items-start p-3 rounded bg-[#111827] border border-[#263244] group-hover:border-[#3B82F6] transition-all h-full">
-              <div className="p-1.5 rounded bg-[#151F2E] border border-[#263244] mb-2 group-hover:scale-105 transition-transform">
+            <div className="flex flex-col items-start p-3 rounded-xl bg-surface border border-border group-hover:border-brand-primary group-hover:bg-brand-primary/5 transition-all h-full shadow-xs">
+              <div className="p-2 rounded-lg bg-card border border-border mb-2 group-hover:scale-105 transition-transform shadow-xs">
                 {act.icon}
               </div>
-              <div className="text-xs font-semibold text-[#E5E7EB] group-hover:text-[#3B82F6] transition-colors leading-snug">
+              <div className="text-xs font-semibold text-text-primary group-hover:text-brand-primary transition-colors leading-snug">
                 {act.label}
               </div>
-              <div className="text-[10px] text-[#94A3B8] mt-1 leading-tight hidden sm:block">
+              <div className="text-[10px] text-text-secondary mt-1 leading-tight hidden sm:block">
                 {act.description}
               </div>
             </div>

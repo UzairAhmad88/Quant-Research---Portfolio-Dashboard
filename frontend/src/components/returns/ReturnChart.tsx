@@ -50,27 +50,27 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
       width: chartContainerRef.current.clientWidth,
       height: height,
       layout: {
-        background: { color: '#0B1220' },
-        textColor: '#94A3B8',
+        background: { color: '#FFFFFF' },
+        textColor: '#64748B',
         fontSize: 12,
         fontFamily: 'JetBrains Mono, monospace',
       },
       grid: {
-        vertLines: { color: '#1E293B' },
-        horzLines: { color: '#1E293B' },
+        vertLines: { color: '#E5E7EB' },
+        horzLines: { color: '#E5E7EB' },
       },
       crosshair: {
         mode: 0, // Normal crosshair
-        vertLine: { color: '#3B82F6', width: 1, style: 3 },
-        horzLine: { color: '#3B82F6', width: 1, style: 3 },
+        vertLine: { color: '#14532D', width: 1, style: 3 },
+        horzLine: { color: '#14532D', width: 1, style: 3 },
       },
       timeScale: {
-        borderColor: '#263244',
+        borderColor: '#E5E7EB',
         timeVisible: false,
         secondsVisible: false,
       },
       rightPriceScale: {
-        borderColor: '#263244',
+        borderColor: '#E5E7EB',
       },
     });
 
@@ -78,7 +78,7 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
 
     if (chartMode === 'cumulative') {
       const lineSeries = chart.addSeries(LineSeries, {
-        color: '#3B82F6',
+        color: '#14532D',
         lineWidth: 2,
         priceFormat: {
           type: 'custom',
@@ -107,7 +107,7 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
           return {
             time: item.timestamp.split('T')[0],
             value: val,
-            color: val >= 0 ? '#22C55E' : '#EF4444',
+            color: val >= 0 ? '#16A34A' : '#DC2626',
           };
         });
 
@@ -162,16 +162,16 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
   const displayCumulative = legendData.cumulativeReturn !== undefined ? legendData.cumulativeReturn : (latestObs ? latestObs.cumulative_return : undefined);
 
   return (
-    <div className="relative w-full bg-[#0B1220] border border-[#263244] rounded-lg overflow-hidden">
+    <div className="relative w-full bg-white border border-[#E5E7EB] rounded-lg overflow-hidden shadow-sm">
       {/* Legend Overlay */}
-      <div className="absolute top-3 left-3 z-10 p-2 bg-[#151F2E]/90 border border-[#263244] rounded text-xs font-mono backdrop-blur-xs flex items-center gap-4 text-slate-300">
-        <span className="font-semibold text-slate-100">{symbol}</span>
-        <span>Date: <strong className="text-slate-100">{displayDate}</strong></span>
-        {displayPrice !== undefined && <span>Price: <strong className="text-slate-100">${displayPrice.toFixed(2)}</strong></span>}
+      <div className="absolute top-3 left-3 z-10 p-2 bg-white/95 border border-[#E5E7EB] rounded text-xs font-mono shadow-sm flex items-center gap-4 text-[#64748B]">
+        <span className="font-bold text-[#17211B]">{symbol}</span>
+        <span>Date: <strong className="text-[#17211B]">{displayDate}</strong></span>
+        {displayPrice !== undefined && <span>Price: <strong className="text-[#17211B]">${displayPrice.toFixed(2)}</strong></span>}
         {displayPeriodic !== undefined && (
           <span>
             {returnType === 'log' ? 'Log Return' : 'Return'}:{' '}
-            <strong className={displayPeriodic >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+            <strong className={displayPeriodic >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'}>
               {displayPeriodic >= 0 ? '+' : ''}{(displayPeriodic * 100).toFixed(2)}%
             </strong>
           </span>
@@ -179,7 +179,7 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
         {displayCumulative !== undefined && (
           <span>
             Cumulative:{' '}
-            <strong className={displayCumulative >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+            <strong className={displayCumulative >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'}>
               {displayCumulative >= 0 ? '+' : ''}{(displayCumulative * 100).toFixed(2)}%
             </strong>
           </span>
@@ -187,19 +187,19 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-[360px] text-xs font-mono text-slate-400 animate-pulse">
+        <div className="flex items-center justify-center h-[360px] text-xs font-mono text-[#64748B] animate-pulse">
           Calculating return metrics...
         </div>
       ) : series.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[360px] p-6 text-center space-y-3 bg-[#0B1220]">
-          <div className="w-10 h-10 rounded-full bg-[#152136] border border-[#263244] flex items-center justify-center text-[#3B82F6]">
+        <div className="flex flex-col items-center justify-center h-[360px] p-6 text-center space-y-3 bg-white">
+          <div className="w-10 h-10 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] flex items-center justify-center text-[#14532D]">
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-sm font-semibold text-slate-200">
+            <div className="text-sm font-bold text-[#17211B]">
               No Validated Market Data Available for {symbol || 'Target'}
             </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-md">
+            <p className="text-xs text-[#64748B] mt-1 max-w-md">
               Historical price observations for this instrument have not been ingested for the selected window ({returnType} return).
             </p>
           </div>
@@ -207,7 +207,7 @@ export const ReturnChart: React.FC<ReturnChartProps> = ({
             <button
               onClick={onIngestData}
               disabled={isIngesting}
-              className="mt-2 flex items-center gap-2 px-4 py-2 bg-[#1D4ED8] hover:bg-[#2563EB] disabled:bg-[#1E3A8A]/50 text-xs font-semibold text-white rounded-lg shadow-sm transition-all cursor-pointer"
+              className="mt-2 flex items-center gap-2 px-4 py-2 bg-[#14532D] hover:bg-[#166534] disabled:bg-[#14532D]/50 text-xs font-semibold text-white rounded-lg shadow-sm transition-all cursor-pointer"
             >
               <Download className={`w-3.5 h-3.5 ${isIngesting ? 'animate-spin' : ''}`} />
               <span>{isIngesting ? 'Downloading Real Market Data...' : `Download ${symbol || 'Instrument'} Market Data`}</span>

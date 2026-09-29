@@ -34,11 +34,11 @@ export const RecentActivityPanel: React.FC<RecentActivityPanelProps> = ({
       subtitle="Recorded events across market data acquisition, strategy signals, portfolios, and backtest runs."
     >
       {isLoading ? (
-        <div className="py-6 text-center text-xs font-mono text-[#94A3B8] animate-pulse">
+        <div className="py-6 text-center text-xs font-mono text-text-muted animate-pulse">
           Loading activity timeline...
         </div>
       ) : activities.length === 0 ? (
-        <div className="py-6 text-center text-xs font-mono text-[#94A3B8]">
+        <div className="py-6 text-center text-xs font-mono text-text-muted">
           No research activities recorded yet.
         </div>
       ) : (
@@ -46,20 +46,20 @@ export const RecentActivityPanel: React.FC<RecentActivityPanelProps> = ({
           {activities.map((act) => (
             <div
               key={act.id}
-              className="flex items-center justify-between p-2 rounded bg-[#111827] border border-[#263244] text-xs font-mono"
+              className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-border text-xs font-mono shadow-xs hover:border-forest-200 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <Clock className="w-3.5 h-3.5 text-forest-700 shrink-0" />
                 <div>
-                  <span className="font-semibold text-[#E5E7EB]">{act.entity_symbol_or_name}</span>
-                  <div className="text-[10px] text-[#94A3B8]">
+                  <span className="font-semibold text-text-primary">{act.entity_symbol_or_name}</span>
+                  <div className="text-[10px] text-text-muted">
                     {new Date(act.timestamp).toLocaleString()}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {getActivityBadge(act.activity_type)}
-                <span className="text-[10px] text-[#94A3B8] uppercase">{act.status}</span>
+                <span className="text-[10px] text-text-muted uppercase font-medium">{act.status}</span>
               </div>
             </div>
           ))}

@@ -12,17 +12,17 @@ export const ReportWarningBanner: React.FC<ReportWarningBannerProps> = ({ warnin
   }
 
   return (
-    <div className="bg-amber-950/40 border border-amber-800/60 rounded-lg p-4 mb-6 text-xs font-mono flex items-start gap-3">
-      <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
-      <div className="space-y-1 text-amber-200">
-        <div className="font-semibold text-amber-300">
+    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-xs font-mono flex items-start gap-3 shadow-xs">
+      <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="space-y-1 text-amber-900">
+        <div className="font-semibold text-amber-950 font-sans">
           Simulation Completed with Warnings
         </div>
-        <p className="text-amber-200/80 leading-relaxed">
+        <p className="text-amber-800/90 leading-relaxed font-sans text-xs">
           This historical backtest executed successfully, but contains documented market-data or parameter warnings. Please inspect Section 11 Data Quality before evaluating final performance metrics.
         </p>
         {warnings.length > 0 && (
-          <ul className="list-disc list-inside space-y-0.5 pt-1 text-amber-300">
+          <ul className="list-disc list-inside space-y-0.5 pt-1 text-amber-900 font-mono text-[11px]">
             {warnings.map((w, idx) => (
               <li key={idx}>{w}</li>
             ))}

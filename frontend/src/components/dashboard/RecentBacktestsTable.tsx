@@ -75,23 +75,22 @@ export const RecentBacktestsTable: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0D1525] border border-[#17253D] rounded-lg p-4 shadow-md flex flex-col justify-between">
+    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 shadow-sm flex flex-col justify-between">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-[#17253D] gap-2">
-        <h3 className="text-sm font-bold text-white tracking-tight">Recent Backtests</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-[#E5E7EB] gap-2">
+        <h3 className="text-sm font-bold text-[#17211B] tracking-tight">Recent Backtests</h3>
 
         <div className="flex items-center gap-2">
-
           {/* Strategy filter selector */}
-          <div className="flex items-center bg-[#070D18] border border-[#17253D] rounded-md p-0.5 text-[11px]">
+          <div className="flex items-center bg-[#F8FAF9] border border-[#CBD5E1] rounded-md p-0.5 text-[11px]">
             {['ALL', 'SMA', 'Momentum', 'Reversion'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilterStrategy(cat)}
                 className={`px-2 py-0.5 rounded transition-all ${
                   filterStrategy === cat
-                    ? 'bg-[#1D4ED8] text-white font-semibold'
-                    : 'text-[#94A3B8] hover:text-white'
+                    ? 'bg-[#14532D] text-white font-semibold'
+                    : 'text-[#64748B] hover:text-[#17211B]'
                 }`}
               >
                 {cat}
@@ -101,7 +100,7 @@ export const RecentBacktestsTable: React.FC = () => {
 
           <button
             onClick={() => navigate('/backtesting')}
-            className="text-xs text-[#3B82F6] hover:text-[#60A5FA] flex items-center gap-1 font-medium group transition-colors"
+            className="text-xs text-[#14532D] hover:text-[#166534] flex items-center gap-1 font-semibold group transition-colors"
           >
             New <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </button>
@@ -112,34 +111,34 @@ export const RecentBacktestsTable: React.FC = () => {
       <div className="overflow-x-auto pt-2">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="text-[11px] text-[#94A3B8] border-b border-[#17253D]/80">
-              <th className="pb-2 font-medium">Strategy Model</th>
-              <th className="pb-2 font-medium">Symbol</th>
-              <th className="pb-2 font-medium text-center">Period</th>
-              <th className="pb-2 font-medium text-right">Return</th>
-              <th className="pb-2 font-medium text-right">Sharpe</th>
-              <th className="pb-2 font-medium text-right">Max DD</th>
-              <th className="pb-2 font-medium text-right">Status</th>
+            <tr className="text-[11px] text-[#64748B] bg-[#F0FDF4] border-b border-[#E5E7EB]">
+              <th className="py-2 px-2 font-semibold">Strategy Model</th>
+              <th className="py-2 px-2 font-semibold">Symbol</th>
+              <th className="py-2 px-2 font-semibold text-center">Period</th>
+              <th className="py-2 px-2 font-semibold text-right">Return</th>
+              <th className="py-2 px-2 font-semibold text-right">Sharpe</th>
+              <th className="py-2 px-2 font-semibold text-right">Max DD</th>
+              <th className="py-2 px-2 font-semibold text-right">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#17253D]/40 text-xs font-mono-num">
+          <tbody className="divide-y divide-[#E5E7EB] text-xs font-mono-num">
             {filteredBacktests.map((item) => (
               <tr
                 key={item.id}
                 onClick={() => handleRowClick(item)}
-                className="hover:bg-[#152136]/60 transition-colors cursor-pointer group"
+                className="hover:bg-[#F8FAF9] transition-colors cursor-pointer group"
               >
-                <td className="py-2.5 text-[#E2E8F0] font-sans font-medium group-hover:text-white flex items-center gap-1.5">
-                  <Play className="w-3 h-3 text-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity fill-current" />
+                <td className="py-2.5 px-2 text-[#17211B] font-sans font-medium group-hover:text-[#14532D] flex items-center gap-1.5">
+                  <Play className="w-3 h-3 text-[#14532D] opacity-0 group-hover:opacity-100 transition-opacity fill-current" />
                   {item.strategy}
                 </td>
-                <td className="py-2.5 font-bold text-white">{item.instrument}</td>
-                <td className="py-2.5 text-center text-[#94A3B8]">{item.period}</td>
-                <td className="py-2.5 text-right text-[#22C55E] font-bold">{item.totalReturn}</td>
-                <td className="py-2.5 text-right text-[#E2E8F0] font-medium">{item.sharpe}</td>
-                <td className="py-2.5 text-right text-[#EF4444] font-medium">{item.maxDD}</td>
-                <td className="py-2.5 text-right">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold text-[#22C55E] bg-[#14532D]/40 border border-[#22C55E]/30 rounded">
+                <td className="py-2.5 px-2 font-bold text-[#17211B]">{item.instrument}</td>
+                <td className="py-2.5 px-2 text-center text-[#64748B]">{item.period}</td>
+                <td className="py-2.5 px-2 text-right text-[#15803D] font-bold">{item.totalReturn}</td>
+                <td className="py-2.5 px-2 text-right text-[#17211B] font-medium">{item.sharpe}</td>
+                <td className="py-2.5 px-2 text-right text-[#DC2626] font-medium">{item.maxDD}</td>
+                <td className="py-2.5 px-2 text-right">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold text-[#166534] bg-[#DCFCE7] border border-[#BBF7D0] rounded">
                     <CheckCircle2 className="w-2.5 h-2.5" />
                     <span>Done</span>
                   </span>

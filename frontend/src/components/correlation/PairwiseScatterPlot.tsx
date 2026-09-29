@@ -10,9 +10,9 @@ export const PairwiseScatterPlot: React.FC<PairwiseScatterPlotProps> = ({ pairwi
 
   if (!scatter_points || scatter_points.length === 0) {
     return (
-      <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 p-6 text-center text-slate-500">
+      <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-border bg-card p-6 text-center text-text-muted shadow-card">
         <p className="text-sm font-medium">No scatter plot data available</p>
-        <p className="text-xs text-slate-600 mt-1">Select valid instruments with aligned return observations.</p>
+        <p className="text-xs text-text-muted mt-1">Select valid instruments with aligned return observations.</p>
       </div>
     );
   }
@@ -32,26 +32,26 @@ export const PairwiseScatterPlot: React.FC<PairwiseScatterPlotProps> = ({ pairwi
   const mapY = (valB: number) => height - pad - ((valB + boundB) / (2 * boundB)) * (height - 2 * pad);
 
   return (
-    <div className="flex flex-col space-y-3 rounded-lg border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+    <div className="flex flex-col space-y-3 rounded-lg border border-border bg-card p-5 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">
+          <h3 className="text-sm font-semibold text-text-primary">
             {symbol_a} vs {symbol_b} Return Scatter Plot
           </h3>
-          <p className="text-xs text-slate-400">Pairwise aligned observation distribution</p>
+          <p className="text-xs text-text-muted">Pairwise aligned observation distribution</p>
         </div>
         <div className="flex items-center space-x-3 font-mono text-xs">
-          <span className="text-slate-400">
-            Obs: <strong className="text-slate-200">{observations}</strong>
+          <span className="text-text-muted">
+            Obs: <strong className="text-text-primary">{observations}</strong>
           </span>
-          <span className="text-slate-400">
-            Pearson: <strong className="text-blue-400">{correlation !== null && correlation !== undefined ? correlation.toFixed(4) : 'N/A'}</strong>
+          <span className="text-text-muted">
+            Pearson: <strong className="text-brand-primary">{correlation !== null && correlation !== undefined ? correlation.toFixed(4) : 'N/A'}</strong>
           </span>
         </div>
       </div>
 
       {!min_observations_met && (
-        <div className="rounded border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-300">
+        <div className="rounded border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
           Insufficient data for statistical confidence ({observations} observations available, min 30 required).
         </div>
       )}
@@ -60,11 +60,11 @@ export const PairwiseScatterPlot: React.FC<PairwiseScatterPlotProps> = ({ pairwi
       <div className="flex justify-center">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full max-w-lg overflow-visible font-mono text-3xs select-none">
           {/* Background Grid */}
-          <rect x={pad} y={pad} width={width - 2 * pad} height={height - 2 * pad} fill="#0B1220" stroke="#1E293B" strokeWidth="1" />
+          <rect x={pad} y={pad} width={width - 2 * pad} height={height - 2 * pad} fill="#F8FAF9" stroke="#E2E8F0" strokeWidth="1" />
 
           {/* Zero Axis Lines */}
-          <line x1={mapX(0)} y1={pad} x2={mapX(0)} y2={height - pad} stroke="#334155" strokeWidth="1.5" strokeDasharray="3 3" />
-          <line x1={pad} y1={mapY(0)} x2={width - pad} y2={mapY(0)} stroke="#334155" strokeWidth="1.5" strokeDasharray="3 3" />
+          <line x1={mapX(0)} y1={pad} x2={mapX(0)} y2={height - pad} stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="3 3" />
+          <line x1={pad} y1={mapY(0)} x2={width - pad} y2={mapY(0)} stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="3 3" />
 
           {/* Scatter Points */}
           {scatter_points.map((pt, idx) => {
@@ -76,7 +76,7 @@ export const PairwiseScatterPlot: React.FC<PairwiseScatterPlotProps> = ({ pairwi
                 cx={cx}
                 cy={cy}
                 r="3"
-                className="fill-blue-500/80 stroke-blue-300/60 hover:fill-emerald-400 hover:r-5 transition-all duration-150"
+                className="fill-brand-primary/80 stroke-brand-primary/40 hover:fill-emerald-600 hover:r-5 transition-all duration-150"
               >
                 <title>
                   {`${new Date(pt.timestamp).toLocaleDateString()}\n${symbol_a}: ${(pt.return_a * 100).toFixed(2)}%\n${symbol_b}: ${(pt.return_b * 100).toFixed(2)}%`}
@@ -86,10 +86,10 @@ export const PairwiseScatterPlot: React.FC<PairwiseScatterPlotProps> = ({ pairwi
           })}
 
           {/* Axis Labels */}
-          <text x={width / 2} y={height - 10} fill="#94A3B8" textAnchor="middle" className="text-2xs font-semibold">
+          <text x={width / 2} y={height - 10} fill="#64748B" textAnchor="middle" className="text-2xs font-semibold">
             {symbol_a} Return (%)
           </text>
-          <text x={12} y={height / 2} fill="#94A3B8" textAnchor="middle" transform={`rotate(-90 12 ${height / 2})`} className="text-2xs font-semibold">
+          <text x={12} y={height / 2} fill="#64748B" textAnchor="middle" transform={`rotate(-90 12 ${height / 2})`} className="text-2xs font-semibold">
             {symbol_b} Return (%)
           </text>
         </svg>

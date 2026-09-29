@@ -13,7 +13,7 @@ export const TradeEventsTable: React.FC<TradeEventsTableProps> = ({ trades, isLo
 
   if (isLoading) {
     return (
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-8 text-center text-sm text-[#94A3B8]">
+      <div className="bg-card border border-border rounded-xl p-8 text-center text-sm text-text-secondary font-mono shadow-xs">
         Loading simulated trade events...
       </div>
     );
@@ -21,24 +21,24 @@ export const TradeEventsTable: React.FC<TradeEventsTableProps> = ({ trades, isLo
 
   if (!trades || trades.length === 0) {
     return (
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-8 text-center text-sm text-[#94A3B8]">
+      <div className="bg-card border border-border rounded-xl p-8 text-center text-sm text-text-secondary font-mono shadow-xs">
         No trade executions were generated for this historical simulation period.
       </div>
     );
   }
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg overflow-hidden">
-      <div className="p-4 border-b border-[#263244] flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-[#E5E7EB] uppercase tracking-wider font-mono">
+    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs">
+      <div className="p-4 border-b border-border flex items-center justify-between bg-surface">
+        <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wider font-mono">
           Simulated Trade Executions ({trades.length})
         </h4>
-        <span className="text-xs text-[#94A3B8]">NEXT_OPEN Execution Model</span>
+        <span className="text-xs text-text-secondary font-mono">NEXT_OPEN Execution Model</span>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-[#E5E7EB] font-mono">
-          <thead className="bg-[#111827] text-[#94A3B8] uppercase text-[10px] border-b border-[#263244]">
+        <table className="w-full text-left text-xs text-text-primary font-mono">
+          <thead className="bg-surface text-text-secondary uppercase text-[10px] border-b border-border">
             <tr>
               <th className="py-2.5 px-4 font-semibold">Signal Date</th>
               <th className="py-2.5 px-4 font-semibold">Execution Date</th>
@@ -52,21 +52,21 @@ export const TradeEventsTable: React.FC<TradeEventsTableProps> = ({ trades, isLo
               <th className="py-2.5 px-4 font-semibold">Reason</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#263244]">
+          <tbody className="divide-y divide-border">
             {trades.map((t) => {
               const badge = formatTradeSideBadge(t.side);
               return (
-                <tr key={t.id} className="hover:bg-[#111827]/50 transition-colors">
-                  <td className="py-2.5 px-4 text-[#94A3B8]">{t.signal_timestamp.split('T')[0]}</td>
-                  <td className="py-2.5 px-4 font-medium text-[#E5E7EB]">{t.execution_timestamp.split('T')[0]}</td>
+                <tr key={t.id} className="hover:bg-surface-hover transition-colors">
+                  <td className="py-2.5 px-4 text-text-secondary">{t.signal_timestamp.split('T')[0]}</td>
+                  <td className="py-2.5 px-4 font-semibold text-text-primary">{t.execution_timestamp.split('T')[0]}</td>
                   <td className="py-2.5 px-4">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         badge.variant === 'positive'
-                          ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/80'
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
                           : badge.variant === 'negative'
-                          ? 'bg-red-950/80 text-red-400 border border-red-800/80'
-                          : 'bg-[#111827] text-[#94A3B8] border border-[#263244]'
+                          ? 'bg-rose-50 text-rose-800 border border-rose-300'
+                          : 'bg-surface text-text-secondary border border-border'
                       }`}
                     >
                       {badge.label}
@@ -75,10 +75,10 @@ export const TradeEventsTable: React.FC<TradeEventsTableProps> = ({ trades, isLo
                   <td className="py-2.5 px-4 text-right font-medium">{formatCurrency(t.execution_price)}</td>
                   <td className="py-2.5 px-4 text-right">{t.quantity.toFixed(4)}</td>
                   <td className="py-2.5 px-4 text-right font-medium">{formatCurrency(t.notional_value)}</td>
-                  <td className="py-2.5 px-4 text-right text-[#94A3B8]">{formatCurrency(t.commission)}</td>
-                  <td className="py-2.5 px-4 text-right text-[#94A3B8]">{formatCurrency(t.slippage)}</td>
-                  <td className="py-2.5 px-4 text-right font-medium">{formatCurrency(t.cash_after)}</td>
-                  <td className="py-2.5 px-4 text-[#94A3B8] text-[11px]">{t.execution_reason}</td>
+                  <td className="py-2.5 px-4 text-right text-text-secondary">{formatCurrency(t.commission)}</td>
+                  <td className="py-2.5 px-4 text-right text-text-secondary">{formatCurrency(t.slippage)}</td>
+                  <td className="py-2.5 px-4 text-right font-semibold text-brand-primary">{formatCurrency(t.cash_after)}</td>
+                  <td className="py-2.5 px-4 text-text-secondary text-[11px]">{t.execution_reason}</td>
                 </tr>
               );
             })}

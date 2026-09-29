@@ -43,13 +43,13 @@ export const RecentBacktestsPanel: React.FC<RecentBacktestsPanelProps> = ({
       }
     >
       {isLoading ? (
-        <div className="py-8 text-center text-xs font-mono text-[#94A3B8] animate-pulse">
+        <div className="py-8 text-center text-xs font-mono text-text-muted animate-pulse">
           Loading backtest history...
         </div>
       ) : backtests.length === 0 ? (
-        <div className="py-8 text-center bg-[#111827] rounded border border-[#263244] p-6">
-          <PlayCircle className="h-8 w-8 text-[#94A3B8] mx-auto mb-2 opacity-60" />
-          <p className="text-xs text-[#94A3B8] mb-3">No backtests executed yet.</p>
+        <div className="py-8 text-center bg-forest-50/40 rounded-xl border border-forest-100 p-6 shadow-xs">
+          <PlayCircle className="h-8 w-8 text-forest-700/60 mx-auto mb-2" />
+          <p className="text-xs text-text-secondary mb-3">No backtests executed yet.</p>
           <NavLink to="/backtesting">
             <Button variant="primary" size="sm" icon={<PlayCircle className="w-3.5 h-3.5" />}>
               Run Historical Backtest
@@ -60,7 +60,7 @@ export const RecentBacktestsPanel: React.FC<RecentBacktestsPanelProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs font-mono">
             <thead>
-              <tr className="border-b border-[#263244] bg-[#0F172A] text-[#94A3B8] uppercase text-[10px]">
+              <tr className="border-b border-border bg-forest-50/50 text-text-secondary uppercase text-[10px]">
                 <th className="py-2.5 px-3">Ticker</th>
                 <th className="py-2.5 px-3">Strategy</th>
                 <th className="py-2.5 px-3">Period</th>
@@ -70,29 +70,29 @@ export const RecentBacktestsPanel: React.FC<RecentBacktestsPanelProps> = ({
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E293B] text-[#E5E7EB]">
+            <tbody className="divide-y divide-border text-text-primary">
               {backtests.map((bt) => (
-                <tr key={bt.id} className="hover:bg-[#1E293B]/50 transition-colors">
-                  <td className="py-2.5 px-3 font-bold text-[#3B82F6]">{bt.instrument_symbol}</td>
-                  <td className="py-2.5 px-3 text-[#94A3B8]">{bt.strategy_name}</td>
-                  <td className="py-2.5 px-3 text-[#94A3B8] text-[11px]">{bt.period}</td>
+                <tr key={bt.id} className="hover:bg-forest-50/40 transition-colors">
+                  <td className="py-2.5 px-3 font-bold text-forest-700">{bt.instrument_symbol}</td>
+                  <td className="py-2.5 px-3 text-text-secondary">{bt.strategy_name}</td>
+                  <td className="py-2.5 px-3 text-text-muted text-[11px]">{bt.period}</td>
                   <td className="py-2.5 px-3">{getStatusBadge(bt.status)}</td>
                   <td className="py-2.5 px-3 text-right font-semibold">
                     {bt.total_return_pct !== null && bt.total_return_pct !== undefined ? (
-                      <span className={bt.total_return_pct >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}>
+                      <span className={bt.total_return_pct >= 0 ? 'text-forest-600' : 'text-rose-600'}>
                         {bt.total_return_pct >= 0 ? '+' : ''}{bt.total_return_pct.toFixed(2)}%
                       </span>
                     ) : (
                       '—'
                     )}
                   </td>
-                  <td className="py-2.5 px-3 text-right text-[#94A3B8]">
+                  <td className="py-2.5 px-3 text-right text-text-secondary">
                     {bt.trade_count !== null && bt.trade_count !== undefined ? bt.trade_count : '—'}
                   </td>
                   <td className="py-2.5 px-3 text-right">
                     <NavLink
                       to={`/backtesting`}
-                      className="inline-flex items-center gap-1 text-[11px] text-[#3B82F6] hover:underline"
+                      className="inline-flex items-center gap-1 text-[11px] text-forest-700 hover:text-forest-900 font-semibold hover:underline"
                     >
                       <FileText className="w-3 h-3" /> View Run
                     </NavLink>

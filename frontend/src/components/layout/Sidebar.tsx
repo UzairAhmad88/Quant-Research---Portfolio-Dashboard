@@ -64,14 +64,14 @@ export const Sidebar: React.FC = () => {
   } = useAppStore();
 
   const sidebarContent = (
-    <div className="flex flex-col justify-between h-full bg-[#070D18] select-none">
+    <div className="flex flex-col justify-between h-full bg-white select-none">
       {/* Top Branding */}
-      <div className="flex items-center justify-between h-14 px-4 border-b border-[#152136]">
+      <div className="flex items-center justify-between h-14 px-4 border-b border-[#E5E7EB]">
         <MonogramLogo collapsed={isSidebarCollapsed} />
         {isMobileDrawerOpen && (
           <button
             onClick={() => setMobileDrawerOpen(false)}
-            className="md:hidden p-1 rounded text-[#94A3B8] hover:text-[#E5E7EB]"
+            className="md:hidden p-1 rounded text-[#64748B] hover:text-[#17211B] hover:bg-[#F0FDF4]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -93,10 +93,10 @@ export const Sidebar: React.FC = () => {
               end={item.path === '/'}
               onClick={() => setMobileDrawerOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
+                `flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-[#1D4ED8] text-white shadow-md'
-                    : 'text-[#94A3B8] hover:bg-[#111C30] hover:text-[#E2E8F0]'
+                    ? 'bg-[#14532D] text-white shadow-sm font-semibold'
+                    : 'text-[#334155] hover:bg-[#F0FDF4] hover:text-[#14532D]'
                 } ${isSidebarCollapsed ? 'justify-center px-0' : ''}`
               }
             >
@@ -125,10 +125,10 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Collapse Toggle Footer */}
-      <div className="p-2 border-t border-[#152136] hidden md:flex items-center justify-between">
+      <div className="p-2 border-t border-[#E5E7EB] hidden md:flex items-center justify-between">
         <button
           onClick={toggleSidebar}
-          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded text-xs text-[#64748B] hover:bg-[#111C30] hover:text-[#94A3B8] transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-xs text-[#64748B] hover:bg-[#F0FDF4] hover:text-[#14532D] transition-colors"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isSidebarCollapsed ? (
@@ -147,7 +147,7 @@ export const Sidebar: React.FC = () => {
   return (
     <>
       <aside
-        className={`hidden md:flex fixed top-0 left-0 bottom-0 z-[100] bg-[#070D18] border-r border-[#152136] transition-all duration-200 ease-in-out flex-col ${
+        className={`hidden md:flex fixed top-0 left-0 bottom-0 z-[100] bg-white border-r border-[#E5E7EB] transition-all duration-200 ease-in-out flex-col shadow-[1px_0_4px_rgba(0,0,0,0.02)] ${
           isSidebarCollapsed ? 'w-16' : 'w-56'
         }`}
       >
@@ -157,10 +157,10 @@ export const Sidebar: React.FC = () => {
       {isMobileDrawerOpen && (
         <div className="md:hidden fixed inset-0 z-[200] flex">
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs"
             onClick={() => setMobileDrawerOpen(false)}
           />
-          <aside className="relative w-56 bg-[#070D18] border-r border-[#152136] h-full shadow-2xl z-10">
+          <aside className="relative w-56 bg-white border-r border-[#E5E7EB] h-full shadow-2xl z-10">
             {sidebarContent}
           </aside>
         </div>

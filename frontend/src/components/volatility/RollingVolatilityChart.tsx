@@ -45,7 +45,7 @@ export const RollingVolatilityChart: React.FC<RollingVolatilityChartProps> = ({
 
   if (series.length === 0) {
     return (
-      <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-6 text-center text-slate-400">
+      <div className="bg-white border border-[#E5E7EB] rounded-lg p-6 text-center text-[#64748B]">
         No rolling volatility data available.
       </div>
     );
@@ -54,20 +54,20 @@ export const RollingVolatilityChart: React.FC<RollingVolatilityChartProps> = ({
   const hoverPoint = hoveredIndex !== null ? series[hoveredIndex] : null;
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5">
+    <div className="bg-white border border-[#E5E7EB] rounded-lg p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">
+          <h3 className="text-sm font-bold text-[#17211B]">
             Rolling Volatility Time Series ({symbol})
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#64748B]">
             {windowSize}-observation rolling standard deviation ({isAnnualized ? 'Annualized' : 'Daily'})
           </p>
         </div>
         {hoverPoint && (
-          <div className="bg-[#0B1220]/90 border border-[#263244] px-3 py-1.5 rounded text-right shadow-lg font-mono text-xs">
-            <span className="text-slate-400 mr-2">{formatDate(hoverPoint.timestamp)}:</span>
-            <span className="text-blue-400 font-semibold">{formatPct(hoverPoint.rolling_volatility)}</span>
+          <div className="bg-[#17211B] text-white border border-[#334155] px-3 py-1.5 rounded text-right shadow-md font-mono text-xs">
+            <span className="text-[#94A3B8] mr-2">{formatDate(hoverPoint.timestamp)}:</span>
+            <span className="text-[#FDE68A] font-bold">{formatPct(hoverPoint.rolling_volatility)}</span>
           </div>
         )}
       </div>
@@ -89,7 +89,7 @@ export const RollingVolatilityChart: React.FC<RollingVolatilityChartProps> = ({
                   y1={yPos}
                   x2={800 - padding.right}
                   y2={yPos}
-                  stroke="#1E293B"
+                  stroke="#E5E7EB"
                   strokeDasharray={ratio === 0 ? undefined : '3 3'}
                 />
                 <text
@@ -126,7 +126,7 @@ export const RollingVolatilityChart: React.FC<RollingVolatilityChartProps> = ({
                 return acc === '' ? `M ${x} ${y}` : `${acc} L ${x} ${y}`;
               }, '')}
               fill="none"
-              stroke="#3B82F6"
+              stroke="#D97706"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -175,10 +175,10 @@ export const RollingVolatilityChart: React.FC<RollingVolatilityChartProps> = ({
                       y1={padding.top}
                       x2={x}
                       y2={chartHeight - padding.bottom}
-                      stroke="#475569"
+                      stroke="#94A3B8"
                       strokeDasharray="2 2"
                     />
-                    <circle cx={x} cy={y} r="4" fill="#3B82F6" stroke="#0B1220" strokeWidth="2" />
+                    <circle cx={x} cy={y} r="4" fill="#D97706" stroke="#FFFFFF" strokeWidth="2" />
                   </>
                 );
               })()}
@@ -214,7 +214,7 @@ export const RollingVolatilityChart: React.FC<RollingVolatilityChartProps> = ({
         </svg>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-500 mt-2 font-mono">
+      <div className="flex items-center justify-between text-xs text-[#64748B] mt-2 font-mono">
         <span>* First {windowSize - 1} observations return N/A (initial window offset)</span>
         <span>Window: {windowSize} observations</span>
       </div>

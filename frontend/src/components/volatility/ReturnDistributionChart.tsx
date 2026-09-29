@@ -20,59 +20,59 @@ export const ReturnDistributionChart: React.FC<ReturnDistributionChartProps> = (
   const hoveredBin = hoveredBinIndex !== null ? histogram[hoveredBinIndex] : null;
 
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5">
+    <div className="bg-white border border-[#E5E7EB] rounded-lg p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">
+          <h3 className="text-sm font-bold text-[#17211B]">
             Return Distribution Histogram ({symbol})
           </h3>
-          <p className="text-xs text-slate-400">Frequency distribution of observed return series</p>
+          <p className="text-xs text-[#64748B]">Frequency distribution of observed return series</p>
         </div>
         {hoveredBin && (
-          <div className="bg-[#0B1220]/90 border border-[#263244] px-3 py-1.5 rounded text-right shadow-lg font-mono text-xs">
-            <span className="text-slate-400 mr-2">
+          <div className="bg-[#17211B] text-white border border-[#334155] px-3 py-1.5 rounded text-right shadow-md font-mono text-xs">
+            <span className="text-[#94A3B8] mr-2">
               [{formatPct(hoveredBin.bin_start)} to {formatPct(hoveredBin.bin_end)}]:
             </span>
-            <span className="text-blue-400 font-semibold">{hoveredBin.count} obs ({hoveredBin.frequency_pct.toFixed(1)}%)</span>
+            <span className="text-[#86EFAC] font-bold">{hoveredBin.count} obs ({hoveredBin.frequency_pct.toFixed(1)}%)</span>
           </div>
         )}
       </div>
 
       {/* Summary statistics grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4 bg-[#0B1220] p-3 rounded border border-[#263244] font-mono text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4 bg-[#F8FAF9] p-3 rounded border border-[#E5E7EB] font-mono text-xs">
         <div>
-          <div className="text-slate-500 text-[10px]">MEAN</div>
-          <div className="text-slate-200">{formatPct(summary.mean)}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">MEAN</div>
+          <div className="text-[#17211B] font-bold">{formatPct(summary.mean)}</div>
         </div>
         <div>
-          <div className="text-slate-500 text-[10px]">MEDIAN</div>
-          <div className="text-slate-200">{formatPct(summary.median)}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">MEDIAN</div>
+          <div className="text-[#17211B] font-bold">{formatPct(summary.median)}</div>
         </div>
         <div>
-          <div className="text-slate-500 text-[10px]">MIN</div>
-          <div className="text-amber-400">{formatPct(summary.min)}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">MIN</div>
+          <div className="text-[#DC2626] font-bold">{formatPct(summary.min)}</div>
         </div>
         <div>
-          <div className="text-slate-500 text-[10px]">MAX</div>
-          <div className="text-emerald-400">{formatPct(summary.max)}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">MAX</div>
+          <div className="text-[#15803D] font-bold">{formatPct(summary.max)}</div>
         </div>
         <div>
-          <div className="text-slate-500 text-[10px]">STD DEV</div>
-          <div className="text-slate-200">{formatPct(summary.std_dev)}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">STD DEV</div>
+          <div className="text-[#17211B] font-bold">{formatPct(summary.std_dev)}</div>
         </div>
         <div>
-          <div className="text-slate-500 text-[10px]">POSITIVE</div>
-          <div className="text-emerald-400">{summary.positive_observations}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">POSITIVE</div>
+          <div className="text-[#15803D] font-bold">{summary.positive_observations}</div>
         </div>
         <div>
-          <div className="text-slate-500 text-[10px]">NEGATIVE</div>
-          <div className="text-amber-400">{summary.negative_observations}</div>
+          <div className="text-[#64748B] text-[10px] font-semibold">NEGATIVE</div>
+          <div className="text-[#DC2626] font-bold">{summary.negative_observations}</div>
         </div>
       </div>
 
       {/* Histogram SVG */}
       {histogram.length === 0 ? (
-        <div className="text-center text-slate-500 py-8">No histogram data available.</div>
+        <div className="text-center text-[#64748B] py-8">No histogram data available.</div>
       ) : (
         <div className="relative w-full overflow-hidden">
           <svg
@@ -91,7 +91,7 @@ export const ReturnDistributionChart: React.FC<ReturnDistributionChartProps> = (
                     y1={yPos}
                     x2={800 - padding.right}
                     y2={yPos}
-                    stroke="#1E293B"
+                    stroke="#E5E7EB"
                     strokeDasharray="3 3"
                   />
                   <text
@@ -122,14 +122,14 @@ export const ReturnDistributionChart: React.FC<ReturnDistributionChartProps> = (
                       y1={padding.top}
                       x2={zeroX}
                       y2={chartHeight - padding.bottom}
-                      stroke="#94A3B8"
+                      stroke="#CBD5E1"
                       strokeWidth="1.5"
                       strokeDasharray="4 4"
                     />
                     <text
                       x={zeroX}
                       y={padding.top - 5}
-                      fill="#94A3B8"
+                      fill="#64748B"
                       fontSize="9"
                       fontFamily="monospace"
                       textAnchor="middle"
@@ -154,8 +154,8 @@ export const ReturnDistributionChart: React.FC<ReturnDistributionChartProps> = (
 
               // Color based on positive/negative region
               const isPositive = bin.bin_center >= 0;
-              const barColor = isPositive ? '#3B82F6' : '#64748B';
-              const hoverColor = isPositive ? '#60A5FA' : '#94A3B8';
+              const barColor = isPositive ? '#15803D' : '#DC2626';
+              const hoverColor = isPositive ? '#16A34A' : '#EF4444';
 
               return (
                 <rect

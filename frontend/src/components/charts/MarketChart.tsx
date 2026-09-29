@@ -64,37 +64,37 @@ export const MarketChart: React.FC<MarketChartProps> = ({
       const chart = createChart(containerRef.current, {
         height: height,
         layout: {
-          background: { color: '#0B0F17' },
-          textColor: '#94A3B8',
+          background: { color: '#FFFFFF' },
+          textColor: '#64748B',
           fontSize: 11,
           fontFamily: 'monospace',
         },
         grid: {
-          vertLines: { color: showGrid ? '#1E293B' : 'transparent' },
-          horzLines: { color: showGrid ? '#1E293B' : 'transparent' },
+          vertLines: { color: showGrid ? '#E5E7EB' : 'transparent' },
+          horzLines: { color: showGrid ? '#E5E7EB' : 'transparent' },
         },
         crosshair: {
           mode: showCrosshair ? CrosshairMode.Normal : CrosshairMode.Hidden,
           vertLine: {
-            color: '#60A5FA',
+            color: '#166534',
             width: 1,
             style: 2, // Dashed
           },
           horzLine: {
-            color: '#60A5FA',
+            color: '#166534',
             width: 1,
             style: 2,
           },
         },
         rightPriceScale: {
-          borderColor: '#263244',
+          borderColor: '#E5E7EB',
           scaleMargins: {
             top: 0.1,
             bottom: showVolume ? 0.25 : 0.1,
           },
         },
         timeScale: {
-          borderColor: '#263244',
+          borderColor: '#E5E7EB',
           timeVisible: true,
           secondsVisible: false,
         },
@@ -107,18 +107,18 @@ export const MarketChart: React.FC<MarketChartProps> = ({
       // 2. Add Price Series using Lightweight Charts v5 addSeries API
       if (chartType === 'candlestick') {
         const candleSeries = chart.addSeries(CandlestickSeries, {
-          upColor: '#22C55E',
-          downColor: '#EF4444',
-          borderUpColor: '#22C55E',
-          borderDownColor: '#EF4444',
-          wickUpColor: '#22C55E',
-          wickDownColor: '#EF4444',
+          upColor: '#16A34A',
+          downColor: '#DC2626',
+          borderUpColor: '#16A34A',
+          borderDownColor: '#DC2626',
+          wickUpColor: '#16A34A',
+          wickDownColor: '#DC2626',
         });
         candleSeries.setData(normalized.candlestickData as CandlestickData[]);
         candleSeriesRef.current = candleSeries;
       } else {
         const lineSeries = chart.addSeries(LineSeries, {
-          color: '#3B82F6',
+          color: '#14532D',
           lineWidth: 2,
         });
         lineSeries.setData(normalized.lineData as LineData[]);
@@ -227,9 +227,9 @@ export const MarketChart: React.FC<MarketChartProps> = ({
   }
 
   return (
-    <div className="relative w-full flex flex-col rounded border border-[#263244] bg-[#0B0F17] overflow-hidden select-none">
+    <div className="relative w-full flex flex-col rounded-md border border-[#E5E7EB] bg-white overflow-hidden select-none shadow-2xs">
       {/* Legend Header Overlay */}
-      <div className="p-2 border-b border-[#1E293B] bg-[#0B0F17]">
+      <div className="p-2 border-b border-[#E5E7EB] bg-white">
         <ChartLegend symbol={symbol} data={hoveredData} priceMode={priceMode} />
       </div>
 

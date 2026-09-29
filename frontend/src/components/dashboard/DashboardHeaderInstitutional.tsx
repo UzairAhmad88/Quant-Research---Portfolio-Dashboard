@@ -55,14 +55,14 @@ export const DashboardHeaderInstitutional: React.FC<DashboardHeaderInstitutional
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-1">
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Research Dashboard</h1>
-          <span className="px-2 py-0.5 text-[10px] font-bold text-[#60A5FA] bg-[#1E3A8A]/40 border border-[#3B82F6]/30 rounded-full flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-[#3B82F6]" />
+          <h1 className="text-2xl font-bold text-[#17211B] tracking-tight">Research Dashboard</h1>
+          <span className="px-2.5 py-0.5 text-[10px] font-bold text-[#166534] bg-[#DCFCE7] border border-[#86EFAC] rounded-full flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-[#14532D]" />
             LIVE MARKET FEED
           </span>
         </div>
 
-        <p className="text-xs text-[#94A3B8] mt-1">
+        <p className="text-xs text-[#64748B] mt-1">
           Institutional-grade quantitative research, live factor calculations, and multi-asset backtesting engine.
         </p>
       </div>
@@ -70,20 +70,20 @@ export const DashboardHeaderInstitutional: React.FC<DashboardHeaderInstitutional
       <div className="flex flex-wrap items-center gap-3">
         {/* Live Clock HUD */}
         <div className="text-right font-mono-num hidden sm:block">
-          <div className="text-[11px] text-[#94A3B8]">{dateString || 'Monday, October 13, 2026'}</div>
-          <div className="text-xs font-semibold text-[#E2E8F0] tracking-wide">{timeString || '14:32:18 (UTC)'}</div>
+          <div className="text-[11px] text-[#64748B]">{dateString || 'Monday, October 13, 2026'}</div>
+          <div className="text-xs font-semibold text-[#17211B] tracking-wide">{timeString || '14:32:18 (UTC)'}</div>
         </div>
 
         {/* Timeframe Range Selector */}
-        <div className="flex items-center bg-[#0D1525] border border-[#17253D] rounded-lg p-0.5 shadow-inner">
+        <div className="flex items-center bg-[#F8FAF9] border border-[#CBD5E1] rounded-lg p-0.5 shadow-2xs">
           {ranges.map((range) => (
             <button
               key={range}
               onClick={() => handleRangeClick(range)}
-              className={`px-2.5 py-1 text-xs font-semibold rounded transition-all ${
+              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
                 activeRange === range
-                  ? 'bg-[#1D4ED8] text-white shadow-sm'
-                  : 'text-[#94A3B8] hover:text-white hover:bg-[#152136]'
+                  ? 'bg-[#14532D] text-white shadow-2xs'
+                  : 'text-[#64748B] hover:text-[#17211B] hover:bg-[#F0FDF4]'
               }`}
             >
               {range}
@@ -98,23 +98,23 @@ export const DashboardHeaderInstitutional: React.FC<DashboardHeaderInstitutional
               onClick={onRefresh}
               disabled={isFetching}
               title="Refresh Market Data & Analytics"
-              className="p-2 bg-[#0D1525] hover:bg-[#152136] border border-[#17253D] hover:border-[#3B82F6] text-[#94A3B8] hover:text-white rounded-lg transition-all"
+              className="p-2 bg-white hover:bg-[#F0FDF4] border border-[#CBD5E1] hover:border-[#14532D] text-[#64748B] hover:text-[#14532D] rounded-lg transition-all shadow-2xs"
             >
-              <RefreshCw className={`w-4 h-4 text-[#3B82F6] ${isFetching ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 text-[#14532D] ${isFetching ? 'animate-spin' : ''}`} />
             </button>
           )}
 
           <button
             onClick={() => navigate('/market-data')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0D1525] hover:bg-[#152136] border border-[#17253D] hover:border-[#3B82F6] text-xs font-medium text-white rounded-lg transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#F0FDF4] border border-[#CBD5E1] hover:border-[#14532D] text-xs font-medium text-[#17211B] rounded-lg transition-all shadow-2xs"
           >
-            <DownloadCloud className="w-3.5 h-3.5 text-[#3B82F6]" />
+            <DownloadCloud className="w-3.5 h-3.5 text-[#14532D]" />
             <span className="hidden sm:inline">Ingest Data</span>
           </button>
 
           <button
             onClick={() => navigate('/backtesting')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1D4ED8] hover:bg-[#2563EB] text-xs font-semibold text-white rounded-lg transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#14532D] hover:bg-[#166534] text-xs font-semibold text-white rounded-lg transition-all shadow-xs"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
             <span>New Backtest</span>

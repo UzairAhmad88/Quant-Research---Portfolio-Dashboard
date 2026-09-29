@@ -25,25 +25,25 @@ export const RollingCorrelationChart: React.FC<RollingCorrelationChartProps> = (
       const chart = createChart(containerRef.current, {
         height: height,
         layout: {
-          background: { color: '#0B1220' },
-          textColor: '#94A3B8',
+          background: { color: '#FFFFFF' },
+          textColor: '#64748B',
           fontSize: 11,
           fontFamily: 'monospace',
         },
         grid: {
-          vertLines: { color: '#1E293B' },
-          horzLines: { color: '#1E293B' },
+          vertLines: { color: '#F1F5F9' },
+          horzLines: { color: '#F1F5F9' },
         },
         crosshair: {
-          vertLine: { color: '#3B82F6', width: 1, style: 2 },
-          horzLine: { color: '#3B82F6', width: 1, style: 2 },
+          vertLine: { color: '#14532D', width: 1, style: 2 },
+          horzLine: { color: '#14532D', width: 1, style: 2 },
         },
         rightPriceScale: {
-          borderColor: '#263244',
+          borderColor: '#E2E8F0',
           scaleMargins: { top: 0.1, bottom: 0.1 },
         },
         timeScale: {
-          borderColor: '#263244',
+          borderColor: '#E2E8F0',
           timeVisible: true,
           secondsVisible: false,
         },
@@ -68,7 +68,7 @@ export const RollingCorrelationChart: React.FC<RollingCorrelationChartProps> = (
 
       if (uniqueLineData.length > 0) {
         const lineSeries = chart.addSeries(LineSeries, {
-          color: '#3B82F6',
+          color: '#14532D',
           lineWidth: 2,
         });
         lineSeries.setData(uniqueLineData);
@@ -99,29 +99,29 @@ export const RollingCorrelationChart: React.FC<RollingCorrelationChartProps> = (
 
   if (!series || series.length === 0) {
     return (
-      <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 p-6 text-center text-slate-500">
+      <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-border bg-card p-6 text-center text-text-muted shadow-card">
         <p className="text-sm font-medium">No rolling correlation data available</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col space-y-3 rounded-lg border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+    <div className="flex flex-col space-y-3 rounded-lg border border-border bg-card p-5 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">
+          <h3 className="text-sm font-semibold text-text-primary">
             Rolling Correlation ({window} Observations Window)
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Time-varying Pearson correlation coefficient between {symbol_a} and {symbol_b}
           </p>
         </div>
-        <span className="font-mono text-xs font-semibold text-blue-400">
+        <span className="font-mono text-xs font-semibold text-brand-primary">
           Window: {window} Obs
         </span>
       </div>
 
-      <div ref={containerRef} className="w-full relative overflow-hidden rounded border border-slate-800/80" style={{ height }} />
+      <div ref={containerRef} className="w-full relative overflow-hidden rounded border border-border" style={{ height }} />
     </div>
   );
 };

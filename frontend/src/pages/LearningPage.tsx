@@ -108,10 +108,10 @@ export const LearningPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-1">
         <div>
           <div className="flex items-center gap-2.5">
-            <BookOpen className="w-5 h-5 text-[#38BDF8]" />
-            <h1 className="text-2xl font-bold text-white tracking-tight">Quant Glossary & Formula Inspector</h1>
+            <BookOpen className="w-5 h-5 text-[#14532D]" />
+            <h1 className="text-2xl font-bold text-[#17211B] tracking-tight">Quant Glossary & Formula Inspector</h1>
           </div>
-          <p className="text-xs text-[#94A3B8] mt-1">
+          <p className="text-xs text-[#64748B] mt-1">
             Institutional mathematical formulations, variable breakdowns, interpretation guidelines, and risk limitations.
           </p>
         </div>
@@ -120,7 +120,7 @@ export const LearningPage: React.FC = () => {
       {/* Search & Selection Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Sidebar: Term List (4 cols) */}
-        <div className="lg:col-span-4 bg-[#0D1525] border border-[#17253D] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-white border border-[#E5E7EB] rounded-lg p-3.5 shadow-sm flex flex-col justify-between">
           <div className="relative mb-3">
             <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
@@ -128,7 +128,7 @@ export const LearningPage: React.FC = () => {
               placeholder="Search quant terms..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-8 pr-2.5 py-1.5 bg-[#070D18] border border-[#17253D] focus:border-[#3B82F6] rounded text-xs text-white placeholder-[#64748B] outline-none"
+              className="w-full pl-8 pr-2.5 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/20 rounded text-xs text-[#17211B] placeholder-[#64748B] outline-none"
             />
           </div>
 
@@ -139,57 +139,57 @@ export const LearningPage: React.FC = () => {
                 onClick={() => setSelectedTermKey(item.key)}
                 className={`w-full text-left p-2.5 rounded-md transition-all ${
                   selectedTermKey === item.key
-                    ? 'bg-[#1D4ED8] text-white font-semibold'
-                    : 'bg-[#070D18] hover:bg-[#152136] text-[#94A3B8]'
+                    ? 'bg-[#14532D] text-white font-semibold shadow-sm'
+                    : 'bg-[#F8FAF9] hover:bg-[#F0FDF4] text-[#17211B] border border-[#E5E7EB]'
                 }`}
               >
                 <div className="text-xs font-semibold">{item.term}</div>
-                <div className="text-[10px] opacity-75">{item.category}</div>
+                <div className={`text-[10px] ${selectedTermKey === item.key ? 'text-[#DCFCE7]' : 'text-[#64748B]'}`}>{item.category}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Right Detail Pane: Formula Inspector (8 cols) */}
-        <div className="lg:col-span-8 bg-[#0D1525] border border-[#17253D] rounded-lg p-6 shadow-md space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#17253D]">
+        <div className="lg:col-span-8 bg-white border border-[#E5E7EB] rounded-lg p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
             <div>
-              <span className="text-[10px] font-bold text-[#60A5FA] uppercase tracking-wider">{selected.category}</span>
-              <h2 className="text-xl font-bold text-white tracking-tight mt-0.5">{selected.term}</h2>
+              <span className="text-[10px] font-bold text-[#14532D] uppercase tracking-wider">{selected.category}</span>
+              <h2 className="text-xl font-bold text-[#17211B] tracking-tight mt-0.5">{selected.term}</h2>
             </div>
           </div>
 
           {/* Definition */}
-          <div className="p-3.5 bg-[#070D18] border border-[#17253D] rounded-lg text-xs text-[#E2E8F0] leading-relaxed">
+          <div className="p-3.5 bg-[#F8FAF9] border border-[#E5E7EB] rounded-lg text-xs text-[#17211B] leading-relaxed">
             {selected.definition}
           </div>
 
           {/* Formula Display */}
-          <div className="p-4 bg-[#0A101D] border border-[#1E3A8A]/60 rounded-lg">
-            <div className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">Mathematical Formulation</div>
-            <pre className="font-mono-num text-sm text-[#86EFAC] font-bold bg-[#070D18] p-3 rounded border border-[#17253D] overflow-x-auto">
+          <div className="p-4 bg-[#F0FDF4] border border-[#86EFAC] rounded-lg">
+            <div className="text-[10px] font-bold text-[#166534] uppercase tracking-wider mb-2">Mathematical Formulation</div>
+            <pre className="font-mono-num text-sm text-[#14532D] font-bold bg-white p-3 rounded border border-[#E5E7EB] overflow-x-auto">
               {selected.formula}
             </pre>
           </div>
 
           {/* Variables Table */}
           <div>
-            <h4 className="text-xs font-bold text-white mb-2">Variable Definitions</h4>
+            <h4 className="text-xs font-bold text-[#17211B] mb-2">Variable Definitions</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs font-mono-num">
                 <thead>
-                  <tr className="text-[10px] text-[#64748B] border-b border-[#17253D]">
-                    <th className="pb-1">Variable</th>
-                    <th className="pb-1">Description</th>
-                    <th className="pb-1">Unit</th>
+                  <tr className="text-[10px] text-[#64748B] bg-[#F0FDF4] border-b border-[#E5E7EB]">
+                    <th className="py-1 px-2 font-semibold">Variable</th>
+                    <th className="py-1 px-2 font-semibold">Description</th>
+                    <th className="py-1 px-2 font-semibold">Unit</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#17253D]/40">
+                <tbody className="divide-y divide-[#E5E7EB]">
                   {selected.variables.map((v, i) => (
-                    <tr key={i}>
-                      <td className="py-2 text-[#38BDF8] font-bold">{v.symbol}</td>
-                      <td className="py-2 text-[#E2E8F0] font-sans">{v.name}</td>
-                      <td className="py-2 text-[#94A3B8]">{v.unit}</td>
+                    <tr key={i} className="hover:bg-[#F8FAF9]">
+                      <td className="py-2 px-2 text-[#14532D] font-bold">{v.symbol}</td>
+                      <td className="py-2 px-2 text-[#17211B] font-sans">{v.name}</td>
+                      <td className="py-2 px-2 text-[#64748B]">{v.unit}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -199,24 +199,24 @@ export const LearningPage: React.FC = () => {
 
           {/* Practical Example & Interpretation */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-3.5 bg-[#070D18] border border-[#17253D] rounded-lg space-y-1">
-              <div className="font-bold text-[#60A5FA]">Numerical Example</div>
-              <div className="text-[#94A3B8] text-[11px] leading-relaxed">{selected.example}</div>
+            <div className="p-3.5 bg-[#F8FAF9] border border-[#E5E7EB] rounded-lg space-y-1">
+              <div className="font-bold text-[#14532D]">Numerical Example</div>
+              <div className="text-[#64748B] text-[11px] leading-relaxed">{selected.example}</div>
             </div>
 
-            <div className="p-3.5 bg-[#070D18] border border-[#17253D] rounded-lg space-y-1">
-              <div className="font-bold text-[#22C55E]">Institutional Interpretation</div>
-              <div className="text-[#94A3B8] text-[11px] leading-relaxed">{selected.interpretation}</div>
+            <div className="p-3.5 bg-[#F8FAF9] border border-[#E5E7EB] rounded-lg space-y-1">
+              <div className="font-bold text-[#15803D]">Institutional Interpretation</div>
+              <div className="text-[#64748B] text-[11px] leading-relaxed">{selected.interpretation}</div>
             </div>
           </div>
 
           {/* Limitations & Risks */}
-          <div className="p-3.5 bg-[#7F1D1D]/15 border border-[#EF4444]/30 rounded-lg text-xs space-y-1">
-            <div className="font-bold text-[#FCA5A5] flex items-center gap-1.5">
+          <div className="p-3.5 bg-[#FEE2E2]/50 border border-[#FECACA] rounded-lg text-xs space-y-1">
+            <div className="font-bold text-[#DC2626] flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5" />
               <span>Assumptions & Risk Limitations</span>
             </div>
-            <div className="text-[#FCA5A5]/80 text-[11px] leading-relaxed">
+            <div className="text-[#991B1B] text-[11px] leading-relaxed">
               {selected.limitations}
             </div>
           </div>

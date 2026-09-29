@@ -28,19 +28,19 @@ export const ReportNavigation: React.FC<ReportNavigationProps> = ({
   onSelectSection,
 }) => {
   return (
-    <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-3 font-mono sticky top-4 z-20 mb-6">
+    <div className="bg-card border border-border rounded-xl p-3 font-mono sticky top-4 z-20 mb-6 shadow-xs">
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-        <span className="text-[10px] text-[#64748B] uppercase font-bold shrink-0 flex items-center gap-1 pr-2 border-r border-[#263244]">
-          <ListFilter className="h-3 w-3" /> Sections
+        <span className="text-[10px] text-text-secondary uppercase font-bold shrink-0 flex items-center gap-1 pr-2 border-r border-border">
+          <ListFilter className="h-3 w-3 text-forest-700" /> Sections
         </span>
         {REPORT_SECTIONS.map((sec) => (
           <button
             key={sec.id}
             onClick={() => onSelectSection(sec.id)}
-            className={`px-2.5 py-1 rounded text-[11px] whitespace-nowrap transition-colors ${
+            className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors ${
               activeSection === sec.id
-                ? 'bg-[#3B82F6] text-white font-semibold'
-                : 'text-[#94A3B8] hover:text-[#E5E7EB] hover:bg-[#111827]'
+                ? 'bg-forest-700 text-white font-semibold shadow-xs'
+                : 'text-text-secondary hover:text-text-primary hover:bg-forest-50'
             }`}
           >
             {sec.label}

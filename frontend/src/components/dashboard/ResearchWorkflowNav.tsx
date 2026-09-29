@@ -30,15 +30,15 @@ export const ResearchWorkflowNav: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 pt-1">
         {stages.map((stage) => (
           <NavLink key={stage.step} to={stage.route} className="group">
-            <div className="flex flex-col h-full p-2.5 rounded bg-[#111827] border border-[#263244] group-hover:border-[#3B82F6] transition-all relative">
-              <div className="flex items-center justify-between text-[10px] font-mono text-[#94A3B8] mb-1.5">
-                <span>0{stage.step}</span>
-                <span className="text-[#3B82F6] group-hover:translate-x-0.5 transition-transform">
+            <div className="flex flex-col h-full p-2.5 rounded-xl bg-forest-50/50 border border-forest-100 group-hover:border-forest-400 group-hover:bg-forest-50 transition-all relative shadow-xs">
+              <div className="flex items-center justify-between text-[10px] font-mono text-text-muted mb-1.5">
+                <span className="font-semibold text-forest-700">0{stage.step}</span>
+                <span className="text-forest-600 group-hover:translate-x-0.5 transition-transform">
                   <ChevronRight className="w-3 h-3" />
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#E5E7EB] group-hover:text-[#3B82F6] transition-colors mt-auto">
-                <span className="text-[#3B82F6] shrink-0">{stage.icon}</span>
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-text-primary group-hover:text-forest-800 transition-colors mt-auto">
+                <span className="text-forest-700 shrink-0">{stage.icon}</span>
                 <span className="leading-tight">{stage.label}</span>
               </div>
             </div>

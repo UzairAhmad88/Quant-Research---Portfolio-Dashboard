@@ -311,39 +311,38 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
   ];
 
   return (
-    <div className="bg-[#0D1525] border border-[#17253D] rounded-lg p-4 shadow-md flex flex-col justify-between">
+    <div className="bg-white border border-[#E5E7EB] rounded-[10px] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
       {/* Header controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#17253D]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-3">
           {/* Symbol Dropdown Selector */}
           <div className="relative">
             <button
               onClick={() => setIsSymbolOpen(!isSymbolOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#070D18] border border-[#1D4ED8]/60 hover:border-[#3B82F6] rounded-md text-white font-bold transition-all shadow-sm group"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#F8FAF9] border border-[#CBD5E1] hover:border-[#14532D] rounded-md text-[#17211B] font-bold transition-all shadow-2xs group"
             >
-              <span className="text-sm tracking-tight text-white group-hover:text-[#60A5FA]">{currentSymbol} — Price Chart</span>
-              <span className="text-[11px] font-normal text-[#94A3B8] hidden md:inline">({currentData.name})</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#3B82F6]" />
+              <span className="text-sm tracking-tight text-[#17211B] group-hover:text-[#14532D]">{currentSymbol} — Price Chart</span>
+              <span className="text-[11px] font-normal text-[#64748B] hidden md:inline">({currentData.name})</span>
+              <ChevronDown className="w-3.5 h-3.5 text-[#14532D]" />
             </button>
 
-
             {isSymbolOpen && (
-              <div className="absolute left-0 mt-1 py-1.5 w-52 bg-[#0A101D] border border-[#1E3A8A] rounded-lg shadow-2xl z-30 divide-y divide-[#17253D]/50">
+              <div className="absolute left-0 mt-1 py-1.5 w-56 bg-white border border-[#E5E7EB] rounded-lg shadow-xl z-30 divide-y divide-[#E5E7EB]">
                 {Object.keys(INSTRUMENTS_DATASET).map((sym) => {
                   const inst = INSTRUMENTS_DATASET[sym];
                   return (
                     <button
                       key={sym}
                       onClick={() => handleSymbolChange(sym)}
-                      className={`w-full text-left px-3 py-2 flex items-center justify-between text-xs hover:bg-[#152136] transition-colors ${
-                        currentSymbol === sym ? 'bg-[#1D4ED8]/20 text-white font-bold' : 'text-[#94A3B8]'
+                      className={`w-full text-left px-3 py-2 flex items-center justify-between text-xs hover:bg-[#F0FDF4] transition-colors ${
+                        currentSymbol === sym ? 'bg-[#DCFCE7] text-[#14532D] font-bold' : 'text-[#334155]'
                       }`}
                     >
                       <div>
-                        <div className="font-semibold text-white">{sym}</div>
+                        <div className="font-semibold text-[#17211B]">{sym}</div>
                         <div className="text-[10px] text-[#64748B]">{inst.name}</div>
                       </div>
-                      <div className="text-right font-mono-num text-xs font-semibold text-[#E2E8F0]">
+                      <div className="text-right font-mono-num text-xs font-semibold text-[#17211B]">
                         ${inst.currentPrice.toFixed(2)}
                       </div>
                     </button>
@@ -354,13 +353,13 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-[10px] font-semibold text-[#60A5FA] bg-[#1E3A8A]/30 border border-[#3B82F6]/30 rounded">
+            <span className="px-2 py-0.5 text-[10px] font-semibold text-[#166534] bg-[#DCFCE7] border border-[#86EFAC] rounded">
               {currentData.exchange}
             </span>
-            <span className="text-xs font-mono-num font-bold text-white">${currentData.currentPrice.toFixed(2)}</span>
+            <span className="text-xs font-mono-num font-bold text-[#17211B]">${currentData.currentPrice.toFixed(2)}</span>
             <span
               className={`text-xs font-mono-num flex items-center font-semibold ${
-                currentData.changeDayPct >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'
+                currentData.changeDayPct >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'
               }`}
             >
               {currentData.changeDayPct >= 0 ? '+' : ''}
@@ -373,15 +372,15 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
         {/* Chart View Toggles & Actions */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Timeframe selector */}
-          <div className="flex items-center bg-[#070D18] border border-[#17253D] rounded-md p-0.5">
+          <div className="flex items-center bg-[#F8FAF9] border border-[#CBD5E1] rounded-md p-0.5">
             {['1M', '3M', '6M', '1Y', 'MAX'].map((tf) => (
               <button
                 key={tf}
                 onClick={() => setActiveTimeframe(tf)}
                 className={`px-2 py-0.5 text-[11px] font-semibold rounded transition-all ${
                   activeTimeframe === tf
-                    ? 'bg-[#1D4ED8] text-white shadow-sm'
-                    : 'text-[#94A3B8] hover:text-white hover:bg-[#152136]'
+                    ? 'bg-[#14532D] text-white shadow-2xs'
+                    : 'text-[#64748B] hover:text-[#17211B] hover:bg-[#F0FDF4]'
                 }`}
               >
                 {tf}
@@ -393,13 +392,13 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsIntervalOpen(!isIntervalOpen)}
-              className="flex items-center gap-1 px-2.5 py-1 bg-[#070D18] border border-[#17253D] text-[#94A3B8] hover:text-white text-xs rounded-md"
+              className="flex items-center gap-1 px-2.5 py-1 bg-[#F8FAF9] border border-[#CBD5E1] text-[#64748B] hover:text-[#17211B] text-xs rounded-md"
             >
               <span>{activeInterval}</span>
-              <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+              <ChevronDown className="w-3 h-3 text-[#64748B]" />
             </button>
             {isIntervalOpen && (
-              <div className="absolute right-0 mt-1 py-1 w-24 bg-[#0D1525] border border-[#17253D] rounded shadow-lg z-20 text-xs">
+              <div className="absolute right-0 mt-1 py-1 w-24 bg-white border border-[#E5E7EB] rounded shadow-lg z-20 text-xs">
                 {['Daily', 'Weekly', 'Monthly'].map((intv) => (
                   <button
                     key={intv}
@@ -407,7 +406,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
                       setActiveInterval(intv);
                       setIsIntervalOpen(false);
                     }}
-                    className="w-full text-left px-3 py-1 text-[#94A3B8] hover:text-white hover:bg-[#152136]"
+                    className="w-full text-left px-3 py-1 text-[#64748B] hover:text-[#14532D] hover:bg-[#F0FDF4]"
                   >
                     {intv}
                   </button>
@@ -420,42 +419,42 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           <button
             onClick={() => navigate(`/market-data?symbol=${currentSymbol}`)}
             title="Inspect Live Market Data"
-            className="flex items-center gap-1 px-2 py-1 bg-[#070D18] border border-[#17253D] hover:border-[#3B82F6] text-[#94A3B8] hover:text-white text-xs rounded-md transition-all"
+            className="flex items-center gap-1 px-2 py-1 bg-white border border-[#CBD5E1] hover:border-[#14532D] text-[#64748B] hover:text-[#14532D] text-xs rounded-md transition-all shadow-2xs"
           >
-            <Eye className="w-3.5 h-3.5 text-[#3B82F6]" />
+            <Eye className="w-3.5 h-3.5 text-[#14532D]" />
             <span className="hidden lg:inline">Data</span>
           </button>
 
           <button
             onClick={() => navigate(`/backtesting?symbol=${currentSymbol}`)}
             title="Run Backtest on Symbol"
-            className="flex items-center gap-1 px-2.5 py-1 bg-[#1D4ED8]/20 border border-[#1D4ED8] hover:bg-[#1D4ED8] text-[#93C5FD] hover:text-white text-xs font-semibold rounded-md transition-all shadow-sm"
+            className="flex items-center gap-1 px-2.5 py-1 bg-[#14532D] hover:bg-[#166534] text-white text-xs font-semibold rounded-md transition-all shadow-xs"
           >
-            <Play className="w-3 h-3 text-[#93C5FD] hover:text-white fill-current" />
+            <Play className="w-3 h-3 fill-current" />
             <span>Backtest</span>
           </button>
         </div>
       </div>
 
       {/* OHLC and Indicator Toggles Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-2 pb-2 text-xs border-b border-[#17253D]/40">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-2 pb-2 text-xs border-b border-[#E5E7EB]">
         {/* Dynamic HUD Bar */}
         <div className="flex items-center gap-3 text-xs font-mono-num">
           <span className="text-[#64748B] text-[11px]">{activeBar?.date || '2026-10-13'}</span>
-          <span className="text-[#94A3B8]">
-            O <strong className="text-[#E2E8F0] font-medium">{activeBar?.o.toFixed(2)}</strong>
+          <span className="text-[#64748B]">
+            O <strong className="text-[#17211B] font-medium">{activeBar?.o.toFixed(2)}</strong>
           </span>
-          <span className="text-[#94A3B8]">
-            H <strong className="text-[#E2E8F0] font-medium">{activeBar?.h.toFixed(2)}</strong>
+          <span className="text-[#64748B]">
+            H <strong className="text-[#15803D] font-medium">{activeBar?.h.toFixed(2)}</strong>
           </span>
-          <span className="text-[#94A3B8]">
-            L <strong className="text-[#E2E8F0] font-medium">{activeBar?.l.toFixed(2)}</strong>
+          <span className="text-[#64748B]">
+            L <strong className="text-[#DC2626] font-medium">{activeBar?.l.toFixed(2)}</strong>
           </span>
-          <span className="text-[#94A3B8]">
-            C <strong className="text-[#E2E8F0] font-medium">{activeBar?.c.toFixed(2)}</strong>
+          <span className="text-[#64748B]">
+            C <strong className="text-[#17211B] font-medium">{activeBar?.c.toFixed(2)}</strong>
           </span>
-          <span className="text-[#94A3B8]">
-            Vol <strong className="text-[#38BDF8] font-medium">{activeBar?.v.toFixed(1)}M</strong>
+          <span className="text-[#64748B]">
+            Vol <strong className="text-[#14532D] font-medium">{activeBar?.v.toFixed(1)}M</strong>
           </span>
         </div>
 
@@ -463,37 +462,37 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
         <div className="flex items-center gap-3 text-xs">
           <button
             onClick={() => setShowSMA50(!showSMA50)}
-            className={`flex items-center gap-1.5 px-2 py-0.5 rounded border transition-all ${
+            className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${
               showSMA50
-                ? 'bg-[#1E3A8A]/30 border-[#3B82F6]/50 text-[#93C5FD]'
-                : 'bg-transparent border-[#17253D] text-[#64748B] opacity-50'
+                ? 'bg-[#DCFCE7] border-[#86EFAC] text-[#14532D] font-semibold'
+                : 'bg-transparent border-[#CBD5E1] text-[#64748B] opacity-50'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-[#3B82F6]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#14532D]"></span>
             <span>SMA 50 ({activeSma50?.toFixed(2)})</span>
           </button>
 
           <button
             onClick={() => setShowSMA200(!showSMA200)}
-            className={`flex items-center gap-1.5 px-2 py-0.5 rounded border transition-all ${
+            className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${
               showSMA200
-                ? 'bg-[#7C2D12]/30 border-[#F97316]/50 text-[#FDBA74]'
-                : 'bg-transparent border-[#17253D] text-[#64748B] opacity-50'
+                ? 'bg-[#FEF3C7] border-[#FDE68A] text-[#92400E] font-semibold'
+                : 'bg-transparent border-[#CBD5E1] text-[#64748B] opacity-50'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-[#F97316]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
             <span>SMA 200 ({activeSma200?.toFixed(2)})</span>
           </button>
 
           <button
             onClick={() => setShowVolume(!showVolume)}
-            className={`flex items-center gap-1.5 px-2 py-0.5 rounded border transition-all ${
+            className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${
               showVolume
-                ? 'bg-[#064E3B]/30 border-[#10B981]/50 text-[#6EE7B7]'
-                : 'bg-transparent border-[#17253D] text-[#64748B] opacity-50'
+                ? 'bg-[#F0FDF4] border-[#DCFCE7] text-[#166534] font-semibold'
+                : 'bg-transparent border-[#CBD5E1] text-[#64748B] opacity-50'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#16A34A]"></span>
             <span>Volume</span>
           </button>
         </div>
@@ -519,12 +518,12 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
         >
           <defs>
             <linearGradient id="vol-grad-green" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22C55E" stopOpacity={0.65} />
-              <stop offset="100%" stopColor="#22C55E" stopOpacity={0.1} />
+              <stop offset="0%" stopColor="#16A34A" stopOpacity={0.65} />
+              <stop offset="100%" stopColor="#DCFCE7" stopOpacity={0.1} />
             </linearGradient>
             <linearGradient id="vol-grad-red" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#EF4444" stopOpacity={0.65} />
-              <stop offset="100%" stopColor="#EF4444" stopOpacity={0.1} />
+              <stop offset="0%" stopColor="#DC2626" stopOpacity={0.65} />
+              <stop offset="100%" stopColor="#FEE2E2" stopOpacity={0.1} />
             </linearGradient>
           </defs>
 
@@ -533,7 +532,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
             const y = pToY(price);
             return (
               <g key={price}>
-                <line x1="30" y1={y} x2="690" y2={y} stroke="#17253D" strokeDasharray="3 3" strokeWidth="0.8" />
+                <line x1="30" y1={y} x2="690" y2={y} stroke="#E5E7EB" strokeDasharray="3 3" strokeWidth="0.8" />
                 <text x="700" y={y + 3} fill="#64748B" fontSize="10" fontFamily="monospace">
                   {price.toFixed(2)}
                 </text>
@@ -544,7 +543,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           {/* Volume subpane separator */}
           {showVolume && (
             <>
-              <line x1="30" y1="210" x2="690" y2="210" stroke="#1E293B" strokeWidth="1" />
+              <line x1="30" y1="210" x2="690" y2="210" stroke="#E5E7EB" strokeWidth="1" />
               <text x="700" y="235" fill="#64748B" fontSize="9" fontFamily="monospace">
                 {maxVol.toFixed(0)}M
               </text>
@@ -561,7 +560,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
             const yClose = pToY(c.c);
             const bodyTop = Math.min(yOpen, yClose);
             const bodyHeight = Math.max(Math.abs(yOpen - yClose), 1.5);
-            const candleColor = isUp ? '#22C55E' : '#EF4444';
+            const candleColor = isUp ? '#16A34A' : '#DC2626';
             const isHovered = hoveredIdx === i;
 
             // Volume bar
@@ -599,8 +598,8 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
                   y={bodyTop}
                   width="8"
                   height={bodyHeight}
-                  fill={isUp ? '#22C55E' : '#EF4444'}
-                  stroke={isHovered ? '#FFFFFF' : candleColor}
+                  fill={isUp ? '#16A34A' : '#DC2626'}
+                  stroke={isHovered ? '#17211B' : candleColor}
                   strokeWidth={isHovered ? '1.5' : '0.5'}
                   rx="0.5"
                 />
@@ -612,7 +611,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           {showSMA50 && (
             <polyline
               fill="none"
-              stroke="#3B82F6"
+              stroke="#14532D"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -624,7 +623,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
           {showSMA200 && (
             <polyline
               fill="none"
-              stroke="#F97316"
+              stroke="#D97706"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -641,7 +640,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
                 y1="10"
                 x2={35 + (hoveredIdx / (candles.length - 1 || 1)) * 650}
                 y2="265"
-                stroke="#60A5FA"
+                stroke="#166534"
                 strokeDasharray="4 4"
                 strokeWidth="1"
               />
@@ -651,7 +650,7 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
                 y1={pToY(candles[hoveredIdx].c)}
                 x2="690"
                 y2={pToY(candles[hoveredIdx].c)}
-                stroke="#60A5FA"
+                stroke="#166534"
                 strokeDasharray="4 4"
                 strokeWidth="1"
               />
@@ -660,16 +659,16 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
 
           {/* Right Y-axis live price tags */}
           <g transform={`translate(695, ${pToY(activeBar?.c || currentData.currentPrice) - 8})`}>
-            <rect x="0" y="0" width="55" height="16" fill="#166534" rx="2" />
-            <text x="5" y="11" fill="#86EFAC" fontSize="9" fontWeight="bold" fontFamily="monospace">
+            <rect x="0" y="0" width="55" height="16" fill="#14532D" rx="2" />
+            <text x="5" y="11" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="monospace">
               {(activeBar?.c || currentData.currentPrice).toFixed(2)}
             </text>
           </g>
 
           {showSMA50 && (
             <g transform={`translate(695, ${pToY(activeSma50 || 0) - 8})`}>
-              <rect x="0" y="0" width="55" height="16" fill="#1E3A8A" rx="2" />
-              <text x="5" y="11" fill="#93C5FD" fontSize="9" fontWeight="bold" fontFamily="monospace">
+              <rect x="0" y="0" width="55" height="16" fill="#166534" rx="2" />
+              <text x="5" y="11" fill="#DCFCE7" fontSize="9" fontWeight="bold" fontFamily="monospace">
                 {(activeSma50 || 0).toFixed(2)}
               </text>
             </g>
@@ -677,8 +676,8 @@ export const DashboardMainChart: React.FC<DashboardMainChartProps> = ({
 
           {showSMA200 && (
             <g transform={`translate(695, ${pToY(activeSma200 || 0) - 8})`}>
-              <rect x="0" y="0" width="55" height="16" fill="#7C2D12" rx="2" />
-              <text x="5" y="11" fill="#FDBA74" fontSize="9" fontWeight="bold" fontFamily="monospace">
+              <rect x="0" y="0" width="55" height="16" fill="#D97706" rx="2" />
+              <text x="5" y="11" fill="#FEF3C7" fontSize="9" fontWeight="bold" fontFamily="monospace">
                 {(activeSma200 || 0).toFixed(2)}
               </text>
             </g>

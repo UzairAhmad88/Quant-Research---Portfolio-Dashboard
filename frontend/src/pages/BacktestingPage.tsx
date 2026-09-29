@@ -215,21 +215,21 @@ export const BacktestingPage: React.FC = () => {
 
       {/* View Mode Toggle Bar & Export Controls */}
       {activeBacktest && (
-        <div className="col-span-12 bg-[#151F2E] border border-[#263244] rounded-lg p-3 font-mono flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-[#94A3B8]">
-            Active Backtest ID: <span className="text-[#E5E7EB] font-bold">{activeBacktest.id}</span>
+        <div className="col-span-12 bg-white border border-[#E5E7EB] rounded-lg p-3 font-mono flex flex-wrap items-center justify-between gap-3 shadow-sm">
+          <div className="text-xs text-[#64748B]">
+            Active Backtest ID: <span className="text-[#17211B] font-bold">{activeBacktest.id}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <ExportMenu options={backtestExportOptions} />
 
-            <div className="flex items-center gap-2 bg-[#111827] rounded p-1 border border-[#263244]">
+            <div className="flex items-center gap-2 bg-[#F8FAF9] rounded p-1 border border-[#CBD5E1]">
               <button
                 onClick={() => setViewMode('workspace')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors ${
                   viewMode === 'workspace'
-                    ? 'bg-[#3B82F6] text-white font-bold'
-                    : 'text-[#94A3B8] hover:text-[#E5E7EB]'
+                    ? 'bg-[#14532D] text-white font-bold shadow-sm'
+                    : 'text-[#64748B] hover:text-[#17211B]'
                 }`}
               >
                 <Activity className="h-3.5 w-3.5" /> Interactive Analytics
@@ -239,8 +239,8 @@ export const BacktestingPage: React.FC = () => {
                 onClick={() => setViewMode('report')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors ${
                   viewMode === 'report'
-                    ? 'bg-[#3B82F6] text-white font-bold'
-                    : 'text-[#94A3B8] hover:text-[#E5E7EB]'
+                    ? 'bg-[#14532D] text-white font-bold shadow-sm'
+                    : 'text-[#64748B] hover:text-[#17211B]'
                 }`}
               >
                 <FileText className="h-3.5 w-3.5" /> Research Report (v1.0)
@@ -257,7 +257,7 @@ export const BacktestingPage: React.FC = () => {
             {reportData ? (
               <BacktestReportView report={reportData} isLoading={reportLoading} />
             ) : (
-              <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-sm font-mono text-[#94A3B8]">
+              <div className="bg-white border border-[#E5E7EB] rounded-lg p-12 text-center text-sm font-mono text-[#64748B] shadow-sm">
                 Generating structured quantitative research report DTO...
               </div>
             )}
@@ -303,10 +303,10 @@ export const BacktestingPage: React.FC = () => {
           </>
         )
       ) : (
-        <div className="col-span-12 bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center">
-          <PlayCircle className="h-12 w-12 text-[#94A3B8] mx-auto mb-3 opacity-60" />
-          <h3 className="text-base font-semibold text-[#E5E7EB]">No Backtest Simulation Active</h3>
-          <p className="text-xs text-[#94A3B8] max-w-md mx-auto mt-1 leading-relaxed">
+        <div className="col-span-12 bg-white border border-[#E5E7EB] rounded-lg p-12 text-center shadow-sm">
+          <PlayCircle className="h-12 w-12 text-[#14532D] mx-auto mb-3 opacity-60" />
+          <h3 className="text-base font-semibold text-[#17211B]">No Backtest Simulation Active</h3>
+          <p className="text-xs text-[#64748B] max-w-md mx-auto mt-1 leading-relaxed">
             Select an instrument, set execution parameters above, and click <strong>Run Historical Backtest</strong> to execute a reproducible chronological simulation and generate a quantitative research report.
           </p>
         </div>

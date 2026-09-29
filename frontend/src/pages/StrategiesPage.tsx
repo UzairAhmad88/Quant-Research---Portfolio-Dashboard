@@ -191,7 +191,7 @@ export const StrategiesPage: React.FC = () => {
     : [];
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-slate-100 p-6 space-y-6">
+    <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Strategies' }, { label: selectedInstrument?.symbol || 'Instrument' }]} />
       <ResearchContextBar availableInstruments={availableInstruments} />
 
@@ -205,9 +205,9 @@ export const StrategiesPage: React.FC = () => {
           actions={<ExportMenu options={exportOptions} disabled={!selectedInstrument || !strategyData} />}
         />
       ) : (
-        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-5">
-          <h1 className="text-xl font-bold text-slate-100 font-mono">Moving Average Strategy Engine</h1>
-          <p className="text-xs text-slate-400 mt-1 font-sans">
+        <div className="bg-card border border-border rounded-xl p-5 shadow-xs">
+          <h1 className="text-xl font-bold text-text-primary font-mono">Moving Average Strategy Engine</h1>
+          <p className="text-xs text-text-secondary mt-1">
             Historical moving-average crossover research &amp; signal inspection
           </p>
         </div>
@@ -224,27 +224,27 @@ export const StrategiesPage: React.FC = () => {
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="bg-rose-950/40 border border-rose-900/60 rounded-lg p-4 flex items-center gap-3 text-rose-300 text-sm">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center gap-3 text-rose-800 text-sm">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-rose-600" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Insufficient Data Alert */}
       {strategyData && !strategyData.is_sufficient && (
-        <div className="bg-amber-950/40 border border-amber-900/60 rounded-lg p-4 flex items-center gap-3 text-amber-300 text-sm">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3 text-amber-800 text-sm">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-600" />
           <div>
             <div className="font-semibold">Insufficient Data Warning</div>
-            <div className="text-xs text-amber-400/80">{strategyData.message}</div>
+            <div className="text-xs text-amber-700">{strategyData.message}</div>
           </div>
         </div>
       )}
 
       {/* Main Content Area */}
       {isLoading ? (
-        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400 font-mono text-xs">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-500 mb-3" />
+        <div className="bg-card border border-border rounded-xl p-12 text-center text-text-secondary font-mono text-xs shadow-xs">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-brand-primary mb-3" />
           <span>Calculating moving averages &amp; detecting crossover signals...</span>
         </div>
       ) : strategyData && strategyData.is_sufficient ? (
@@ -290,7 +290,7 @@ export const StrategiesPage: React.FC = () => {
           </div>
         </div>
       ) : availableInstruments.length === 0 ? (
-        <div className="bg-[#151F2E] border border-[#263244] rounded-lg p-12 text-center text-slate-400 font-mono text-xs">
+        <div className="bg-card border border-border rounded-xl p-12 text-center text-text-secondary font-mono text-xs shadow-xs">
           No instruments available in database. Add instruments in the Market Data workspace.
         </div>
       ) : null}

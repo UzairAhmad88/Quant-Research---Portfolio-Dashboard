@@ -72,20 +72,19 @@ export const TopInstrumentsTable: React.FC<TopInstrumentsTableProps> = ({
   };
 
   return (
-    <div className="bg-[#0D1525] border border-[#17253D] rounded-lg p-4 shadow-md flex flex-col justify-between">
+    <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 shadow-sm flex flex-col justify-between">
       {/* Header with Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-[#17253D] gap-2">
-        <h3 className="text-sm font-bold text-white tracking-tight">Top Instruments</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-[#E5E7EB] gap-2">
+        <h3 className="text-sm font-bold text-[#17211B] tracking-tight">Top Instruments</h3>
 
         <div className="relative w-full sm:w-44">
-
           <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Filter symbols..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-8 pr-2.5 py-1 bg-[#070D18] border border-[#17253D] focus:border-[#3B82F6] rounded text-xs text-white placeholder-[#64748B] outline-none transition-colors"
+            className="w-full pl-8 pr-2.5 py-1 bg-[#F8FAF9] border border-[#CBD5E1] focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/20 rounded text-xs text-[#17211B] placeholder-[#64748B] outline-none transition-colors"
           />
         </div>
       </div>
@@ -94,92 +93,92 @@ export const TopInstrumentsTable: React.FC<TopInstrumentsTableProps> = ({
       <div className="overflow-x-auto pt-2">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="text-[11px] text-[#94A3B8] border-b border-[#17253D]/80">
+            <tr className="text-[11px] text-[#64748B] bg-[#F0FDF4] border-b border-[#E5E7EB]">
               <th
                 onClick={() => handleSort('symbol')}
-                className="pb-2 font-medium cursor-pointer hover:text-white transition-colors"
+                className="py-2 px-2 font-semibold cursor-pointer hover:text-[#17211B] transition-colors"
               >
                 <div className="flex items-center gap-1">
-                  Symbol {sortField === 'symbol' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#3B82F6]" /> : <ChevronDown className="w-3 h-3 text-[#3B82F6]" />)}
+                  Symbol {sortField === 'symbol' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#14532D]" /> : <ChevronDown className="w-3 h-3 text-[#14532D]" />)}
                 </div>
               </th>
-              <th className="pb-2 font-medium">Name</th>
+              <th className="py-2 px-2 font-semibold">Name</th>
               <th
                 onClick={() => handleSort('price')}
-                className="pb-2 font-medium text-right cursor-pointer hover:text-white transition-colors"
+                className="py-2 px-2 font-semibold text-right cursor-pointer hover:text-[#17211B] transition-colors"
               >
                 <div className="flex items-center justify-end gap-1">
-                  Price {sortField === 'price' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#3B82F6]" /> : <ChevronDown className="w-3 h-3 text-[#3B82F6]" />)}
+                  Price {sortField === 'price' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#14532D]" /> : <ChevronDown className="w-3 h-3 text-[#14532D]" />)}
                 </div>
               </th>
               <th
                 onClick={() => handleSort('day')}
-                className="pb-2 font-medium text-right cursor-pointer hover:text-white transition-colors"
+                className="py-2 px-2 font-semibold text-right cursor-pointer hover:text-[#17211B] transition-colors"
               >
                 <div className="flex items-center justify-end gap-1">
-                  1D % {sortField === 'day' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#3B82F6]" /> : <ChevronDown className="w-3 h-3 text-[#3B82F6]" />)}
+                  1D % {sortField === 'day' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#14532D]" /> : <ChevronDown className="w-3 h-3 text-[#14532D]" />)}
                 </div>
               </th>
               <th
                 onClick={() => handleSort('month')}
-                className="pb-2 font-medium text-right cursor-pointer hover:text-white transition-colors"
+                className="py-2 px-2 font-semibold text-right cursor-pointer hover:text-[#17211B] transition-colors"
               >
                 <div className="flex items-center justify-end gap-1">
-                  1M % {sortField === 'month' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#3B82F6]" /> : <ChevronDown className="w-3 h-3 text-[#3B82F6]" />)}
+                  1M % {sortField === 'month' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#14532D]" /> : <ChevronDown className="w-3 h-3 text-[#14532D]" />)}
                 </div>
               </th>
               <th
                 onClick={() => handleSort('ytd')}
-                className="pb-2 font-medium text-right cursor-pointer hover:text-white transition-colors"
+                className="py-2 px-2 font-semibold text-right cursor-pointer hover:text-[#17211B] transition-colors"
               >
                 <div className="flex items-center justify-end gap-1">
-                  YTD % {sortField === 'ytd' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#3B82F6]" /> : <ChevronDown className="w-3 h-3 text-[#3B82F6]" />)}
+                  YTD % {sortField === 'ytd' && (sortAsc ? <ChevronUp className="w-3 h-3 text-[#14532D]" /> : <ChevronDown className="w-3 h-3 text-[#14532D]" />)}
                 </div>
               </th>
-              <th className="pb-2 font-medium text-right">Actions</th>
+              <th className="py-2 px-2 font-semibold text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#17253D]/40 text-xs font-mono-num">
+          <tbody className="divide-y divide-[#E5E7EB] text-xs font-mono-num">
             {filteredInstruments.map((item) => {
               const isSelected = activeSymbol === item.symbol;
               return (
                 <tr
                   key={item.symbol}
                   onClick={() => handleRowClick(item.symbol)}
-                  className={`hover:bg-[#152136]/60 transition-colors cursor-pointer ${
-                    isSelected ? 'bg-[#1D4ED8]/15 border-l-2 border-[#3B82F6]' : ''
+                  className={`hover:bg-[#F8FAF9] transition-colors cursor-pointer ${
+                    isSelected ? 'bg-[#DCFCE7] border-l-2 border-[#14532D]' : ''
                   }`}
                 >
-                  <td className="py-2.5 font-bold text-white tracking-tight flex items-center gap-1.5">
+                  <td className="py-2.5 px-2 font-bold text-[#17211B] tracking-tight flex items-center gap-1.5">
                     {item.symbol}
                     {isSelected && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse"></span>
                     )}
                   </td>
-                  <td className="py-2.5 text-[#94A3B8] font-sans truncate max-w-[110px]">{item.name}</td>
-                  <td className="py-2.5 text-right text-[#E2E8F0] font-medium">${item.price.toFixed(2)}</td>
-                  <td className={`py-2.5 text-right font-medium ${item.day >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                  <td className="py-2.5 px-2 text-[#64748B] font-sans truncate max-w-[110px]">{item.name}</td>
+                  <td className="py-2.5 px-2 text-right text-[#17211B] font-medium">${item.price.toFixed(2)}</td>
+                  <td className={`py-2.5 px-2 text-right font-medium ${item.day >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'}`}>
                     +{item.day.toFixed(2)}%
                   </td>
-                  <td className={`py-2.5 text-right font-medium ${item.month >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                  <td className={`py-2.5 px-2 text-right font-medium ${item.month >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'}`}>
                     +{item.month.toFixed(2)}%
                   </td>
-                  <td className={`py-2.5 text-right font-medium ${item.ytd >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                  <td className={`py-2.5 px-2 text-right font-medium ${item.ytd >= 0 ? 'text-[#15803D]' : 'text-[#DC2626]'}`}>
                     +{item.ytd.toFixed(1)}%
                   </td>
-                  <td className="py-2.5 text-right">
+                  <td className="py-2.5 px-2 text-right">
                     <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => navigate(`/returns?symbol=${item.symbol}`)}
                         title="Analyze Returns & Risk"
-                        className="p-1 hover:bg-[#1E3A8A] text-[#94A3B8] hover:text-[#93C5FD] rounded transition-colors"
+                        className="p-1 hover:bg-[#F0FDF4] text-[#64748B] hover:text-[#14532D] rounded transition-colors"
                       >
                         <LineChart className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => navigate(`/backtesting?symbol=${item.symbol}`)}
                         title="Launch Strategy Backtest"
-                        className="p-1 hover:bg-[#1E3A8A] text-[#94A3B8] hover:text-[#22C55E] rounded transition-colors"
+                        className="p-1 hover:bg-[#F0FDF4] text-[#64748B] hover:text-[#15803D] rounded transition-colors"
                       >
                         <Play className="w-3.5 h-3.5 fill-current" />
                       </button>

@@ -47,18 +47,18 @@ export const MarketDataSnapshotPanel: React.FC<MarketDataSnapshotPanelProps> = (
       }
     >
       {isLoading ? (
-        <div className="py-8 text-center text-xs font-mono text-[#94A3B8] animate-pulse">
+        <div className="py-8 text-center text-xs font-mono text-text-muted animate-pulse">
           Loading market data snapshot...
         </div>
       ) : instruments.length === 0 ? (
-        <div className="py-8 text-center text-xs text-[#94A3B8] font-mono">
+        <div className="py-8 text-center text-xs text-text-muted font-mono">
           No instruments tracked in database registry.
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs font-mono">
             <thead>
-              <tr className="border-b border-[#263244] bg-[#0F172A] text-[#94A3B8] uppercase text-[10px]">
+              <tr className="border-b border-border bg-forest-50/50 text-text-secondary uppercase text-[10px]">
                 <th className="py-2 px-3">Symbol</th>
                 <th className="py-2 px-3">Name</th>
                 <th className="py-2 px-3">Asset Class</th>
@@ -68,29 +68,29 @@ export const MarketDataSnapshotPanel: React.FC<MarketDataSnapshotPanelProps> = (
                 <th className="py-2 px-3 text-right">Freshness</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E293B] text-[#E5E7EB]">
+            <tbody className="divide-y divide-border text-text-primary">
               {instruments.map((inst) => (
-                <tr key={inst.id} className="hover:bg-[#1E293B]/50 transition-colors">
+                <tr key={inst.id} className="hover:bg-forest-50/40 transition-colors">
                   <td className="py-2.5 px-3">
                     <NavLink
                       to={`/returns?symbol=${inst.symbol}`}
-                      className="font-bold text-[#3B82F6] hover:underline"
+                      className="font-bold text-forest-700 hover:underline"
                     >
                       {inst.symbol}
                     </NavLink>
                   </td>
-                  <td className="py-2.5 px-3 text-[#94A3B8]">{inst.name}</td>
+                  <td className="py-2.5 px-3 text-text-secondary">{inst.name}</td>
                   <td className="py-2.5 px-3">
-                    <Badge variant="info" className="text-[10px] py-0 px-1 border-[#3B82F6]/30">
+                    <Badge variant="info" className="text-[10px] py-0 px-1 border-forest-200">
                       {inst.asset_type}
                     </Badge>
                   </td>
-                  <td className="py-2.5 px-3 font-semibold text-[#F8FAFC]">
+                  <td className="py-2.5 px-3 font-semibold text-text-primary">
                     {inst.latest_price !== undefined && inst.latest_price !== null
                       ? `$${inst.latest_price.toFixed(2)}`
                       : '—'}
                   </td>
-                  <td className="py-2.5 px-3">{inst.observation_count.toLocaleString()} bars</td>
+                  <td className="py-2.5 px-3 text-text-secondary">{inst.observation_count.toLocaleString()} bars</td>
                   <td className="py-2.5 px-3">{getQualityBadge(inst.data_quality)}</td>
                   <td className="py-2.5 px-3 text-right">
                     {getFreshnessBadge(inst.freshness_state, inst.freshness_label)}
