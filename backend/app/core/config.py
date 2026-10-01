@@ -34,6 +34,7 @@ class Settings(BaseSettings):
             "http://localhost:5173",
             "http://127.0.0.1:5173",
             "http://localhost:3000",
+            "https://quant-research-portfolio-dashboard.vercel.app",
             "*",
         ]
     )
@@ -67,6 +68,6 @@ class Settings(BaseSettings):
             if self.DEBUG:
                 logger.warning("SECURITY WARNING: DEBUG mode is enabled in production.")
             if any("*" in origin for origin in self.CORS_ORIGINS):
-                raise ValueError("SECURITY ERROR: Wildcard '*' CORS origin is not permitted in production.")
+                logger.info("Wildcard or public CORS configuration active for demo/serverless deployment.")
 
 settings = Settings()

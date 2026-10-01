@@ -98,8 +98,10 @@ async def websocket_market_data(websocket: WebSocket):
     except Exception:
         ws_manager.disconnect(websocket)
 
-# Mount Versioned API v1 Router
+# Mount Versioned API v1 Router across prefixes for standard and serverless rewrites
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix="/v1")
+app.include_router(api_router, prefix="/api")
 
 
 if __name__ == "__main__":
